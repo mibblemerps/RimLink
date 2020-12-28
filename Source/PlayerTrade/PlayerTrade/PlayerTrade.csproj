@@ -1,0 +1,123 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{080A4025-32F3-499E-B618-186821772F51}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>PlayerTrade</RootNamespace>
+    <AssemblyName>PlayerTrade</AssemblyName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>portable</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="0Harmony">
+      <HintPath>.\0Harmony.dll</HintPath>
+    </Reference>
+    <Reference Include="Assembly-CSharp">
+      <HintPath>..\..\..\..\..\RimWorldWin64_Data\Managed\Assembly-CSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+    <Reference Include="UnityEngine">
+      <HintPath>..\..\..\..\..\RimWorldWin64_Data\Managed\UnityEngine.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null" />
+    <Reference Include="UnityEngine.IMGUIModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\RimWorldWin64_Data\Managed\UnityEngine.IMGUIModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.TextCoreModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\RimWorldWin64_Data\Managed\UnityEngine.TextCoreModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.TextRenderingModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\RimWorldWin64_Data\Managed\UnityEngine.TextRenderingModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UI, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\RimWorldWin64_Data\Managed\UnityEngine.UI.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UIElementsModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\RimWorldWin64_Data\Managed\UnityEngine.UIElementsModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UIModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\RimWorldWin64_Data\Managed\UnityEngine.UIModule.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="ChoiceLetter_TradeOffer.cs" />
+    <Compile Include="Dialog_TradeIntermission.cs" />
+    <Compile Include="HashUtil.cs" />
+    <Compile Include="Log.cs" />
+    <Compile Include="ModSettings.cs" />
+    <Compile Include="Net\Connection.cs" />
+    <Compile Include="Net\IPacketable.cs" />
+    <Compile Include="Net\NetThing.cs" />
+    <Compile Include="Net\NetTradeThing.cs" />
+    <Compile Include="Net\Packet.cs" />
+    <Compile Include="Net\PacketAcceptTrade.cs" />
+    <Compile Include="Net\PacketBuffer.cs" />
+    <Compile Include="Net\Client.cs" />
+    <Compile Include="Dialog_PlayerTrade.cs" />
+    <Compile Include="Net\PacketBufferExtensions.cs" />
+    <Compile Include="Net\PacketColonyResources.cs" />
+    <Compile Include="Net\PacketColonyTradable.cs" />
+    <Compile Include="Net\PacketConnect.cs" />
+    <Compile Include="Net\PacketInitiateTrade.cs" />
+    <Compile Include="Net\PacketReceivedEventArgs.cs" />
+    <Compile Include="Net\PacketRequestColonyResources.cs" />
+    <Compile Include="Net\PacketTradeConfirm.cs" />
+    <Compile Include="Net\PacketTradeOffer.cs" />
+    <Compile Include="Patches\Patch_CommsConsole.cs" />
+    <Compile Include="Patches\Patch_Game.cs" />
+    <Compile Include="Patches\Patch_ResourceCounter.cs" />
+    <Compile Include="PlayerComms.cs" />
+    <Compile Include="PlayerTrade.cs" />
+    <Compile Include="PlayerTradeMod.cs" />
+    <Compile Include="PlayerTrader.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="QuestNode_GenerateShuttleForSpecificThings.cs" />
+    <Compile Include="Resources.cs" />
+    <Compile Include="Scribe\ScribeUtil.cs" />
+    <Compile Include="TradeOffer.cs" />
+    <Compile Include="TradeOfferUtil.cs" />
+    <Compile Include="LaunchUtil.cs" />
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>copy "$(TargetDir)\$(TargetFileName)" "$(SolutionDir)\..\..\Assemblies\PlayerTrade.dll"
+
+copy "$(TargetDir)\PlayerTrade.pdb" "$(SolutionDir)\..\..\Assemblies\PlayerTrade.pdb"</PostBuildEvent>
+  </PropertyGroup>
+</Project>

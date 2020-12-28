@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+
+	<QuestScriptDef>
+			<defName>PlayerTrade</defName>
+			<isRootSpecial>true</isRootSpecial>
+			<questDescriptionAndNameRules>
+				<rulesStrings>
+					<li>questName->Player Trade</li>
+					<li>questDescription-></li>
+				</rulesStrings>
+			</questDescriptionAndNameRules>
+			
+			<root Class="QuestNode_Sequence">
+				<nodes>
+					<li Class="QuestNode_GetMap" />
+			
+					<!-- Generate shuttle -->
+					<li Class="QuestNode_GenerateShuttle">
+						<storeAs>shuttle</storeAs>
+						<requiredItems>$requiredItems</requiredItems>
+					</li>
+					<li Class="QuestNode_SpawnSkyfaller">
+						<skyfallerDef>ShuttleIncoming</skyfallerDef>
+						<innerThings>$shuttle</innerThings>
+						<lookForSafeSpot>True</lookForSafeSpot>
+						<tryLandInShipLandingZone>True</tryLandInShipLandingZone>
+					</li>
+					<li Class="QuestNode_Letter">
+						<label TKey="LetterLabelPermitShuttleArrived">Shuttle arrived</label>
+						<text TKey="LetterTextPermitShuttleArrived">The orbital trade shuttle has arrived.</text>
+						<lookTargets>$shuttle</lookTargets>
+					</li>
+					
+					
+					<li Class="QuestNode_Signal">
+						<inSignal>shuttle.SentSatisfied</inSignal>
+						<node Class="QuestNode_Sequence">
+							<nodes>
+								<li Class="QuestNode_Letter">
+									<label TKey="LetterLabelPermitShuttleArrived">Shuttle departed</label>
+									<text TKey="LetterTextPermitShuttleArrived">The orbital trade shuttle has departed.</text>
+									<lookTargets>$shuttle</lookTargets>
+								</li>
+								<li Class="QuestNode_End" />
+							</nodes>
+						</node>
+					</li>
+				</nodes>
+			</root>
+	</QuestScriptDef>
+	
+</Defs>

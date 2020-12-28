@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+
+	<LetterDef ParentName="CustomChoiceLetterBase">
+		<defName>PlayerTradeOffer</defName>
+		<color>(60, 140, 82)</color>
+		<letterClass>PlayerTrade.ChoiceLetter_TradeOffer</letterClass>
+	</LetterDef>
+
+</Defs>
