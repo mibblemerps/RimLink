@@ -19,14 +19,14 @@ namespace PlayerTrade.Patches
 
             var comms = new List<ICommunicable>();
 
+            // Add default comms entries
+            comms.AddRange(__result);
+
             // Add player traders
             foreach (string username in PlayerTradeMod.Instance.Client.TradablePlayers)
             {
                 comms.Add(new PlayerComms(username));
             }
-
-            // Add default comms entries
-            comms.AddRange(__result);
 
             __result = comms;
         }
