@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
+using Ionic.Zlib;
 using Verse;
 
 namespace PlayerTrade.Net
@@ -23,17 +24,19 @@ namespace PlayerTrade.Net
             byte[] buffer;
             using (var stream = new MemoryStream())
             {
-                var packetBuffer = new PacketBuffer(stream);
-                try
+                using (var gzip = new GZipStream(stream, CompressionMode.Compress))
                 {
-                    // Write packet data
-                    packet.Write(packetBuffer);
+                    var packetBuffer = new PacketBuffer(gzip);
+                    try
+                    {
+                        // Write packet data
+                        packet.Write(packetBuffer);
+                    }
+                    catch (Exception e)
+                    {
+                        Log.Error("Exception writing packet", e);
+                    }
                 }
-                catch (Exception e)
-                {
-                    Log.Error("Exception writing packet", e);
-                }
-
                 buffer = stream.ToArray();
             }
 
@@ -70,8 +73,8 @@ namespace PlayerTrade.Net
             }
 
             // Do some sanity checking
-            if (packetLength > 1048576) // 1MiB max size
-                throw new Exception("Packet over max size (1MiB)");
+            if (packetLength > 3145728) // 3MiB max size
+                throw new Exception("Packet over max size (3MiB) - possible packet overflow");
             if (!Packet.Packets.ContainsKey(packetId))
                 throw new Exception($"Packet ID {packetId} doesn't exist");
 
@@ -86,9 +89,9 @@ namespace PlayerTrade.Net
             if (packetLength > 0)
             {
                 // Parse packet data
-                using (var memoryStream = new MemoryStream(packetContentBuffer))
+                using (var gzip = new GZipStream(new MemoryStream(packetContentBuffer), CompressionMode.Decompress))
                 {
-                    packet.Read(new PacketBuffer(memoryStream));
+                    packet.Read(new PacketBuffer(gzip));
                 }
             }
 
