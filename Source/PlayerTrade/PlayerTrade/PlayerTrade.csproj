@@ -76,6 +76,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ChoiceLetter_TradeOffer.cs" />
+    <Compile Include="Dialog_PlayerComms.cs" />
     <Compile Include="Dialog_TradeIntermission.cs" />
     <Compile Include="HashUtil.cs" />
     <Compile Include="Log.cs" />
@@ -110,7 +111,7 @@
     <Compile Include="Resources.cs" />
     <Compile Include="Scribe\ScribeUtil.cs" />
     <Compile Include="TradeOffer.cs" />
-    <Compile Include="TradeOfferUtil.cs" />
+    <Compile Include="TradeUtil.cs" />
     <Compile Include="LaunchUtil.cs" />
   </ItemGroup>
   <ItemGroup />

@@ -78,7 +78,7 @@ namespace PlayerTrade.Net
         /// <returns></returns>
         public async Task SendTradeOffer()
         {
-            TradeOffer tradeOffer = TradeOfferUtil.FormTradeOffer();
+            TradeOffer tradeOffer = TradeUtil.FormTradeOffer();
             ActiveTradeOffers.Add(tradeOffer);
 
             Log.Message("Forming trade packet...");
@@ -149,7 +149,7 @@ namespace PlayerTrade.Net
                 case Packet.TradeOfferPacketId:
                     TradeOffer newTradeOffer = ((PacketTradeOffer) e.Packet).ToTradeOffer();
                     ActiveTradeOffers.Add(newTradeOffer);
-                    TradeOfferUtil.PresentTradeOffer(newTradeOffer);
+                    TradeUtil.PresentTradeOffer(newTradeOffer);
                     break;
 
                 case Packet.AcceptTradePacketId:

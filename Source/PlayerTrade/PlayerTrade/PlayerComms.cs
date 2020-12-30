@@ -18,22 +18,16 @@ namespace PlayerTrade
 
         public string GetCallLabel() => Username;
 
-        public string GetInfoText() => Username + " Info";
+        public string GetInfoText() => Username;
 
         public PlayerComms(string username)
         {
             Username = username;
         }
 
-        public async void TryOpenComms(Pawn negotiator)
+        public void TryOpenComms(Pawn negotiator)
         {
-            PacketColonyResources packet = await PlayerTradeMod.Instance.Client.GetColonyResources(Username);
-
-            Log.Message($"Other colony has {packet.Resources.Things.Count} things.");
-
-            var playerTrader = new PlayerTrader(Username, packet.Resources);
-
-            Find.WindowStack.Add(new Dialog_PlayerTrade(negotiator, playerTrader));
+            Find.WindowStack.Add(new Dialog_PlayerComms(negotiator, Username));
         }
 
         public Faction GetFaction()

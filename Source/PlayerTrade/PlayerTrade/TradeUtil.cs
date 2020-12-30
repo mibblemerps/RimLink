@@ -11,16 +11,24 @@ using StringBuilder = System.Text.StringBuilder;
 
 namespace PlayerTrade
 {
-    public static class TradeOfferUtil
+    public static class TradeUtil
     {
         public static void PresentTradeOffer(TradeOffer offer)
         {
             Find.LetterStack.ReceiveLetter(new ChoiceLetter_TradeOffer(offer));
         }
 
-        public static void TradeOfferSuccess(TradeOffer offer)
+        /// <summary>
+        /// Initiate a trade with another player and open the trade window.
+        /// </summary>
+        /// <param name="negotiator">Negotiator for the trade (this doesn't affect prices)</param>
+        /// <param name="username">Username of player to trade with</param>
+        public static async Task InitiateTrade(Pawn negotiator, string username)
         {
-            
+            PacketColonyResources packet = await PlayerTradeMod.Instance.Client.GetColonyResources(username);
+
+            var playerTrader = new PlayerTrader(username, packet.Resources);
+            Find.WindowStack.Add(new Dialog_PlayerTrade(negotiator, playerTrader));
         }
 
         public static TradeOffer FormTradeOffer()
