@@ -100,7 +100,7 @@
     <Compile Include="Net\PacketTradeConfirm.cs" />
     <Compile Include="Net\PacketTradeOffer.cs" />
     <Compile Include="Patches\Patch_CommsConsole.cs" />
-    <Compile Include="Patches\Patch_Game.cs" />
+    <Compile Include="Patches\Patch_Game_FinalizeInit.cs" />
     <Compile Include="Patches\Patch_ResourceCounter.cs" />
     <Compile Include="PlayerComms.cs" />
     <Compile Include="PlayerTrade.cs" />
