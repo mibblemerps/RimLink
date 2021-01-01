@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using PlayerTrade.Net;
+using UnityEngine;
 using Verse;
 
 namespace PlayerTrade
@@ -53,6 +54,17 @@ namespace PlayerTrade
 
             // Now tradable
             Client.IsTradableNow = true;
+        }
+
+        public override void GameComponentTick()
+        {
+            base.GameComponentTick();
+
+            if (Current.Game.tickManager.TicksGame % 1200 == 0)
+            {
+                // Mark dirty (send update packet)
+                Client.MarkDirty();
+            }
         }
 
         public override void ExposeData()
