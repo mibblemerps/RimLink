@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using HarmonyLib;
+using PlayerTrade.Net;
 using RimWorld;
 using Verse;
 
@@ -23,9 +24,9 @@ namespace PlayerTrade.Patches
             comms.AddRange(__result);
 
             // Add player traders
-            foreach (string username in RimLinkComp.Find().Client.TradablePlayers)
+            foreach (Player player in RimLinkComp.Find().Client.Players.Values.Where((p, i) => p.TradeableNow))
             {
-                comms.Add(new PlayerComms(username));
+                comms.Add(new PlayerComms(player));
             }
 
             __result = comms;

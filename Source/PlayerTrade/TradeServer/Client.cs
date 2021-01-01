@@ -14,29 +14,15 @@ namespace TradeServer
     {
         public event EventHandler<ClientEventArgs> Authenticated;
         public event EventHandler<ClientEventArgs> Disconnected;
-        public event EventHandler<ClientEventArgs> TradableChanged;
+        public event EventHandler<ClientEventArgs> ColonyInfoReceived;
 
         public ClientState State { get; set; } = ClientState.Auth;
 
-        public string Username;
+        public Player Player;
+        //public string Username;
 
         // [Trade GUID, Target username]
         public Dictionary<Guid, string> TradeOffers = new Dictionary<Guid, string>();
-
-        /// <summary>
-        /// Can this client be traded with currently?
-        /// </summary>
-        public bool IsTradableNow
-        {
-            get => _isTradableNow;
-            set
-            {
-                _isTradableNow = value;
-                TradableChanged?.Invoke(this, new ClientEventArgs(this));
-            }
-        }
-
-        private bool _isTradableNow;
 
         private TaskCompletionSource<Resources> _colonyResourcesCompletionSource;
 
@@ -63,7 +49,6 @@ namespace TradeServer
                 Tcp.Close();
             }
 
-            IsTradableNow = false; // todo: change how this is set
             Disconnected?.Invoke(this, new ClientEventArgs(this));
         }
 
@@ -92,11 +77,11 @@ namespace TradeServer
                 {
                     case Packet.ConnectId:
                         PacketConnect connectPacket = (PacketConnect) e.Packet;
-                        Username = connectPacket.Username;
+                        Player = connectPacket.Player;
+
                         State = ClientState.Normal;
                         Authenticated?.Invoke(this, new ClientEventArgs(this));
-
-                        IsTradableNow = true; // todo: change how this is set to true
+                        // todo: validate player secret
 
                         break;
                     default:
@@ -107,28 +92,33 @@ namespace TradeServer
             {
                 switch (e.Id)
                 {
+                    case Packet.ColonyInfoId:
+                        Log.Message($"Received colony info from {Player.Name}");
+                        ColonyInfoReceived?.Invoke(this, new ClientEventArgs(this));
+                        break;
+
                     case Packet.ColonyResourcesId:
                         PacketColonyResources resourcePacket = (PacketColonyResources) e.Packet;
-                        Log.Message($"Received resource info from {Username}. {resourcePacket.Resources.Things.Count} things");
+                        Log.Message($"Received resource info from {Player.Name}. {resourcePacket.Resources.Things.Count} things");
                         _colonyResourcesCompletionSource?.SetResult(resourcePacket.Resources);
                         break;
 
                     case Packet.InitiateTradeId:
                         PacketInitiateTrade initiateTradePacket = (PacketInitiateTrade) e.Packet;
-                        Log.Message($"{Username} is initiating a trade with {initiateTradePacket.Username}");
+                        Log.Message($"{Player.Name} is initiating a trade with {Program.Server.GetName(initiateTradePacket.Guid)}");
 
                         // Request colony resources from trade partner
-                        Client tradePartner = Program.Server.GetClient(initiateTradePacket.Username);
+                        Client tradePartner = Program.Server.GetClient(initiateTradePacket.Guid);
                         Resources resources = await tradePartner.GetColonyResourcesAsync();
 
                         // Got partner resources - send to initiating client (this client)
-                        await SendPacket(new PacketColonyResources(tradePartner.Username, resources));
+                        await SendPacket(new PacketColonyResources(tradePartner.Player.Guid, resources));
                         break;
 
                     case Packet.TradeOfferPacketId:
                         PacketTradeOffer tradeOfferPacket = (PacketTradeOffer) e.Packet;
                         TradeOffers.Add(tradeOfferPacket.Guid, tradeOfferPacket.For);
-                        Log.Message($"Received trade offer from {Username} for {tradeOfferPacket.For}");
+                        Log.Message($"Received trade offer from {Player.Name} for {Program.Server.GetName(tradeOfferPacket.For)}");
 
                         try
                         {
@@ -146,7 +136,7 @@ namespace TradeServer
 
                         // Find client who made the trade offer
                         Client otherClient = null;
-                        foreach (Client client in Program.Server.Clients)
+                        foreach (Client client in Program.Server.AuthenticatedClients)
                         {
                             if (client.TradeOffers.ContainsKey(acceptTradePacket.Trade))
                             {
@@ -158,7 +148,7 @@ namespace TradeServer
                         if (otherClient == null)
                         {
                             // Can't find client who made trade offer - send non-confirmation packet
-                            Log.Warn($"{Username} attempted to accept trade offer that no longer exists.");
+                            Log.Warn($"{Player.Name} attempted to accept trade offer that no longer exists.");
                             await SendPacket(new PacketTradeConfirm
                             {
                                 Trade = acceptTradePacket.Trade,
@@ -176,7 +166,7 @@ namespace TradeServer
 
                         // Now we just have to wait for the client who made the offer to send a trade confirmation packet
 
-                        Log.Message($"{Username} {(acceptTradePacket.Accept ? "accepted" : "declined")} trade offer {acceptTradePacket.Trade} from {otherClient.Username}");
+                        Log.Message($"{Player.Name} {(acceptTradePacket.Accept ? "accepted" : "declined")} trade offer {acceptTradePacket.Trade} from {otherClient.Player.Name}");
                         break;
 
                     case Packet.ConfirmTradePacketId:
@@ -185,7 +175,7 @@ namespace TradeServer
                         if (!TradeOffers.ContainsKey(packetTradeConfirm.Trade))
                         {
                             // Trade doesn't exist
-                            Log.Warn($"{Username} attempted to confirm trade that no longer exists.");
+                            Log.Warn($"{Player.Name} attempted to confirm trade that no longer exists.");
                             return;
                         }
 
@@ -195,7 +185,7 @@ namespace TradeServer
                         // Forward trade confirm packet
                         await tradeClient.SendPacket(packetTradeConfirm);
 
-                        Log.Message($"{Username} {(packetTradeConfirm.Confirm ? "confirmed" : "aborted")} trade offer {packetTradeConfirm.Trade} for {tradeClient.Username}.");
+                        Log.Message($"{Player.Name} {(packetTradeConfirm.Confirm ? "confirmed" : "aborted")} trade offer {packetTradeConfirm.Trade} for {tradeClient.Player.Name}.");
 
                         break;
                 }

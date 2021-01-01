@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using PlayerTrade.Net;
 using RimWorld;
 using UnityEngine;
 using Verse;
@@ -12,9 +13,9 @@ namespace PlayerTrade
     public class Dialog_PlayerComms : Dialog_NodeTree
     {
         public Pawn Negotiator;
-        public string Player;
+        public Player Player;
 
-        public Dialog_PlayerComms(Pawn negotiator, string player) : base(RootNodeForPlayer(negotiator, player), true)
+        public Dialog_PlayerComms(Pawn negotiator, Player player) : base(RootNodeForPlayer(negotiator, player), true)
         {
             Player = player;
             Negotiator = negotiator;
@@ -30,7 +31,7 @@ namespace PlayerTrade
             Text.Font = GameFont.Medium;
             Widgets.Label(rect1, Negotiator.LabelCap);
             Text.Anchor = TextAnchor.UpperRight;
-            Widgets.Label(rect3, Player);
+            Widgets.Label(rect3, Player.Name);
             Text.Anchor = TextAnchor.UpperLeft;
             Text.Font = GameFont.Small;
             GUI.color = new Color(1f, 1f, 1f, 0.7f);
@@ -46,11 +47,11 @@ namespace PlayerTrade
             DrawNode(new Rect(0.0f, rootNodeY, inRect.width, inRect.height - rootNodeY));
         }
 
-        public static DiaNode RootNodeForPlayer(Pawn negotiator, string player)
+        public static DiaNode RootNodeForPlayer(Pawn negotiator, Player player)
         {
             bool canDoSocial = !negotiator.skills.GetSkill(SkillDefOf.Social).TotallyDisabled;
 
-            var node = new DiaNode($"{negotiator.NameShortColored} greets {player.Colorize(ColoredText.FactionColor_Neutral)} over the comms console.");
+            var node = new DiaNode($"{negotiator.NameShortColored} greets {player.Name.Colorize(ColoredText.FactionColor_Neutral)} over the comms console.");
 
             var tradeOption = new DiaOption("Trade")
             {

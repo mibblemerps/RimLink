@@ -93,7 +93,7 @@
     <Compile Include="Dialog_PlayerTrade.cs" />
     <Compile Include="Net\PacketBufferExtensions.cs" />
     <Compile Include="Net\PacketColonyResources.cs" />
-    <Compile Include="Net\PacketColonyTradable.cs" />
+    <Compile Include="Net\PacketColonyInfo.cs" />
     <Compile Include="Net\PacketConnect.cs" />
     <Compile Include="Net\PacketInitiateTrade.cs" />
     <Compile Include="Net\PacketReceivedEventArgs.cs" />

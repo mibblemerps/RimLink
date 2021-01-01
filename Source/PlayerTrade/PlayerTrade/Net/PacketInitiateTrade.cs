@@ -11,16 +11,16 @@ namespace PlayerTrade.Net
     /// </summary>
     public class PacketInitiateTrade : Packet
     {
-        public string Username;
+        public string Guid;
 
         public override void Write(PacketBuffer buffer)
         {
-            buffer.WriteString(Username);
+            buffer.WriteString(Guid);
         }
 
         public override void Read(PacketBuffer buffer)
         {
-            Username = buffer.ReadString();
+            Guid = buffer.ReadString();
         }
     }
 }

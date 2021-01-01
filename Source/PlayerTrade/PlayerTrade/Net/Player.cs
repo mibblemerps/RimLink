@@ -8,6 +8,7 @@ using Verse;
 
 namespace PlayerTrade.Net
 {
+    [Serializable]
     public class Player
     {
         public readonly string Guid;

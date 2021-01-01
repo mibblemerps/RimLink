@@ -14,20 +14,20 @@ namespace PlayerTrade
 {
     public class PlayerComms : ICommunicable
     {
-        public readonly string Username;
+        public readonly Player Player;
 
-        public string GetCallLabel() => Username;
+        public string GetCallLabel() => Player.Name;
 
-        public string GetInfoText() => Username;
+        public string GetInfoText() => Player.Name;
 
-        public PlayerComms(string username)
+        public PlayerComms(Player player)
         {
-            Username = username;
+            Player = player;
         }
 
         public void TryOpenComms(Pawn negotiator)
         {
-            Find.WindowStack.Add(new Dialog_PlayerComms(negotiator, Username));
+            Find.WindowStack.Add(new Dialog_PlayerComms(negotiator, Player));
         }
 
         public Faction GetFaction()
@@ -37,7 +37,7 @@ namespace PlayerTrade
 
         public FloatMenuOption CommFloatMenuOption(Building_CommsConsole console, Pawn negotiator)
         {
-            return new FloatMenuOption("Trade with " + Username.Colorize(ColoredText.FactionColor_Neutral), () =>
+            return new FloatMenuOption("Trade with " + Player.Name.Colorize(ColoredText.FactionColor_Neutral), () =>
             {
                 console.GiveUseCommsJob(negotiator, this);
             });

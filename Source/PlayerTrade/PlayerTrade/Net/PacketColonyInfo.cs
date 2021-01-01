@@ -6,21 +6,21 @@ using System.Threading.Tasks;
 
 namespace PlayerTrade.Net
 {
-    public class PacketColonyTradable : Packet
+    public class PacketColonyInfo : Packet
     {
-        public string Username;
-        public bool TradableNow;
+        public string Guid;
+        public Player Player;
 
         public override void Write(PacketBuffer buffer)
         {
-            buffer.WriteString(Username);
-            buffer.WriteBoolean(TradableNow);
+            buffer.WriteString(Guid);
+            buffer.Write(Player);
         }
 
         public override void Read(PacketBuffer buffer)
         {
-            Username = buffer.ReadString();
-            TradableNow = buffer.ReadBoolean();
+            Guid = buffer.ReadString();
+            Player = buffer.Read<Player>();
         }
     }
 }

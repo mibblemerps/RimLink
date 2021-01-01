@@ -13,7 +13,7 @@ namespace PlayerTrade.Net
     /// </summary>
     public class PacketColonyResources : Packet
     {
-        public string Username;
+        public string Guid;
 
         public Resources Resources;
 
@@ -21,21 +21,21 @@ namespace PlayerTrade.Net
         {
         }
 
-        public PacketColonyResources(string username, Resources resources)
+        public PacketColonyResources(string guid, Resources resources)
         {
-            Username = username;
+            Guid = guid;
             Resources = resources;
         }
 
         public override void Write(PacketBuffer buffer)
         {
-            buffer.WriteString(Username);
+            buffer.WriteString(Guid);
             Resources.Write(buffer);
         }
 
         public override void Read(PacketBuffer buffer)
         {
-            Username = buffer.ReadString();
+            Guid = buffer.ReadString();
 
             Resources = new Resources();
             Resources.Read(buffer);

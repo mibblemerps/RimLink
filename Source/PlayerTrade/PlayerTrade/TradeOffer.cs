@@ -25,34 +25,42 @@ namespace PlayerTrade
 
         public TaskCompletionSource<bool> TradeAccepted = new TaskCompletionSource<bool>();
 
-        public bool IsForUs => For == RimLinkComp.Find().Client.Username;
+        public bool IsForUs => For == RimLinkComp.Find().Client.Guid;
 
         public string GetTradeOfferString(out List<ThingDef> hyperlinks)
         {
             hyperlinks = new List<ThingDef>();
 
             var builder = new StringBuilder();
-            builder.AppendLine($"{From} has presented a trade offer. They are offering...");
+            builder.AppendLine($"{RimLinkComp.Find().Client.GetName(From)} has presented a trade offer. They are offering...");
 
+            int offerCount = 0;
             foreach (TradeThing thing in Things)
             {
                 if (thing.CountOffered <= 0 || thing.OfferedThings.Count == 0)
                     continue;
                 builder.AppendLine($"      {thing.CountOffered}x {thing.OfferedThings.First().LabelCapNoCount}");
+                offerCount++;
 
                 hyperlinks.Add(thing.OfferedThings.First().def);
             }
+            if (offerCount == 0)
+                builder.AppendFormat("      (nothing)");
 
             builder.AppendLine("In exchange for...");
 
+            int requestCount = 0;
             foreach (TradeThing thing in Things)
             {
                 if (thing.CountOffered >= 0 || thing.RequestedThings.Count == 0)
                     continue;
                 builder.AppendLine($"      {-thing.CountOffered}x {thing.RequestedThings.First().LabelCapNoCount}");
+                requestCount++;
 
                 hyperlinks.Add(thing.RequestedThings.First().def);
             }
+            if (requestCount == 0)
+                builder.AppendFormat("      (nothing)");
 
             return builder.ToString();
         }
@@ -131,7 +139,7 @@ namespace PlayerTrade
             var dropPodLocations = new List<IntVec3>();
             foreach (Thing thing in toGive)
             {
-                Log.Message($"Give thing {thing.Label}");
+                //Log.Message($"Give thing {thing.Label}");
                 IntVec3 pos = DropCellFinder.TradeDropSpot(Find.CurrentMap);
                 dropPodLocations.Add(pos);
                 TradeUtility.SpawnDropPod(pos, Find.CurrentMap, thing);
@@ -139,7 +147,7 @@ namespace PlayerTrade
 
             if (dropPodLocations.Count == 0)
             {
-                Find.LetterStack.ReceiveLetter($"Trade Success ({(IsForUs ? From : For)})", "Trade accepted.", LetterDefOf.PositiveEvent);
+                Find.LetterStack.ReceiveLetter($"Trade Success ({RimLinkComp.Find().Client.GetName(IsForUs ? From : For)})", "Trade accepted.", LetterDefOf.PositiveEvent);
             }
             else
             {
@@ -147,7 +155,7 @@ namespace PlayerTrade
                 foreach (IntVec3 pos in dropPodLocations)
                     averagePos += pos;
                 averagePos = new IntVec3(averagePos.x / dropPodLocations.Count, averagePos.y / dropPodLocations.Count, averagePos.z / dropPodLocations.Count);
-                Find.LetterStack.ReceiveLetter($"Trade Success ({(IsForUs ? From : For)})", "Trade accepted. Your items will arrive in pods momentarily.", LetterDefOf.PositiveEvent, new TargetInfo(averagePos, Find.CurrentMap));
+                Find.LetterStack.ReceiveLetter($"Trade Success ({RimLinkComp.Find().Client.GetName(IsForUs ? From : For)})", "Trade accepted. Your items will arrive in pods momentarily.", LetterDefOf.PositiveEvent, new TargetInfo(averagePos, Find.CurrentMap));
             }
         }
 

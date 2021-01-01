@@ -11,7 +11,7 @@ namespace PlayerTrade.Net
     {
         public const int ConnectId = 1;
         public const int ColonyResourcesId = 2;
-        public const int ColonyTradableId = 3;
+        public const int ColonyInfoId = 3;
         public const int InitiateTradeId = 4;
         public const int RequestColonyResourcesId = 5;
         public const int TradeOfferPacketId = 6;
@@ -22,7 +22,7 @@ namespace PlayerTrade.Net
         {
             {ConnectId, typeof(PacketConnect)},
             {ColonyResourcesId, typeof(PacketColonyResources)},
-            {ColonyTradableId, typeof(PacketColonyTradable)},
+            {ColonyInfoId, typeof(PacketColonyInfo)},
             {InitiateTradeId, typeof(PacketInitiateTrade)},
             {RequestColonyResourcesId, typeof(PacketRequestColonyResources)},
             {TradeOfferPacketId, typeof(PacketTradeOffer)},

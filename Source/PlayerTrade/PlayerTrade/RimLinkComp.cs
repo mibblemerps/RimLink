@@ -45,7 +45,7 @@ namespace PlayerTrade
             {
                 // Connect
                 Log.Message("Connecting to: " + ip);
-                Client = new Client();
+                Client = new Client(this);
                 await PlayerTradeMod.Instance.Connect();
             }
 

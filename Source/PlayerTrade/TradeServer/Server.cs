@@ -5,6 +5,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
+using PlayerTrade;
 using PlayerTrade.Net;
 
 namespace TradeServer
@@ -13,7 +14,7 @@ namespace TradeServer
     {
         public static int ProtocolVersion = 1;
 
-        public List<Client> Clients = new List<Client>();
+        public List<Client> AuthenticatedClients = new List<Client>();
 
         protected TcpListener Listener;
 
@@ -29,58 +30,61 @@ namespace TradeServer
                 var client = new Client(tcp);
                 client.Authenticated += ClientOnAuthenticated;
                 client.Disconnected += ClientOnDisconnected;
-                client.TradableChanged += ClientOnTradableChanged;
-                Clients.Add(client);
+                client.ColonyInfoReceived += ClientOnColonyInfoReceived;
                 client.Run();
             }
         }
 
-        public Client GetClient(string username)
+        public Client GetClient(string guid)
         {
-            return Clients.FirstOrDefault(client => client.Username == username);
+            return AuthenticatedClients.FirstOrDefault(client => client.Player.Guid == guid);
+        }
+
+        public string GetName(string guid)
+        {
+            var client = GetClient(guid);
+            if (client == null || client.Player == null || client.Player.Name == null)
+                return "{" + guid + "}";
+            return client.Player.Name;
         }
 
         private async void ClientOnAuthenticated(object sender, Client.ClientEventArgs e)
         {
-            Console.WriteLine($"{e.Client.Username} connected");
+            Console.WriteLine($"{e.Client.Player.Name} connected");
+            AuthenticatedClients.Add(e.Client);
 
-            // Send client tradable colonies
-            foreach (Client client in Clients)
+            // Send other colonies
+            foreach (Client client in AuthenticatedClients)
             {
-                if (client.Username == e.Client.Username)
+                if (client.Player.Guid == e.Client.Player.Guid)
                     continue; // Skip self
 
-                if (client.IsTradableNow)
+                await e.Client.SendPacket(new PacketColonyInfo
                 {
-                    await e.Client.SendPacket(new PacketColonyTradable
-                    {
-                        TradableNow = true,
-                        Username = client.Username
-                    });
-                }
+                    Guid = client.Player.Guid,
+                    Player = client.Player
+                });
             }
         }
 
         private void ClientOnDisconnected(object sender, Client.ClientEventArgs e)
         {
-            Console.WriteLine($"{e.Client.Username} disconnected");
-            Clients.Remove(e.Client);
+            if (e.Client.Player != null)
+                Console.WriteLine($"{e.Client.Player.Name} disconnected");
+            AuthenticatedClients.Remove(e.Client);
         }
 
-        private void ClientOnTradableChanged(object sender, Client.ClientEventArgs e)
+        private void ClientOnColonyInfoReceived(object sender, Client.ClientEventArgs e)
         {
-            Console.WriteLine($"Colony {e.Client.Username} tradable:\t{(e.Client.IsTradableNow ? "Yes" : "No")}");
-
-            // Send tradable change to clients so they know that they can/cannot trade with this person
-            foreach (Client client in Clients)
+            foreach (Client client in AuthenticatedClients)
             {
-                if (client.Username == e.Client.Username)
-                    continue; // Don't send tradable change to themselves
+                if (client.Player.Guid == e.Client.Player.Guid)
+                    continue; // Skip ourselves
 
-                _ = client.SendPacket(new PacketColonyTradable()
+                _ = client.SendPacket(new PacketColonyInfo
                 {
-                    TradableNow = e.Client.IsTradableNow,
-                    Username = e.Client.Username
+                    Guid = e.Client.Player.Guid,
+                    Player = e.Client.Player
                 });
             }
         }

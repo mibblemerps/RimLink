@@ -13,7 +13,7 @@ namespace PlayerTrade
 {
     public class PlayerTrader : ITrader
     {
-        public string Username;
+        public Player Player;
 
         public Dictionary<ThingDef, int> Counts = new Dictionary<ThingDef, int>();
 
@@ -22,7 +22,7 @@ namespace PlayerTrade
         public IEnumerable<Thing> Goods => _goodsCache;
 
         public int RandomPriceFactorSeed => 0;
-        public string TraderName { get; }
+        public string TraderName => Player.Name;
         public bool CanTradeNow => true;
         public float TradePriceImprovementOffsetForPlayer => 0f;
         public Faction Faction { get; }
@@ -30,13 +30,12 @@ namespace PlayerTrade
 
         private List<Thing> _goodsCache = new List<Thing>();
 
-        public PlayerTrader(string username, Resources resources)
+        public PlayerTrader(Player player, Resources resources)
         {
-            Username = username;
+            Player = player;
 
             TraderKind = DefDatabase<TraderKindDef>.GetNamed("PlayerTrader");
             Faction = Faction.OfPlayer;
-            TraderName = username;
 
             _goodsCache = new List<Thing>();
             foreach (NetThing netThing in resources.Things)

@@ -77,7 +77,7 @@ namespace PlayerTrade
             try
             {
                 Log.Message($"Connecting to {Settings.ServerIp}...");
-                await client.Connect(Settings.Username, Settings.ServerIp);
+                await client.Connect(Settings.ServerIp);
                 Log.Message("Connected");
 
                 Find.WindowStack.TryRemove(typeof(Dialog_ModSettings)); // Close mod settings dialog

@@ -1,13 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using PlayerTrade.Net;
 using RimWorld;
-using RimWorld.QuestGen;
 using Verse;
-using StringBuilder = System.Text.StringBuilder;
 
 namespace PlayerTrade
 {
@@ -22,12 +17,12 @@ namespace PlayerTrade
         /// Initiate a trade with another player and open the trade window.
         /// </summary>
         /// <param name="negotiator">Negotiator for the trade (this doesn't affect prices)</param>
-        /// <param name="username">Username of player to trade with</param>
-        public static async Task InitiateTrade(Pawn negotiator, string username)
+        /// <param name="player">Player to trade with</param>
+        public static async Task InitiateTrade(Pawn negotiator, Player player)
         {
-            PacketColonyResources packet = await RimLinkComp.Find().Client.GetColonyResources(username);
+            PacketColonyResources packet = await RimLinkComp.Find().Client.GetColonyResources(player);
 
-            var playerTrader = new PlayerTrader(username, packet.Resources);
+            var playerTrader = new PlayerTrader(player, packet.Resources);
             Find.WindowStack.Add(new Dialog_PlayerTrade(negotiator, playerTrader));
         }
 
@@ -39,8 +34,8 @@ namespace PlayerTrade
             Log.Message("Forming trade offer...");
             var tradeOffer = new TradeOffer
             {
-                For = ((PlayerTrader)TradeSession.trader).Username,
-                From = RimLinkComp.Find().Client.Username,
+                For = ((PlayerTrader)TradeSession.trader).Player.Guid,
+                From = RimLinkComp.Find().Guid,
                 Fresh = true,
                 Guid = Guid.NewGuid()
             };
