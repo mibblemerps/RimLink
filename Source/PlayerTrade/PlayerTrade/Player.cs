@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using RimWorld;
 using Verse;
 
-namespace PlayerTrade.Net
+namespace PlayerTrade
 {
     [Serializable]
     public class Player

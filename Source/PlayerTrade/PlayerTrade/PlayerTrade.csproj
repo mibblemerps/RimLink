@@ -100,7 +100,7 @@
     <Compile Include="Net\PacketRequestColonyResources.cs" />
     <Compile Include="Net\PacketTradeConfirm.cs" />
     <Compile Include="Net\PacketTradeOffer.cs" />
-    <Compile Include="Net\Player.cs" />
+    <Compile Include="Player.cs" />
     <Compile Include="Patches\Patch_CommsConsole.cs" />
     <Compile Include="Patches\Patch_Game.cs" />
     <Compile Include="Patches\Patch_ResourceCounter.cs" />
