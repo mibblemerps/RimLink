@@ -48,6 +48,7 @@ namespace PlayerTrade.Patches
 
             // Disconnect
             _ = PlayerTradeMod.Instance.Client.Disconnect();
+            PlayerTradeMod.Instance.Client = null;
         }
     }
 }

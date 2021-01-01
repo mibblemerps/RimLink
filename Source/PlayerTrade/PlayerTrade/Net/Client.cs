@@ -17,6 +17,7 @@ namespace PlayerTrade.Net
         public string Username;
 
         public List<TradeOffer> ActiveTradeOffers = new List<TradeOffer>();
+        public List<TradeOffer> OffersToFulfillNextTick = new List<TradeOffer>();
 
         private TaskCompletionSource<PacketColonyResources> _awaitColonyResources = new TaskCompletionSource<PacketColonyResources>();
 
@@ -211,7 +212,7 @@ namespace PlayerTrade.Net
 
             if (confirm)
             {
-                acceptOffer.Fulfill(false);
+                OffersToFulfillNextTick.Add(acceptOffer);
             }
             else
             {
@@ -245,7 +246,7 @@ namespace PlayerTrade.Net
 
             if (confirm)
             {
-                offer.Fulfill(true);
+                OffersToFulfillNextTick.Add(offer);
             }
             else
             {

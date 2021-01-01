@@ -137,12 +137,18 @@ namespace PlayerTrade
                 TradeUtility.SpawnDropPod(pos, Find.CurrentMap, thing);
             }
 
-            var averagePos = new IntVec3(0, 0,0);
-            foreach (IntVec3 pos in dropPodLocations)
-                averagePos += pos;
-            averagePos = new IntVec3(averagePos.x / dropPodLocations.Count, averagePos.y / dropPodLocations.Count, averagePos.z / dropPodLocations.Count);
-
-            Find.LetterStack.ReceiveLetter($"Trade Success ({(IsForUs ? From : For)})", "Trade accepted. Your items will arrive in pods momentarily.", LetterDefOf.PositiveEvent, new TargetInfo(averagePos, Find.CurrentMap));
+            if (dropPodLocations.Count == 0)
+            {
+                Find.LetterStack.ReceiveLetter($"Trade Success ({(IsForUs ? From : For)})", "Trade accepted.", LetterDefOf.PositiveEvent);
+            }
+            else
+            {
+                var averagePos = new IntVec3(0, 0, 0);
+                foreach (IntVec3 pos in dropPodLocations)
+                    averagePos += pos;
+                averagePos = new IntVec3(averagePos.x / dropPodLocations.Count, averagePos.y / dropPodLocations.Count, averagePos.z / dropPodLocations.Count);
+                Find.LetterStack.ReceiveLetter($"Trade Success ({(IsForUs ? From : For)})", "Trade accepted. Your items will arrive in pods momentarily.", LetterDefOf.PositiveEvent, new TargetInfo(averagePos, Find.CurrentMap));
+            }
         }
 
         public bool CanFulfill(bool asReceiver)

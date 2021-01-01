@@ -102,6 +102,7 @@
     <Compile Include="Patches\Patch_CommsConsole.cs" />
     <Compile Include="Patches\Patch_Game.cs" />
     <Compile Include="Patches\Patch_ResourceCounter.cs" />
+    <Compile Include="Patches\Patch_TickManager_DoSingleTick.cs" />
     <Compile Include="PlayerComms.cs" />
     <Compile Include="PlayerTrade.cs" />
     <Compile Include="PlayerTradeMod.cs" />

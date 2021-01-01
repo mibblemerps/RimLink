@@ -16,7 +16,7 @@ namespace PlayerTrade
             Offer = offer;
 
             def = DefDatabase<LetterDef>.GetNamed("PlayerTradeOffer");
-            label = "Trade Offer";
+            label = $"Trade Offer ({Offer.From})";
             text = offer.GetTradeOfferString(out var hyperlinks);
             hyperlinkThingDefs = hyperlinks.Take(Math.Min(hyperlinks.Count, 5)).ToList();
         }
