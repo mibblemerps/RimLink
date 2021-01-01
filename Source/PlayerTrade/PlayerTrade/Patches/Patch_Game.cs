@@ -16,26 +16,7 @@ namespace PlayerTrade.Patches
         public static async void Postfix()
         {
             Log.Message("Game start");
-
-            string ip = PlayerTradeMod.Instance.Settings.ServerIp;
-
-            if (ip.NullOrEmpty())
-            {
-                Log.Message("Not connecting to trade server: No IP set");
-                return;
-            }
-
-            if (!PlayerTradeMod.Instance.Connected)
-            {
-                // Connect
-                Log.Message("Connecting to: " + ip);
-                await PlayerTradeMod.Instance.Connect();
-            }
-
-            Log.Message("Player trade active");
-
-            // Now tradable
-            PlayerTradeMod.Instance.Client.IsTradableNow = true;
+            RimLinkGameComponent.Find().Init();
         }
     }
 

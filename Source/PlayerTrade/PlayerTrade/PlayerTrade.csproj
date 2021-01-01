@@ -76,6 +76,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ChoiceLetter_TradeOffer.cs" />
+    <Compile Include="Dialog_PlaceBounty.cs" />
     <Compile Include="Dialog_PlayerComms.cs" />
     <Compile Include="Dialog_TradeIntermission.cs" />
     <Compile Include="HashUtil.cs" />
@@ -99,6 +100,7 @@
     <Compile Include="Net\PacketRequestColonyResources.cs" />
     <Compile Include="Net\PacketTradeConfirm.cs" />
     <Compile Include="Net\PacketTradeOffer.cs" />
+    <Compile Include="Net\Player.cs" />
     <Compile Include="Patches\Patch_CommsConsole.cs" />
     <Compile Include="Patches\Patch_Game.cs" />
     <Compile Include="Patches\Patch_ResourceCounter.cs" />
@@ -110,6 +112,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="QuestNode_GenerateShuttleForSpecificThings.cs" />
     <Compile Include="Resources.cs" />
+    <Compile Include="RimLinkGameComponent.cs" />
     <Compile Include="Scribe\ScribeUtil.cs" />
     <Compile Include="TradeOffer.cs" />
     <Compile Include="TradeUtil.cs" />
