@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using PlayerTrade.Net;
 using Verse;
 
 namespace PlayerTrade
 {
-    public class RimLinkGameComponent : GameComponent, IDisposable
+    public class RimLinkComp : GameComponent, IDisposable
     {
         /// <summary>
         /// Uniquely identifies this player on the server(s) it plays on.
@@ -18,7 +19,9 @@ namespace PlayerTrade
 
         public List<TradeOffer> TradeOffersPendingFulfillment = new List<TradeOffer>();
 
-        public RimLinkGameComponent(Game game)
+        public Client Client;
+
+        public RimLinkComp(Game game)
         {
 
         }
@@ -42,13 +45,14 @@ namespace PlayerTrade
             {
                 // Connect
                 Log.Message("Connecting to: " + ip);
+                Client = new Client();
                 await PlayerTradeMod.Instance.Connect();
             }
 
             Log.Message("Player trade active. GUID: " + Guid);
 
             // Now tradable
-            PlayerTradeMod.Instance.Client.IsTradableNow = true;
+            Client.IsTradableNow = true;
         }
 
         public override void ExposeData()
@@ -68,12 +72,12 @@ namespace PlayerTrade
         /// Find (get or create) the RimLink game component.
         /// </summary>
         /// <returns></returns>
-        public static RimLinkGameComponent Find()
+        public static RimLinkComp Find()
         {
-            RimLinkGameComponent comp = Current.Game.GetComponent<RimLinkGameComponent>();
+            RimLinkComp comp = Current.Game.GetComponent<RimLinkComp>();
             if (comp == null)
             {
-                comp = new RimLinkGameComponent(Current.Game);
+                comp = new RimLinkComp(Current.Game);
                 Current.Game.components.Add(comp);
             }
             return comp;

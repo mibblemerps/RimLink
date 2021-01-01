@@ -15,13 +15,13 @@ namespace PlayerTrade.Patches
         {
             try
             {
-                if (PlayerTradeMod.Instance.Client == null)
+                if (RimLinkComp.Find().Client == null)
                     return;
 
                 // Fulfill pending trades
-                foreach (TradeOffer offer in PlayerTradeMod.Instance.Client.OffersToFulfillNextTick)
+                foreach (TradeOffer offer in RimLinkComp.Find().Client.OffersToFulfillNextTick)
                     offer.Fulfill(offer.IsForUs);
-                PlayerTradeMod.Instance.Client.OffersToFulfillNextTick.Clear();
+                RimLinkComp.Find().Client.OffersToFulfillNextTick.Clear();
             }
             catch (Exception e)
             {

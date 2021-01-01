@@ -123,7 +123,7 @@ namespace PlayerTrade
                 SoundDefOf.ExecuteTrade.PlayOneShotOnCamera();
 
                 // Send trade deal off
-                _ = PlayerTradeMod.Instance.Client.SendTradeOffer();
+                _ = RimLinkComp.Find().Client.SendTradeOffer();
 
                 Close(false);
                 TradeSession.deal.Reset();

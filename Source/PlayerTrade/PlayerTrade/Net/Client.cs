@@ -27,7 +27,7 @@ namespace PlayerTrade.Net
             set
             {
                 _isTradableNow = value;
-                _ = PlayerTradeMod.Instance.Client.SendPacket(new PacketColonyTradable()
+                _ = RimLinkComp.Find().Client.SendPacket(new PacketColonyTradable()
                 {
                     Username = Username,
                     TradableNow = value

@@ -25,7 +25,7 @@ namespace PlayerTrade
 
         public TaskCompletionSource<bool> TradeAccepted = new TaskCompletionSource<bool>();
 
-        public bool IsForUs => For == PlayerTradeMod.Instance.Client.Username;
+        public bool IsForUs => For == RimLinkComp.Find().Client.Username;
 
         public string GetTradeOfferString(out List<ThingDef> hyperlinks)
         {
@@ -65,7 +65,7 @@ namespace PlayerTrade
                 return;
             }
 
-            Client client = PlayerTradeMod.Instance.Client;
+            Client client = RimLinkComp.Find().Client;
 
             Fresh = false; // Make trade no longer "fresh" (acceptable)
 
@@ -81,7 +81,7 @@ namespace PlayerTrade
         {
             Fresh = false; // Make trade no longer "fresh" (acceptable)
 
-            await PlayerTradeMod.Instance.Client.SendPacket(new PacketAcceptTrade
+            await RimLinkComp.Find().Client.SendPacket(new PacketAcceptTrade
             {
                 Trade = Guid,
                 Accept = false

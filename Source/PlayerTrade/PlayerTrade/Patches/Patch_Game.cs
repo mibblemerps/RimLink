@@ -16,7 +16,7 @@ namespace PlayerTrade.Patches
         public static async void Postfix()
         {
             Log.Message("Game start");
-            RimLinkGameComponent.Find().Init();
+            RimLinkComp.Find().Init();
         }
     }
 
@@ -25,11 +25,12 @@ namespace PlayerTrade.Patches
     {
         public static void Prefix()
         {
+            // todo: don't think this works - investigate using game comp dispose method instead
             Log.Message("Game end");
 
             // Disconnect
-            _ = PlayerTradeMod.Instance.Client.Disconnect();
-            PlayerTradeMod.Instance.Client = null;
+            _ = RimLinkComp.Find().Client.Disconnect();
+            RimLinkComp.Find().Client = null;
         }
     }
 }

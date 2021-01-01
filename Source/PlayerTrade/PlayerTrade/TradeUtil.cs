@@ -25,7 +25,7 @@ namespace PlayerTrade
         /// <param name="username">Username of player to trade with</param>
         public static async Task InitiateTrade(Pawn negotiator, string username)
         {
-            PacketColonyResources packet = await PlayerTradeMod.Instance.Client.GetColonyResources(username);
+            PacketColonyResources packet = await RimLinkComp.Find().Client.GetColonyResources(username);
 
             var playerTrader = new PlayerTrader(username, packet.Resources);
             Find.WindowStack.Add(new Dialog_PlayerTrade(negotiator, playerTrader));
@@ -40,7 +40,7 @@ namespace PlayerTrade
             var tradeOffer = new TradeOffer
             {
                 For = ((PlayerTrader)TradeSession.trader).Username,
-                From = PlayerTradeMod.Instance.Client.Username,
+                From = RimLinkComp.Find().Client.Username,
                 Fresh = true,
                 Guid = Guid.NewGuid()
             };

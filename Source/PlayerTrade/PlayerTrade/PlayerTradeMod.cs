@@ -17,9 +17,21 @@ namespace PlayerTrade
         public static PlayerTradeMod Instance { get; private set; }
 
         public ModSettings Settings;
-        public Client Client;
 
-        public bool Connected => Client != null && Client.Tcp.Connected;
+        public bool Connected
+        {
+            get
+            {
+                try
+                {
+                    return RimLinkComp.Find().Client.Tcp.Connected;
+                }
+                catch (Exception)
+                {
+                    return false;
+                }
+            }
+        }
 
         public PlayerTradeMod(ModContentPack content) : base(content)
         {
@@ -60,11 +72,12 @@ namespace PlayerTrade
 
         public async Task Connect()
         {
-            Client = new Client();
+            Client client = RimLinkComp.Find().Client;
+
             try
             {
                 Log.Message($"Connecting to {Settings.ServerIp}...");
-                await Client.Connect(Settings.Username, Settings.ServerIp);
+                await client.Connect(Settings.Username, Settings.ServerIp);
                 Log.Message("Connected");
 
                 Find.WindowStack.TryRemove(typeof(Dialog_ModSettings)); // Close mod settings dialog

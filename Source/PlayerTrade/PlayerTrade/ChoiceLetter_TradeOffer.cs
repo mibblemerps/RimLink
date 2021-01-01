@@ -59,7 +59,7 @@ namespace PlayerTrade
             if (Offer.Fresh)
             {
                 _ = Offer.Reject(); // send rejection
-                PlayerTradeMod.Instance.Client.ActiveTradeOffers.Remove(Offer);
+                RimLinkComp.Find().Client.ActiveTradeOffers.Remove(Offer);
             }
 
             Option_Close.action();

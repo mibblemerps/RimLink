@@ -23,7 +23,7 @@ namespace PlayerTrade.Patches
             comms.AddRange(__result);
 
             // Add player traders
-            foreach (string username in PlayerTradeMod.Instance.Client.TradablePlayers)
+            foreach (string username in RimLinkComp.Find().Client.TradablePlayers)
             {
                 comms.Add(new PlayerComms(username));
             }

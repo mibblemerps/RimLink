@@ -23,7 +23,7 @@ namespace PlayerTrade.Net
 
         public static Player Self()
         {
-            RimLinkGameComponent comp = RimLinkGameComponent.Find();
+            RimLinkComp comp = RimLinkComp.Find();
             var player = new Player(comp.Guid)
             {
                 Name = Faction.OfPlayer.Name,

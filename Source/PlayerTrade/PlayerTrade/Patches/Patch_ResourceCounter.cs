@@ -33,7 +33,7 @@ namespace PlayerTrade.Patches
             resources.Update(Find.CurrentMap);
 
             // Send packet to server of current resource count
-            SendPacketTask = PlayerTradeMod.Instance.Client.SendPacket(new PacketColonyResources(
+            SendPacketTask = RimLinkComp.Find().Client.SendPacket(new PacketColonyResources(
                 PlayerTradeMod.Instance.Settings.Username, resources));
         }
     }
