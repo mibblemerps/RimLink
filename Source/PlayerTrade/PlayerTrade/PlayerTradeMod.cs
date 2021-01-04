@@ -18,7 +18,7 @@ namespace PlayerTrade
 
         public ModSettings Settings;
 
-        public bool Connected
+        public static bool Connected
         {
             get
             {
@@ -53,13 +53,11 @@ namespace PlayerTrade
 
             listing.Label(""); // Gap
 
-            listing.Label("Connect to Server");
+            listing.Label("Trade Server IP");
             Settings.ServerIp = listing.TextEntry(Settings.ServerIp);
-            if (listing.ButtonText("Connect"))
-            {
-                Debug.Log("Connect...");
-                _ = Connect();
-            }
+
+            listing.CheckboxLabeled("Logging Enabled", ref Settings.LoggingEnabled);
+            Log.Enabled = Settings.LoggingEnabled;
 
             listing.End();
             base.DoSettingsWindowContents(inRect);
@@ -68,25 +66,6 @@ namespace PlayerTrade
         public override string SettingsCategory()
         {
             return "Player Trade";
-        }
-
-        public async Task Connect()
-        {
-            Client client = RimLinkComp.Find().Client;
-
-            try
-            {
-                Log.Message($"Connecting to {Settings.ServerIp}...");
-                await client.Connect(Settings.ServerIp);
-                Log.Message("Connected");
-
-                Find.WindowStack.TryRemove(typeof(Dialog_ModSettings)); // Close mod settings dialog
-                Find.WindowStack.Add(new Dialog_MessageBox($"Connected to trade server ({Settings.ServerIp}).\n\nUse the Comms Console to initiate player trades.", "Ok", title: "Player Trade"));
-            }
-            catch (Exception e)
-            {
-                Log.Error($"Failed to connect to trade server.", e);
-            }
         }
 
         public bool IsTradableNow(Map map)

@@ -11,6 +11,12 @@ namespace PlayerTrade
     public class RimLinkComp : GameComponent, IDisposable
     {
         /// <summary>
+        /// The last known instance of the RimLink comp. This should never be used for normally accessing RimLink (use <see cref="Find"/> instead).<br />
+        /// This is used for the shutdown procedure.
+        /// </summary>
+        public static RimLinkComp LastInstance;
+
+        /// <summary>
         /// Uniquely identifies this player on the server(s) it plays on.
         /// </summary>
         public string Guid = System.Guid.NewGuid().ToString("N");
@@ -27,6 +33,15 @@ namespace PlayerTrade
         public RimLinkComp(Game game)
         {
 
+        }
+
+        public override void FinalizeInit()
+        {
+            base.FinalizeInit();
+
+            Log.Message("RimLink comp init");
+
+            Init();
         }
 
         public async void Init()
@@ -49,13 +64,10 @@ namespace PlayerTrade
                 Secret = BitConverter.ToString(System.Guid.NewGuid().ToByteArray()).Replace("-", "");
             }
 
-            if (!PlayerTradeMod.Instance.Connected)
-            {
-                // Connect
-                Log.Message("Connecting to: " + ip);
-                Client = new Client(this);
-                await PlayerTradeMod.Instance.Connect();
-            }
+            // Connect
+            Log.Message("Connecting to: " + ip);
+            Client = new Client(this);
+            await Client.Connect(PlayerTradeMod.Instance.Settings.ServerIp);
 
             Log.Message("Player trade active. GUID: " + Guid);
 
@@ -68,7 +80,7 @@ namespace PlayerTrade
         {
             base.GameComponentTick();
 
-            if (Current.Game.tickManager.TicksGame % 1200 == 0)
+            if (Current.Game.tickManager.TicksGame % 1200 == 0 && PlayerTradeMod.Connected)
             {
                 // Mark dirty (send update packet)
                 Client?.MarkDirty();
@@ -114,6 +126,7 @@ namespace PlayerTrade
                 comp = new RimLinkComp(Current.Game);
                 Current.Game.components.Add(comp);
             }
+            LastInstance = comp;
             return comp;
         }
     }

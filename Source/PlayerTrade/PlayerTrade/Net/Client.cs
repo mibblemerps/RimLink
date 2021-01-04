@@ -79,6 +79,7 @@ namespace PlayerTrade.Net
                 {
                     await ReceivePacket();
                 }
+                catch (ObjectDisposedException) {} // don't care about object disposed exceptions, this just means the connection is closed now
                 catch (Exception e)
                 {
                     Log.Error("Error receiving packet", e);
