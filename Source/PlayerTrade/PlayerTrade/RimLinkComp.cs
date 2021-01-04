@@ -71,7 +71,7 @@ namespace PlayerTrade
             if (Current.Game.tickManager.TicksGame % 1200 == 0)
             {
                 // Mark dirty (send update packet)
-                Client.MarkDirty();
+                Client?.MarkDirty();
             }
 
             var toRemove = new List<BountyRaid>();

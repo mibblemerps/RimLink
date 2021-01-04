@@ -231,12 +231,21 @@ namespace PlayerTrade
                 .ThenBy(tr => tr.ThingDef.label)
                 .ThenBy(tr => tr.AnyThing.TryGetQuality(out qc) ? (int)qc : -1)
                 .ThenBy(tr => tr.AnyThing.HitPoints).ToList();
-            Log.Message("Cached tradeables...");
+
         }
 
         private void CountToTransferChanged()
         {
             // todo: possibly not needed
+        }
+
+        internal class TradeableInteractive : Tradeable
+        {
+            public TradeableInteractive() {}
+
+            public TradeableInteractive(Thing thingColony, Thing thingTrader) : base(thingColony, thingTrader) {}
+
+            public override bool Interactive => true;
         }
     }
 }
