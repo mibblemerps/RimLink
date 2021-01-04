@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using PlayerTrade.Net;
+using PlayerTrade.Raids;
 using RimWorld;
 using UnityEngine;
 using Verse;
@@ -15,10 +16,16 @@ namespace PlayerTrade
         public Pawn Negotiator;
         public Player Player;
 
+        private Player _self;
+
         public Dialog_PlayerComms(Pawn negotiator, Player player) : base(RootNodeForPlayer(negotiator, player), true)
         {
             Player = player;
             Negotiator = negotiator;
+
+            // Mark dirty so we can have up-to-date info about ourselves in the comms window
+            RimLinkComp.Find().Client.MarkDirty();
+            _self = RimLinkComp.Find().Client.Player;
         }
 
         public override void DoWindowContents(Rect inRect)
@@ -35,9 +42,9 @@ namespace PlayerTrade
             Text.Anchor = TextAnchor.UpperLeft;
             Text.Font = GameFont.Small;
             GUI.color = new Color(1f, 1f, 1f, 0.7f);
-            Widgets.Label(rect2, ""); // todo: add info text for our player
+            Widgets.Label(rect2, GetInfoText(_self));
             Text.Anchor = TextAnchor.UpperRight;
-            Widgets.Label(rect4, ""); // todo: add info text for other player
+            Widgets.Label(rect4, GetInfoText(Player));
             Text.Anchor = TextAnchor.UpperLeft;
             GUI.color = Color.white;
             GUI.EndGroup();
@@ -45,6 +52,13 @@ namespace PlayerTrade
             // Draw dialog node
             float rootNodeY = 147f;
             DrawNode(new Rect(0.0f, rootNodeY, inRect.width, inRect.height - rootNodeY));
+        }
+
+        private string GetInfoText(Player player)
+        {
+            return $"{player.Name.Colorize(ColoredText.FactionColor_Neutral)}\n" +
+                   $"Day {player.Day}, {(WeatherDef.Named(player.Weather)).LabelCap}, {GenText.ToStringTemperature(player.Temperature)}\n" +
+                   $"Wealth: {("$" + Mathf.RoundToInt(player.Wealth)).Colorize(Color.green)}";
         }
 
         public static DiaNode RootNodeForPlayer(Pawn negotiator, Player player)
@@ -61,6 +75,15 @@ namespace PlayerTrade
             if (!canDoSocial)
                 tradeOption.Disable("WorkTypeDisablesOption".Translate((NamedArgument)SkillDefOf.Social.label));
             node.options.Add(tradeOption);
+
+            var bountyOption = new DiaOption("Place Bounty")
+            {
+                resolveTree = true,
+                action = () => { Find.WindowStack.Add(new Dialog_PlaceBounty(player)); }
+            };
+            if (!canDoSocial)
+                tradeOption.Disable("WorkTypeDisablesOption".Translate((NamedArgument)SkillDefOf.Social.label));
+            node.options.Add(bountyOption);
 
             var closeOption = new DiaOption($"({"Disconnect".Translate()})") {resolveTree = true};
             node.options.Add(closeOption);

@@ -17,6 +17,8 @@ namespace PlayerTrade.Net
         public const int TradeOfferPacketId = 6;
         public const int AcceptTradePacketId = 7;
         public const int ConfirmTradePacketId = 8;
+        public const int TriggerRaidPacketId = 9;
+        public const int RaidAcceptedPacketId = 10;
 
         public static Dictionary<int, Type> Packets = new Dictionary<int, Type>
         {
@@ -28,6 +30,8 @@ namespace PlayerTrade.Net
             {TradeOfferPacketId, typeof(PacketTradeOffer)},
             {AcceptTradePacketId, typeof(PacketAcceptTrade)},
             {ConfirmTradePacketId, typeof(PacketTradeConfirm)},
+            {TriggerRaidPacketId, typeof(PacketTriggerRaid)},
+            {RaidAcceptedPacketId, typeof(PacketRaidAccepted)}
         };
 
         public abstract void Write(PacketBuffer buffer);

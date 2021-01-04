@@ -8,6 +8,14 @@ namespace PlayerTrade
 {
     public static class TradeUtil
     {
+        public static float TotalWealth()
+        {
+            float totalWealth = 0f;
+            foreach (Map map in Find.Maps)
+                totalWealth += map.wealthWatcher.WealthTotal;
+            return totalWealth;
+        }
+
         public static void PresentTradeOffer(TradeOffer offer)
         {
             Find.LetterStack.ReceiveLetter(new ChoiceLetter_TradeOffer(offer));

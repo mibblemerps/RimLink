@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
+using PlayerTrade.Raids;
 using RimWorld;
 using Verse;
 
@@ -13,6 +14,8 @@ namespace PlayerTrade.Net
     public class Client : Connection
     {
         public event EventHandler<PlayerUpdateEventArgs> PlayerUpdated;
+
+        public delegate bool PacketPredicate(Packet packet);
 
         public RimLinkComp RimLinkComp;
 
@@ -24,6 +27,8 @@ namespace PlayerTrade.Net
 
         public List<TradeOffer> ActiveTradeOffers = new List<TradeOffer>();
         public List<TradeOffer> OffersToFulfillNextTick = new List<TradeOffer>();
+
+        public Dictionary<PacketPredicate, TaskCompletionSource<Packet>> AwaitingPackets = new Dictionary<PacketPredicate, TaskCompletionSource<Packet>>();
 
         private TaskCompletionSource<PacketColonyResources> _awaitColonyResources = new TaskCompletionSource<PacketColonyResources>();
 
@@ -154,8 +159,22 @@ namespace PlayerTrade.Net
             await SendPacket(new PacketColonyResources(Guid, resources));
         }
 
+        public async Task<Packet> AwaitPacket(PacketPredicate predicate)
+        {
+            var source = new TaskCompletionSource<Packet>();
+            AwaitingPackets.Add(predicate, source);
+            return await source.Task;
+        }
+
         private async void OnPacketReceived(object sender, PacketReceivedEventArgs e)
         {
+            foreach (var awaiting in AwaitingPackets)
+            {
+                if (awaiting.Key(e.Packet))
+                    awaiting.Value.TrySetResult(e.Packet);
+                AwaitingPackets.Remove(awaiting.Key);
+            }
+
             switch (e.Id)
             {
                 case Packet.ColonyInfoId:
@@ -189,6 +208,18 @@ namespace PlayerTrade.Net
 
                 case Packet.ConfirmTradePacketId:
                     await HandleConfirmTradePacket((PacketTradeConfirm) e.Packet);
+                    break;
+
+                case Packet.TriggerRaidPacketId:
+                    PacketTriggerRaid raidPacket = (PacketTriggerRaid) e.Packet;
+                    Log.Message($"Received raid from {GetName(raidPacket.Raid.From)}");
+                    RimLinkComp.Find().RaidsPending.Add(raidPacket.Raid);
+                    raidPacket.Raid.InformTargetBountyPlaced();
+                    await SendPacket(new PacketRaidAccepted
+                    {
+                        For = raidPacket.Raid.From,
+                        Id = raidPacket.Raid.Id
+                    });
                     break;
             }
         }

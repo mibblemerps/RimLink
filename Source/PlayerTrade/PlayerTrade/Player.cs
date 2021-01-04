@@ -15,6 +15,9 @@ namespace PlayerTrade
         public readonly string Guid;
         public string Name;
         public int Wealth;
+        public int Day;
+        public string Weather;
+        public int Temperature;
         public bool TradeableNow;
 
         public List<Faction> LocalFactions;
@@ -31,13 +34,12 @@ namespace PlayerTrade
             {
                 Name = RimWorld.Faction.OfPlayer.Name,
                 TradeableNow = true, // todo: implement properly
+                Wealth = Mathf.RoundToInt(TradeUtil.TotalWealth()),
+                Day = Mathf.FloorToInt(Current.Game.tickManager.TicksGame / 60000f),
+                Weather = Find.CurrentMap.weatherManager.curWeather.defName,
+                Temperature = Mathf.RoundToInt(Find.CurrentMap.mapTemperature.OutdoorTemp),
             };
 
-            // Total wealth
-            float totalWealth = 0f;
-            foreach (Map map in Find.Maps)
-                totalWealth += map.wealthWatcher.WealthTotal;
-            player.Wealth = Mathf.RoundToInt(totalWealth);
 
             // Populate factions
             player.LocalFactions = new List<Faction>();
@@ -49,7 +51,9 @@ namespace PlayerTrade
                 player.LocalFactions.Add(new Faction
                 {
                     Name = faction.Name,
-                    Goodwill = faction.PlayerGoodwill
+                    Goodwill = faction.PlayerGoodwill,
+                    FactionDef = faction.def.defName,
+                    FactionColor = faction.Color,
                 });
             }
 
@@ -61,6 +65,28 @@ namespace PlayerTrade
         {
             public string Name;
             public int Goodwill;
+            public string FactionDef;
+            // We have these because the Unity color type cannot be serialized :c
+            public float FactionColorR;
+            public float FactionColorG;
+            public float FactionColorB;
+
+            public Color FactionColor
+            {
+                get => new Color(FactionColorR, FactionColorG, FactionColorB);
+                set
+                {
+                    FactionColorR = value.r;
+                    FactionColorB = value.b;
+                    FactionColorG = value.g;
+                }
+            }
+            public bool CanUseDropPods => FindDef().techLevel >= TechLevel.Industrial;
+
+            public FactionDef FindDef()
+            {
+                return RimWorld.FactionDef.Named(FactionDef);
+            }
         }
     }
 }
