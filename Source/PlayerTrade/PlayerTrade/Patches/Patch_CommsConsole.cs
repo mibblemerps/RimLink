@@ -15,7 +15,7 @@ namespace PlayerTrade.Patches
     {
         private static void Postfix(ref IEnumerable<ICommunicable> __result)
         {
-            if (!PlayerTradeMod.Instance.Connected)
+            if (!PlayerTradeMod.Connected)
                 return;
 
             var comms = new List<ICommunicable>();
@@ -24,7 +24,7 @@ namespace PlayerTrade.Patches
             comms.AddRange(__result);
 
             // Add player traders
-            foreach (Player player in RimLinkComp.Find().Client.Players.Values.Where((p, i) => p.TradeableNow))
+            foreach (Player player in RimLinkComp.Find().Client.Players.Values)
             {
                 comms.Add(new PlayerComms(player));
             }

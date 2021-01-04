@@ -93,7 +93,9 @@ namespace TradeServer
                 switch (e.Id)
                 {
                     case Packet.ColonyInfoId:
-                        Log.Message($"Received colony info from {Player.Name}");
+                        PacketColonyInfo colonyInfoPacket = (PacketColonyInfo) e.Packet;
+                        Player = colonyInfoPacket.Player;
+                        Log.Message($"Received colony info from {Player.Name} (tradeable = {Player.TradeableNow})");
                         ColonyInfoReceived?.Invoke(this, new ClientEventArgs(this));
                         break;
 

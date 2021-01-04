@@ -74,6 +74,8 @@ namespace PlayerTrade
             };
             if (!canDoSocial)
                 tradeOption.Disable("WorkTypeDisablesOption".Translate((NamedArgument)SkillDefOf.Social.label));
+            if (!player.TradeableNow)
+                tradeOption.Disable("not tradeable currently");
             node.options.Add(tradeOption);
 
             var bountyOption = new DiaOption("Place Bounty")

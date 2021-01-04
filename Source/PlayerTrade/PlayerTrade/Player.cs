@@ -33,13 +33,15 @@ namespace PlayerTrade
             var player = new Player(comp.Guid)
             {
                 Name = RimWorld.Faction.OfPlayer.Name,
-                TradeableNow = true, // todo: implement properly
+                TradeableNow = CommsConsoleUtility.PlayerHasPoweredCommsConsole(),
                 Wealth = Mathf.RoundToInt(TradeUtil.TotalWealth()),
                 Day = Mathf.FloorToInt(Current.Game.tickManager.TicksGame / 60000f),
                 Weather = Find.CurrentMap.weatherManager.curWeather.defName,
                 Temperature = Mathf.RoundToInt(Find.CurrentMap.mapTemperature.OutdoorTemp),
             };
 
+            if (!player.TradeableNow)
+                Log.Message("Not currently tradeable - no comms");
 
             // Populate factions
             player.LocalFactions = new List<Faction>();

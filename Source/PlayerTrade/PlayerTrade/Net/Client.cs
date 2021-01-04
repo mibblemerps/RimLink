@@ -180,7 +180,7 @@ namespace PlayerTrade.Net
             {
                 case Packet.ColonyInfoId:
                     PacketColonyInfo infoPacket = (PacketColonyInfo) e.Packet;
-                    Log.Message($"Received colony info update for {infoPacket.Player.Name}");
+                    Log.Message($"Received colony info update for {infoPacket.Player.Name} (tradeable = {infoPacket.Player.TradeableNow})");
                     Player oldPlayer = Players.ContainsKey(infoPacket.Guid) ? Players[infoPacket.Guid] : null;
                     Players[infoPacket.Guid] = infoPacket.Player;
                     PlayerUpdated?.Invoke(this, new PlayerUpdateEventArgs(oldPlayer, infoPacket.Player));

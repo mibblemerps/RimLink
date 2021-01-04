@@ -24,7 +24,7 @@ namespace PlayerTrade.Patches
                 return;
             }
 
-            if (!PlayerTradeMod.Instance.Connected)
+            if (!PlayerTradeMod.Connected)
                 return;
 
             return; // todo: periodic resource updates obsolete

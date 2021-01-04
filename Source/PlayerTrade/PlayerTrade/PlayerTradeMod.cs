@@ -67,10 +67,5 @@ namespace PlayerTrade
         {
             return "Player Trade";
         }
-
-        public bool IsTradableNow(Map map)
-        {
-            return CommsConsoleUtility.PlayerHasPoweredCommsConsole(map);
-        }
     }
 }

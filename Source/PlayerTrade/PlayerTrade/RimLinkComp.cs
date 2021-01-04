@@ -80,7 +80,7 @@ namespace PlayerTrade
         {
             base.GameComponentTick();
 
-            if (Current.Game.tickManager.TicksGame % 1200 == 0 && PlayerTradeMod.Connected)
+            if (Current.Game.tickManager.TicksGame % 300 == 0 && PlayerTradeMod.Connected)
             {
                 // Mark dirty (send update packet)
                 Client?.MarkDirty();
