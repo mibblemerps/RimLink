@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ModMetaData>
+	<name>RimLink</name>
+	<author>Mibble</author>
+	<packageId>mibble.rimlink</packageId>
+	<url></url>
+	<supportedVersions>
+		<li>1.2</li>
+	</supportedVersions>
+	<description>Brings multiplayer colony interactions to the Rim!</description>
+</ModMetaData>
