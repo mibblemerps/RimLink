@@ -5,20 +5,7 @@
 		<defName>PlayerTrader</defName>
 		<label>player trader</label>
 		<orbital>true</orbital>
-		<stockGenerators>
-			<li Class="StockGenerator_SingleDef">
-				<thingDef>Silver</thingDef>
-				<countRange>2000~4000</countRange>
-			</li>
-			<li Class="StockGenerator_Category">
-				<categoryDef>Root</categoryDef>
-				<excludedCategories>
-					<li>Unfinished</li>
-				</excludedCategories>
-				<thingDefCountRange>5~10</thingDefCountRange>
-				<totalPriceRange>300~900</totalPriceRange>
-			</li>
-		</stockGenerators>
+		<stockGenerators></stockGenerators>
 	</TraderKindDef>
 </Defs>
  
