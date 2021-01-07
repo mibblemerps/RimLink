@@ -37,7 +37,7 @@ namespace PlayerTrade
 
         public FloatMenuOption CommFloatMenuOption(Building_CommsConsole console, Pawn negotiator)
         {
-            return new FloatMenuOption("Trade with " + Player.Name.Colorize(ColoredText.FactionColor_Neutral), () =>
+            return new FloatMenuOption("Contact " + Player.Name.Colorize(ColoredText.FactionColor_Neutral), () =>
             {
                 console.GiveUseCommsJob(negotiator, this);
             });
