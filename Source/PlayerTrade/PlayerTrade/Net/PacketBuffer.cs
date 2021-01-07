@@ -72,6 +72,16 @@ namespace PlayerTrade.Net
             return BitConverter.ToDouble(buffer, 0);
         }
 
+        public void WriteFloat(float f)
+        {
+            WriteDouble(f);
+        }
+
+        public float ReadFloat()
+        {
+            return (float) ReadDouble();
+        }
+
         public void WriteBoolean(bool b)
         {
             Stream.WriteByte(b ? (byte)1 : (byte)0);
@@ -84,10 +94,21 @@ namespace PlayerTrade.Net
             return buffer[0] == 1;
         }
 
-        public void WriteString(string str)
+        public void WriteString(string str, bool allowNull = false)
         {
-            if (str == null)
+            if (str == null && !allowNull)
                 throw new ArgumentException("String cannot be null", nameof(str));
+
+            if (str == null)
+            {
+                // Write null boolean (false = null)
+                WriteBoolean(false);
+                return;
+            } else if (allowNull)
+            {
+                // Write null boolean (true = not null)
+                WriteBoolean(true);
+            }
 
             byte[] strBytes = Encoding.UTF32.GetBytes(str);
 
@@ -97,8 +118,12 @@ namespace PlayerTrade.Net
             Stream.Write(strBytes, 0, strBytes.Length);
         }
 
-        public string ReadString()
+        public string ReadString(bool allowNull = false)
         {
+            // If nulls allowed - read null check boolean first
+            if (allowNull && !ReadBoolean())
+                return null;
+
             int length = ReadInt();
             byte[] buffer = new byte[length];
             Stream.Read(buffer, 0, length);

@@ -76,6 +76,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ChoiceLetter_TradeOffer.cs" />
+    <Compile Include="NetHumanUtil.cs" />
+    <Compile Include="Net\NetHediff.cs" />
+    <Compile Include="Net\NetHuman.cs" />
     <Compile Include="Net\PacketRaidAccepted.cs" />
     <Compile Include="Patches\Patch_Current_Game.cs" />
     <Compile Include="Patches\Patch_Tradeable_Interactive.cs" />
@@ -119,7 +122,6 @@
     <Compile Include="Raids\BountyRaid.cs" />
     <Compile Include="Resources.cs" />
     <Compile Include="RimLinkComp.cs" />
-    <Compile Include="Scribe\ScribeUtil.cs" />
     <Compile Include="TradeOffer.cs" />
     <Compile Include="TradeUtil.cs" />
     <Compile Include="LaunchUtil.cs" />
