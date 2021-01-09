@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
+using PlayerTrade.Labor;
 using PlayerTrade.Raids;
 using RimWorld;
 using Verse;
@@ -18,6 +19,7 @@ namespace PlayerTrade.Net
         public delegate bool PacketPredicate(Packet packet);
 
         public RimLinkComp RimLinkComp;
+        public LaborWorker Labor;
 
         public Player Player { get; private set; }
 
@@ -50,6 +52,8 @@ namespace PlayerTrade.Net
             MarkDirty(false);
 
             PlayerUpdated += OnPlayerUpdated;
+
+            Labor = new LaborWorker(this);
         }
 
         public async Task Connect(string ip, int port = 35562)
@@ -169,12 +173,18 @@ namespace PlayerTrade.Net
 
         private async void OnPacketReceived(object sender, PacketReceivedEventArgs e)
         {
+            Log.Message($"Packet received #{e.Id} ({e.Packet.GetType().Name})");
+
+            // Check awaiting packets
+            var toRemove = new List<PacketPredicate>();
             foreach (var awaiting in AwaitingPackets)
             {
                 if (awaiting.Key(e.Packet))
                     awaiting.Value.TrySetResult(e.Packet);
-                AwaitingPackets.Remove(awaiting.Key);
+                toRemove.Add(awaiting.Key);
             }
+            foreach (var predicate in toRemove)
+                AwaitingPackets.Remove(predicate);
 
             switch (e.Id)
             {
@@ -236,7 +246,7 @@ namespace PlayerTrade.Net
                     Messages.Message($"{e.Player.Name} is now tradable", def: MessageTypeDefOf.NeutralEvent, historical: false);
 
                 }
-                else
+                else if (e.OldPlayer != null) // only show this message if the player previously existed
                 {
                     Log.Message($"{e.Player.Name} no longer tradable");
                     Messages.Message($"{e.Player.Name} is no longer tradable", def: MessageTypeDefOf.NeutralEvent, historical: false);

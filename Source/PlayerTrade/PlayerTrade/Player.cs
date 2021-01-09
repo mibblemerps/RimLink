@@ -40,9 +40,6 @@ namespace PlayerTrade
                 Temperature = Mathf.RoundToInt(Find.CurrentMap.mapTemperature.OutdoorTemp),
             };
 
-            if (!player.TradeableNow)
-                Log.Message("Not currently tradeable - no comms");
-
             // Populate factions
             player.LocalFactions = new List<Faction>();
             foreach (var faction in Find.FactionManager.AllFactionsVisibleInViewOrder)

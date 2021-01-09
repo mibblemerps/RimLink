@@ -73,12 +73,12 @@ namespace PlayerTrade.Raids
             Text.Font = GameFont.Medium;
             string label1 = $"Place Bounty on {(Player.Name.Colorize(ColoredText.FactionColor_Neutral))}";
             Rect rect1 = new Rect(0, 0, Text.CalcSize(label1).x, 70f);
-            GUI.Label(rect1, label1);
+            Widgets.Label(rect1, label1);
 
             Text.Font = GameFont.Small;
             string label2 = "Faction to place bounty with:";
             Rect rect2 = new Rect(0, rect1.yMax + 20f, Text.CalcSize(label2).x, Text.CalcSize(label2).y);
-            GUI.Label(rect2, label2);
+            Widgets.Label(rect2, label2);
 
             if (Widgets.ButtonText(new Rect(rect2.xMax + 10f, rect2.yMin, 220, 35), _selectedFaction.Name))
             {

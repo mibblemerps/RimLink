@@ -2,52 +2,101 @@
 <Defs>
 
 	<QuestScriptDef>
-			<defName>PlayerTrade</defName>
-			<isRootSpecial>true</isRootSpecial>
-			<questDescriptionAndNameRules>
-				<rulesStrings>
-					<li>questName->Player Trade</li>
-					<li>questDescription-></li>
-				</rulesStrings>
-			</questDescriptionAndNameRules>
-			
-			<root Class="QuestNode_Sequence">
-				<nodes>
-					<li Class="QuestNode_GetMap" />
-			
-					<!-- Generate shuttle -->
-					<li Class="QuestNode_GenerateShuttle">
-						<storeAs>shuttle</storeAs>
-						<requiredItems>$requiredItems</requiredItems>
-					</li>
-					<li Class="QuestNode_SpawnSkyfaller">
-						<skyfallerDef>ShuttleIncoming</skyfallerDef>
-						<innerThings>$shuttle</innerThings>
-						<lookForSafeSpot>True</lookForSafeSpot>
-						<tryLandInShipLandingZone>True</tryLandInShipLandingZone>
-					</li>
-					<li Class="QuestNode_Letter">
-						<label TKey="LetterLabelPermitShuttleArrived">Shuttle arrived</label>
-						<text TKey="LetterTextPermitShuttleArrived">The orbital trade shuttle has arrived.</text>
-						<lookTargets>$shuttle</lookTargets>
-					</li>
-					
-					
-					<li Class="QuestNode_Signal">
-						<inSignal>shuttle.SentSatisfied</inSignal>
-						<node Class="QuestNode_Sequence">
-							<nodes>
-								<li Class="QuestNode_Letter">
-									<label TKey="LetterLabelPermitShuttleArrived">Shuttle departed</label>
-									<text TKey="LetterTextPermitShuttleArrived">The orbital trade shuttle has departed.</text>
-									<lookTargets>$shuttle</lookTargets>
-								</li>
-								<li Class="QuestNode_End" />
-							</nodes>
-						</node>
-					</li>
-				</nodes>
-			</root>
+		<defName>PlayerLentColonists</defName>
+		<isRootSpecial>true</isRootSpecial>
+		<autoAccept>true</autoAccept>
+		<questDescriptionAndNameRules>
+			<rulesStrings>
+				<li>questName->Lent Colonists From [from]</li>
+				<li>questName->Hired Labour From [from]</li>
+				<li>questName(pawn_count==1)->Worker From [from]</li>
+				<li>questName(pawn_count==1)->Lent Colonist From [from]</li>
+				<li>questName(pawn_count>=2)->Workers From [from]</li>
+				<li>questName(pawn_count>=2)->Lent Colonists From [from]</li>
+				
+				<li>questDescription(pawn_count==1)->[from] has lent you a colonist for [days] days.\n\n[bondInfo]</li>
+				<li>bondInfo(bond>=1)->If they are not safely returned, you will not have your bond of [bond] silver returned.</li>
+				<li>bondInfo->No bond has been paid.</li>
+			</rulesStrings>
+		</questDescriptionAndNameRules>
+		
+		<root Class="QuestNode_Sequence">
+			<nodes>
+				<li Class="QuestNode_GetMap" />
+				
+				<li Class="QuestNode_Delay">
+					<delayTicks>$shuttle_arrival_ticks</delayTicks>
+					<node Class="QuestNode_Sequence">
+						<nodes>
+							<!-- Generate shuttle -->
+							<li Class="QuestNode_GenerateShuttle">
+								<storeAs>shuttle</storeAs>
+								<requiredPawns>$pawns</requiredPawns>
+								<hideControls>false</hideControls>
+							</li>
+							<li Class="QuestNode_SpawnSkyfaller">
+								<skyfallerDef>ShuttleIncoming</skyfallerDef>
+								<innerThings>$shuttle</innerThings>
+								<lookForSafeSpot>True</lookForSafeSpot>
+								<tryLandInShipLandingZone>True</tryLandInShipLandingZone>
+							</li>
+							<li Class="QuestNode_SendShuttleAwayOnCleanup">
+								<shuttle>$shuttle</shuttle>
+							</li>
+							<li Class="QuestNode_Letter">
+								<label>Shuttle Arrived ($from)</label>
+								<text>
+									The shuttle is here to return lent colonists back to $from.
+								</text>
+								<lookTargets>$shuttle</lookTargets>
+							</li>
+							
+							<li Class="QuestNode_InspectString">
+								<targets>$pawns</targets>
+								<inspectString TKey="InspectStringDepartShuttle">Should depart on shuttle</inspectString>
+							</li>
+							
+							<li Class="QuestNode_ShuttleLeaveDelay">
+								<delayTicks>$($shuttle_leave_ticks - $shuttle_arrival_ticks)</delayTicks>
+								<shuttle>$shuttle</shuttle>
+								<node Class="QuestNode_SendShuttleAway">
+									<shuttle>$shuttle</shuttle>
+								</node>
+							</li>
+							
+							<!-- Shuttle sent -->
+							<li Class="QuestNode_Signal">
+								<inSignal>shuttle.SentSatisfied</inSignal>
+								<node Class="QuestNode_Sequence">
+									<nodes>
+										<li Class="PlayerTrade.Labor.QuestNode_ReturnColonists">
+											<guid>$guid</guid>
+											<shuttle>$shuttle</shuttle>
+										</li>
+										<li Class="QuestNode_IsNull">
+											<value>$bond_things</value>
+											<elseNode Class="QuestNode_DropPods">
+												<useTradeDropSpot>true</useTradeDropSpot>
+												<sendStandardLetter>false</sendStandardLetter>
+												<contents>$bond_things</contents>
+											</elseNode>
+										</li>
+										
+									</nodes>
+								</node>
+							</li>
+							<li Class="QuestNode_Signal">
+								<inSignal>shuttle.SentUnsatisfied</inSignal>
+								<node Class="PlayerTrade.Labor.QuestNode_ReturnColonists">
+									<guid>$guid</guid>
+									<shuttle>$shuttle</shuttle>
+								</node>
+							</li>
+						</nodes>
+					</node>
+				</li>
+			</nodes>
+		</root>
 	</QuestScriptDef>
 	
 </Defs>

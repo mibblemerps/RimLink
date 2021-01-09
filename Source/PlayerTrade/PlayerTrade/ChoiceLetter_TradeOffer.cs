@@ -35,6 +35,8 @@ namespace PlayerTrade
                 var reject = new DiaOption("RejectLetter".Translate());
                 reject.resolveTree = true;
                 reject.action = Reject;
+                if (!Offer.Fresh)
+                    reject.Disable("Offer expired");
                 yield return reject;
 
                 yield return Option_Postpone;

@@ -76,9 +76,20 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ChoiceLetter_TradeOffer.cs" />
+    <Compile Include="Labor\ChoiceLetter_LaborOffer.cs" />
+    <Compile Include="Labor\Dialog_LendColonist.cs" />
+    <Compile Include="Labor\LaborOffer.cs" />
+    <Compile Include="Labor\LaborUtil.cs" />
+    <Compile Include="Labor\LaborWorker.cs" />
+    <Compile Include="Labor\QuestNode_ReturnColonists.cs" />
+    <Compile Include="Labor\QuestPart_ReturnColonists.cs" />
     <Compile Include="NetHumanUtil.cs" />
     <Compile Include="Net\NetHediff.cs" />
     <Compile Include="Net\NetHuman.cs" />
+    <Compile Include="Net\PacketAcceptLaborOffer.cs" />
+    <Compile Include="Net\PacketForPlayer.cs" />
+    <Compile Include="Net\PacketLaborOffer.cs" />
+    <Compile Include="Net\PacketConfirmLaborOffer.cs" />
     <Compile Include="Net\PacketRaidAccepted.cs" />
     <Compile Include="Patches\Patch_Current_Game.cs" />
     <Compile Include="Patches\Patch_Tradeable_Interactive.cs" />

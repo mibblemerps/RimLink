@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using PlayerTrade.Labor;
 using PlayerTrade.Net;
 using PlayerTrade.Raids;
 using RimWorld;
@@ -78,13 +79,24 @@ namespace PlayerTrade
                 tradeOption.Disable("not tradeable currently");
             node.options.Add(tradeOption);
 
+            var lendColonist = new DiaOption("Lend Colonist")
+            {
+                resolveTree = true,
+                action = () => { Find.WindowStack.Add(new Dialog_LendColonist(player)); }
+            };
+            if (!Dialog_LendColonist.HasLendableColonist)
+                lendColonist.Disable("no lendable colonists");
+            if (!canDoSocial)
+                lendColonist.Disable("WorkTypeDisablesOption".Translate((NamedArgument)SkillDefOf.Social.label));
+            node.options.Add(lendColonist);
+
             var bountyOption = new DiaOption("Place Bounty")
             {
                 resolveTree = true,
                 action = () => { Find.WindowStack.Add(new Dialog_PlaceBounty(player)); }
             };
             if (!canDoSocial)
-                tradeOption.Disable("WorkTypeDisablesOption".Translate((NamedArgument)SkillDefOf.Social.label));
+                bountyOption.Disable("WorkTypeDisablesOption".Translate((NamedArgument)SkillDefOf.Social.label));
             node.options.Add(bountyOption);
 
             var closeOption = new DiaOption($"({"Disconnect".Translate()})") {resolveTree = true};

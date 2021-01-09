@@ -90,6 +90,29 @@ namespace TradeServer
             }
             else
             {
+                /*
+                 * Sending colonist only works once, then it breaks until server is restarted.
+                 * Possibly related to this code I dunno??
+                 */
+                if (e.Packet is PacketForPlayer forPlayer)
+                {
+                    if (forPlayer.For == Player.Guid)
+                    {
+                        Log.Warn("Attempt to route packet to same client it was sent from. This isn't permitted.");
+                        return;
+                    }
+                    Client target = Program.Server.GetClient(forPlayer.For);
+                    if (target == null)
+                    {
+                        Log.Warn($"Attempt to route packet {e.Packet.GetType().Name} to player that doesn't exist ({forPlayer.For}).");
+                        return;
+                    }
+
+                    // Forward packet
+                    await target.SendPacket(forPlayer);
+                    Log.Message($"Packet ID {e.Id} forwarded from {Player.Name} -> {target.Player.Name}");
+                }
+
                 switch (e.Id)
                 {
                     case Packet.ColonyInfoId:
