@@ -51,6 +51,13 @@ namespace PlayerTrade.Labor
                 return;
             }
 
+            if (!packet.Accept)
+            {
+                // Other player rejected
+                Find.LetterStack.ReceiveLetter($"Labor Offer Rejected ({RimLinkComp.Find().Client.GetName(offer.For)})", "Your offer to lend colonists has been rejected.", LetterDefOf.NegativeEvent);
+                return;
+            }
+
             bool fulfill = offer.LenderCanStillFulfill();
 
             Log.Message($"Received acceptance of labor offer {offer.Guid}. Fulfill = {fulfill}");
