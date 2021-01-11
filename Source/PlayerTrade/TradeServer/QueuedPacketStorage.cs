@@ -12,7 +12,7 @@ namespace TradeServer
 {
     public class QueuedPacketStorage
     {
-        public const int FormatVersion = 1;
+        public const int FormatVersion = 2;
         public const int MaxPacketsStoredPerPlayer = 1000;
 
         public string SaveFileName = "queued_packets.dat";
@@ -62,7 +62,10 @@ namespace TradeServer
                     buffer.WriteString(kv.Key);
                     buffer.WriteInt(kv.Value.Count);
                     foreach (var packet in kv.Value)
+                    {
+                        buffer.WriteInt(Packet.Packets.First(p => p.Value == packet.GetType()).Key); // (packet ID)
                         buffer.WritePacketable(packet);
+                    }
                 }
             }
         }
@@ -97,7 +100,13 @@ namespace TradeServer
                     int queuedCount = buffer.ReadInt();
                     var queued = new List<Packet>(queuedCount);
                     for (int j = 0; j < queuedCount; j++)
-                        queued.Add(buffer.ReadPacketable<Packet>());
+                    {
+                        Type packetType = Packet.Packets[buffer.ReadInt()];
+                        Packet packet = (Packet) Activator.CreateInstance(packetType);
+                        packet.Read(buffer);
+                        queued.Add(packet);
+                    }
+
                     Storage.Add(guid, queued);
                 }
             }
