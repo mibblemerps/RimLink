@@ -31,7 +31,6 @@ namespace PlayerTrade.Net
         public string Guid => RimLinkComp.Guid; // Unique user ID
 
         public List<TradeOffer> ActiveTradeOffers = new List<TradeOffer>();
-        public List<TradeOffer> OffersToFulfillNextTick = new List<TradeOffer>();
 
         public Dictionary<PacketPredicate, TaskCompletionSource<Packet>> AwaitingPackets = new Dictionary<PacketPredicate, TaskCompletionSource<Packet>>();
 
@@ -327,7 +326,7 @@ namespace PlayerTrade.Net
 
             if (confirm)
             {
-                OffersToFulfillNextTick.Add(acceptOffer);
+                RimLinkComp.TradeOffersPendingFulfillment.Add(acceptOffer);
             }
             else
             {
@@ -361,7 +360,7 @@ namespace PlayerTrade.Net
 
             if (confirm)
             {
-                OffersToFulfillNextTick.Add(offer);
+                RimLinkComp.TradeOffersPendingFulfillment.Add(offer);
             }
             else
             {

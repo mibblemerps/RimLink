@@ -97,6 +97,12 @@ namespace PlayerTrade
                 Client?.MarkDirty();
             }
 
+            // Fulfill pending trades
+            foreach (TradeOffer offer in TradeOffersPendingFulfillment)
+                offer.Fulfill(offer.IsForUs);
+            TradeOffersPendingFulfillment.Clear();
+
+            // Trigger pending raids
             var raidsToRemove = new List<BountyRaid>();
             foreach (BountyRaid raid in RaidsPending)
             {

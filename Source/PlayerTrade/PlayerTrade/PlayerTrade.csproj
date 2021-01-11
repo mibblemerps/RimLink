@@ -124,7 +124,6 @@
     <Compile Include="Net\PacketTriggerRaid.cs" />
     <Compile Include="Player.cs" />
     <Compile Include="Patches\Patch_CommsConsole.cs" />
-    <Compile Include="Patches\Patch_TickManager_DoSingleTick.cs" />
     <Compile Include="PlayerComms.cs" />
     <Compile Include="PlayerTradeMod.cs" />
     <Compile Include="Trade\PlayerTrader.cs" />
