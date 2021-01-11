@@ -60,7 +60,7 @@ namespace PlayerTrade.Trade
                 hyperlinks.Add(thing.RequestedThings.First().def);
             }
             if (requestCount == 0)
-                builder.AppendFormat("      (nothing)");
+                builder.AppendLine("      (nothing)");
 
             return builder.ToString();
         }
