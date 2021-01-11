@@ -18,6 +18,10 @@ namespace PlayerTrade.Trade
 
             forcePause = true;
             absorbInputAroundWindow = true;
+            closeOnClickedOutside = false;
+            closeOnAccept = false;
+            closeOnCancel = false;
+            doWindowBackground = true;
             soundAppear = SoundDefOf.CommsWindow_Open;
             soundClose = SoundDefOf.ExecuteTrade;
             soundAmbient = SoundDefOf.RadioComms_Ambience;
@@ -44,15 +48,15 @@ namespace PlayerTrade.Trade
             GUI.BeginGroup(inRect);
             
             Text.Font = GameFont.Medium;
-            Text.Anchor = TextAnchor.MiddleLeft;
+            Text.Anchor = TextAnchor.MiddleCenter;
             string text1 = "Confirming Trade...";
             Rect pos1 = inRect.TopPart(0.75f);
-            GUI.Label(pos1, text1);
+            Widgets.Label(pos1, text1);
 
-            string text2 = Offer.IsForUs ? Offer.From : Offer.For;
+            string text2 = RimLinkComp.Find().Client.GetName(Offer.IsForUs ? Offer.From : Offer.For);
             Rect pos2 = inRect.BottomPart(0.25f);
             Text.Font = GameFont.Tiny;
-            GUI.Label(pos2, text2);
+            Widgets.Label(pos2, text2);
 
             Text.Font = GameFont.Medium;
             Text.Anchor = TextAnchor.UpperLeft;
