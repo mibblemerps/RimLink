@@ -18,7 +18,9 @@ namespace PlayerTrade.Trade
 
         public static void PresentTradeOffer(TradeOffer offer)
         {
-            Find.LetterStack.ReceiveLetter(new ChoiceLetter_TradeOffer(offer));
+            Letter letter = new ChoiceLetter_TradeOffer(offer);
+            letter.ID = Find.UniqueIDsManager.GetNextLetterID();
+            Find.LetterStack.ReceiveLetter(letter);
         }
 
         /// <summary>

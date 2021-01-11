@@ -19,6 +19,8 @@ namespace PlayerTrade.Trade
             hyperlinkThingDefs = hyperlinks.Take(Math.Min(hyperlinks.Count, 5)).ToList();
         }
 
+        public ChoiceLetter_TradeOffer() { }
+
         public override IEnumerable<DiaOption> Choices
         {
             get
@@ -26,16 +28,16 @@ namespace PlayerTrade.Trade
                 var accept = new DiaOption("Accept");
                 accept.action = Accept;
                 accept.resolveTree = true;
-                if (!Offer.Fresh)
+                if (Offer == null || !Offer.Fresh)
                     accept.Disable("Offer expired");
-                if (!Offer.CanFulfill(true))
+                else if (!Offer.CanFulfill(true))
                     accept.Disable("Missing resources");
                 yield return accept;
 
                 var reject = new DiaOption("RejectLetter".Translate());
                 reject.resolveTree = true;
                 reject.action = Reject;
-                if (!Offer.Fresh)
+                if (Offer == null || !Offer.Fresh)
                     reject.Disable("Offer expired");
                 yield return reject;
 
@@ -47,6 +49,7 @@ namespace PlayerTrade.Trade
         {
             if (!Offer.Fresh)
                 return; // Offer not fresh (sanity check)
+            Find.LetterStack.RemoveLetter(this);
 
             Find.WindowStack.Add(new Dialog_TradeIntermission(Offer));
 
@@ -55,20 +58,12 @@ namespace PlayerTrade.Trade
 
         private void Reject()
         {
-            Option_Reject.action();
+            Find.LetterStack.RemoveLetter(this);
             if (Offer.Fresh)
             {
                 _ = Offer.Reject(); // send rejection
                 RimLinkComp.Find().Client.ActiveTradeOffers.Remove(Offer);
             }
-
-            Option_Close.action();
-        }
-
-        public override void ExposeData()
-        {
-            base.ExposeData();
-            Scribe_Deep.Look(ref Offer, "offer");
         }
     }
 }

@@ -32,27 +32,27 @@ namespace PlayerTrade.Labor
                 var accept = new DiaOption("Accept");
                 accept.action = Accept;
                 accept.resolveTree = true;
-                if (!LaborOffer.Fresh)
+                if (LaborOffer == null || !LaborOffer.Fresh)
                     accept.Disable("Offer expired");
-                if (!LaborOffer.CanFulfill())
+                else if (!LaborOffer.CanFulfill())
                     accept.Disable("Missing resources");
                 yield return accept;
 
                 var reject = new DiaOption("RejectLetter".Translate());
                 reject.resolveTree = true;
                 reject.action = Reject;
-                if (!LaborOffer.Fresh)
+                if (LaborOffer == null || !LaborOffer.Fresh)
                     reject.Disable("Offer expired");
                 yield return reject;
 
-                foreach (Pawn pawn in LaborOffer.Colonists)
+                if (LaborOffer?.Colonists != null)
                 {
-                    var inspect = new DiaOption("View: " + pawn.NameFullColored);
-                    inspect.action = () =>
+                    foreach (Pawn pawn in LaborOffer.Colonists)
                     {
-                        Find.WindowStack.Add(new Dialog_InfoCard(pawn));
-                    };
-                    yield return inspect;
+                        var inspect = new DiaOption("View: " + pawn.NameFullColored);
+                        inspect.action = () => { Find.WindowStack.Add(new Dialog_InfoCard(pawn)); };
+                        yield return inspect;
+                    }
                 }
 
                 yield return Option_Postpone;
@@ -64,6 +64,8 @@ namespace PlayerTrade.Labor
             if (!LaborOffer.Fresh)
                 return;
             LaborOffer.Fresh = false;
+            Find.LetterStack.RemoveLetter(this);
+
             Client client = RimLinkComp.Find().Client;
 
             // Send acceptance
@@ -104,6 +106,7 @@ namespace PlayerTrade.Labor
             if (!LaborOffer.Fresh)
                 return;
             LaborOffer.Fresh = false;
+            Find.LetterStack.RemoveLetter(this);
 
             // Send rejection
             _ = RimLinkComp.Find().Client.SendPacket(new PacketAcceptLaborOffer

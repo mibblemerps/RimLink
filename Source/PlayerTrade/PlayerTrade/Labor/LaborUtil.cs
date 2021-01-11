@@ -12,6 +12,7 @@ namespace PlayerTrade.Labor
         public static void PresentLendColonistOffer(LaborOffer offer)
         {
             Letter letter = new ChoiceLetter_LaborOffer(offer);
+            letter.ID = Find.UniqueIDsManager.GetNextLetterID();
             Find.LetterStack.ReceiveLetter(letter);
         }
 

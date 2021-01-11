@@ -51,6 +51,7 @@ namespace PlayerTrade
             Log.Message("RimLink comp init");
 
             Init();
+            RemoveExpiredOfferLetters();
         }
 
         public async void Init()
@@ -147,6 +148,22 @@ namespace PlayerTrade
             }
             LastInstance = comp;
             return comp;
+        }
+
+        /// <summary>
+        /// Remove any trade/labor offer letters that are expired and are no longer relevant.<br />
+        /// Most of the info in these letters is still readable in the letter history, however the cannot be accepted.
+        /// </summary>
+        public static void RemoveExpiredOfferLetters()
+        {
+            foreach (Letter letter in Verse.Find.LetterStack.LettersListForReading)
+            {
+                if (letter is ChoiceLetter_TradeOffer tradeOfferLetter && tradeOfferLetter.Offer == null)
+                    Verse.Find.LetterStack.RemoveLetter(letter);
+
+                if (letter is ChoiceLetter_LaborOffer laborOfferLetter && laborOfferLetter.LaborOffer == null)
+                    Verse.Find.LetterStack.RemoveLetter(letter);
+            }
         }
     }
 }
