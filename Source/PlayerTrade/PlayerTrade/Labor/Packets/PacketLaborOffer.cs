@@ -12,6 +12,8 @@ namespace PlayerTrade.Labor.Packets
         public float Days;
         public List<NetHuman> Colonists;
 
+        public override bool ShouldQueue => false;
+
         public override void Write(PacketBuffer buffer)
         {
             base.Write(buffer);

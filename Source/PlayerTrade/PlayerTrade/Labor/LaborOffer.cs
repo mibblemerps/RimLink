@@ -18,6 +18,7 @@ namespace PlayerTrade.Labor
 
         public string Guid;
         public List<Pawn> Colonists;
+        public int ColonistCount;
         public float Days;
         public int Payment;
         public int Bond;
@@ -221,7 +222,7 @@ namespace PlayerTrade.Labor
             Scribe_Values.Look(ref Days, "days");
             Scribe_Values.Look(ref Payment, "payment");
             Scribe_Values.Look(ref Bond, "bond");
-            //Scribe_Collections.Look(ref Colonists, "colonists", LookMode.Deep);
+            Scribe_Collections.Look(ref Colonists, "colonists", LookMode.Reference);
             //Scribe_Collections.Look(ref MarketValues, "market_values");
         }
 

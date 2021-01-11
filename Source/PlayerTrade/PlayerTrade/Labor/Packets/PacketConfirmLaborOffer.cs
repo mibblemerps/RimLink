@@ -7,6 +7,8 @@ namespace PlayerTrade.Labor.Packets
         public string Guid;
         public bool Confirm;
 
+        public override bool ShouldQueue => false;
+
         public override void Write(PacketBuffer buffer)
         {
             base.Write(buffer);

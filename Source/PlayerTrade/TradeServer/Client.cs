@@ -101,16 +101,9 @@ namespace TradeServer
                         Log.Warn("Attempt to route packet to same client it was sent from. This isn't permitted.");
                         return;
                     }
-                    Client target = Program.Server.GetClient(forPlayer.For);
-                    if (target == null)
-                    {
-                        Log.Warn($"Attempt to route packet {e.Packet.GetType().Name} to player that doesn't exist ({forPlayer.For}).");
-                        return;
-                    }
 
                     // Forward packet
-                    await target.SendPacket(forPlayer);
-                    Log.Message($"Packet ID {e.Id} forwarded from {Player.Name} -> {target.Player.Name}");
+                    await Program.Server.SendPacketToClient(forPlayer.For, e.Packet);
                 }
 
                 switch (e.Id)
@@ -118,7 +111,6 @@ namespace TradeServer
                     case Packet.ColonyInfoId:
                         PacketColonyInfo colonyInfoPacket = (PacketColonyInfo) e.Packet;
                         Player = colonyInfoPacket.Player;
-                        Log.Message($"Received colony info from {Player.Name} (tradeable = {Player.TradeableNow})");
                         ColonyInfoReceived?.Invoke(this, new ClientEventArgs(this));
                         break;
 

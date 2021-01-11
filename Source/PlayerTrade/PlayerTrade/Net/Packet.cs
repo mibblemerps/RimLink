@@ -8,7 +8,7 @@ using PlayerTrade.Labor.Packets;
 
 namespace PlayerTrade.Net
 {
-    public abstract class Packet
+    public abstract class Packet : IPacketable
     {
         public const int ConnectId = 1;
         public const int ColonyResourcesId = 2;

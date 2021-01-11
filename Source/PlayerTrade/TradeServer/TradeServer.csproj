@@ -48,6 +48,7 @@
     <Compile Include="ClientState.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="QueuedPacketStorage.cs" />
     <Compile Include="Server.cs" />
   </ItemGroup>
   <ItemGroup>

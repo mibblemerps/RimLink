@@ -12,6 +12,8 @@ namespace PlayerTrade.Labor.Packets
         public string Guid;
         public List<NetHuman> ReturnedColonists;
 
+        public override bool ShouldQueue => true;
+
         public override void Write(PacketBuffer buffer)
         {
             base.Write(buffer);

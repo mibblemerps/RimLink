@@ -15,23 +15,26 @@ namespace TradeServer
         public static int ProtocolVersion = 1;
 
         public List<Client> AuthenticatedClients = new List<Client>();
+        public QueuedPacketStorage QueuedPacketStorage = new QueuedPacketStorage();
 
         protected TcpListener Listener;
 
         public async Task Run(int port = 35562)
         {
+            QueuedPacketStorage.Load();
+
             Listener = new TcpListener(IPAddress.Any, port);
             Listener.Start();
 
             while (true)
             {
                 TcpClient tcp = await Listener.AcceptTcpClientAsync();
-                Console.WriteLine($"Accepted TCP connection from {tcp.Client.RemoteEndPoint}");
+                Log.Message($"Accepted TCP connection from {tcp.Client.RemoteEndPoint}");
                 var client = new Client(tcp);
                 client.Authenticated += ClientOnAuthenticated;
                 client.Disconnected += ClientOnDisconnected;
                 client.ColonyInfoReceived += ClientOnColonyInfoReceived;
-                client.Run();
+                _ = client.Run();
             }
         }
 
@@ -48,9 +51,43 @@ namespace TradeServer
             return client.Player.Name;
         }
 
+        public async Task SendPacketToClient(string guid, Packet packet)
+        {
+            Client client = GetClient(guid);
+
+            bool shouldQueue = false;
+            if (packet is PacketForPlayer packetForPlayer)
+            {
+                if (packetForPlayer.For != guid)
+                    Log.Warn($"Sending packet {packet.GetType().Name} to client that isn't the originally intended target");
+
+                if (packetForPlayer.ShouldQueue)
+                    shouldQueue = true;
+            }
+
+            if (client != null && client.State == ClientState.Normal && client.Tcp.Connected)
+            {
+                // Client connected - send packet
+                await client.SendPacket(packet);
+            }
+            else
+            {
+                // Client not connected
+                if (shouldQueue)
+                {
+                    Log.Message($"Attempt to send packet to player ({guid}) that isn't connected! Packet will be queued for next time they connect.");
+                    QueuedPacketStorage.StorePacket(guid, packet);
+                }
+                else
+                {
+                    Log.Message($"Attempt to send packet to player ({guid}) that isn't connected! Packet isn't queuable so it will be thrown out.");
+                }
+            }
+        }
+
         private async void ClientOnAuthenticated(object sender, Client.ClientEventArgs e)
         {
-            Console.WriteLine($"{e.Client.Player.Name} connected");
+            Log.Message($"{e.Client.Player.Name} connected");
             AuthenticatedClients.Add(e.Client);
 
             // Send other colonies
@@ -65,6 +102,10 @@ namespace TradeServer
                     Player = client.Player
                 });
             }
+
+            // Send queued packets
+            foreach (Packet packet in QueuedPacketStorage.GetQueuedPackets(e.Client.Player.Guid, true))
+                await e.Client.SendPacket(packet);
         }
 
         private void ClientOnDisconnected(object sender, Client.ClientEventArgs e)
