@@ -29,6 +29,9 @@ namespace PlayerTrade.Labor
         public Dialog_LendColonist(Player player)
         {
             Player = player;
+
+            doCloseButton = true;
+            forcePause = true;
         }
 
         public override void PreOpen()
@@ -94,7 +97,7 @@ namespace PlayerTrade.Labor
 
         private static IEnumerable<Pawn> GetLendablePawns()
         {
-            foreach (Pawn pawn in Find.ColonistBar.GetColonistsInOrder())
+            foreach (Pawn pawn in Find.CurrentMap.mapPawns.FreeColonists)
             {
                 if (pawn.royalty.AllTitlesForReading.Count > 0)
                     continue;

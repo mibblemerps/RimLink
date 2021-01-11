@@ -27,6 +27,8 @@ namespace PlayerTrade
             // Mark dirty so we can have up-to-date info about ourselves in the comms window
             RimLinkComp.Find().Client.MarkDirty();
             _self = RimLinkComp.Find().Client.Player;
+
+            forcePause = true;
         }
 
         public override void DoWindowContents(Rect inRect)

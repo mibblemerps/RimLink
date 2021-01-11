@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using PlayerTrade.Labor.Packets;
 using PlayerTrade.Net;
 using RimWorld;
 using RimWorld.QuestGen;
@@ -85,8 +86,7 @@ namespace PlayerTrade.Labor
             Log.Message($"Fulfilling labor offer {Guid} as sender (removing pawns receiving payment)");
 
             // Remove offered colonists from our map
-            foreach (Pawn pawn in Colonists)
-                pawn.Destroy(DestroyMode.Vanish);
+            RimLinkComp.Find().PawnsToRemove.AddRange(Colonists);
 
             if (Payment > 0)
             {
@@ -147,12 +147,82 @@ namespace PlayerTrade.Labor
             Find.QuestManager.Add(quest);
         }
 
+        /// <summary>
+        /// Return colonists.
+        /// </summary>
+        public async Task ReturnColonists(List<Pawn> pawns)
+        {
+            Client client = RimLinkComp.Find().Client;
+
+            var netPawns = new List<NetHuman>();
+            foreach (Pawn pawn in pawns)
+                netPawns.Add(pawn.ToNetHuman());
+
+            var packet = new PacketReturnLentColonists
+            {
+                For = From,
+                Guid = Guid,
+                ReturnedColonists = netPawns
+            };
+
+            await client.SendPacket(packet);
+
+            RimLinkComp.Find().ActiveLaborOffers.Remove(this);
+        }
+
+        /// <summary>
+        /// Called when a return colonists packet is received. This facilitates the giving back of the colonists and paying out and bond - if applicable. 
+        /// </summary>
+        public void ReturnedColonistsReceived(PacketReturnLentColonists packet)
+        {
+            Client client = RimLinkComp.Find().Client;
+
+            if (From != client.Guid)
+            {
+                Log.Error($"Attempt to return colonists for a labor offer we didn't send!");
+                return;
+            }
+
+            foreach (var colonist in packet.ReturnedColonists)
+            {
+                Pawn pawn = colonist.ToPawn();
+                Log.Message($"Returning {pawn.Name.ToStringFull}...");
+                IntVec3 pos = DropCellFinder.TradeDropSpot(Find.CurrentMap);
+                TradeUtility.SpawnDropPod(pos, Find.CurrentMap, pawn);
+            }
+
+            Log.Message($"{packet.ReturnedColonists.Count}/{Colonists.Count} returned from labor deal.");
+            if (packet.ReturnedColonists.Count < Colonists.Count)
+            {
+                if (Bond > 0)
+                {
+                    // Pay bond
+                    var bondThing = ThingMaker.MakeThing(ThingDefOf.Silver);
+                    bondThing.stackCount = Bond;
+                    TradeUtility.SpawnDropPod(DropCellFinder.TradeDropSpot(Find.CurrentMap), Find.CurrentMap, bondThing);
+                }
+
+                Find.LetterStack.ReceiveLetter($"Colonists Lost ({client.GetName(For)})", $"{client.GetName(For).Colorize(ColoredText.FactionColor_Neutral)} didn't return all your colonists.", LetterDefOf.NegativeEvent);
+            }
+            else
+            {
+                Find.LetterStack.ReceiveLetter($"Colonists Returned ({client.GetName(For)})", $"{client.GetName(For).Colorize(ColoredText.FactionColor_Neutral)} returned your colonists.", LetterDefOf.PositiveEvent);
+            }
+
+            // Remove this as an active labor offer.
+            RimLinkComp.Find().ActiveLaborOffers.Remove(this);
+        }
+
         public void ExposeData()
         {
             Scribe_Values.Look(ref Guid, "guid");
             Scribe_Values.Look(ref From, "from");
             Scribe_Values.Look(ref For, "for");
-            Scribe_Collections.Look(ref Colonists, "colonists");
+            Scribe_Values.Look(ref Days, "days");
+            Scribe_Values.Look(ref Payment, "payment");
+            Scribe_Values.Look(ref Bond, "bond");
+            //Scribe_Collections.Look(ref Colonists, "colonists", LookMode.Deep);
+            //Scribe_Collections.Look(ref MarketValues, "market_values");
         }
 
         public PacketLaborOffer ToPacket()

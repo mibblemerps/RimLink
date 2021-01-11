@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using PlayerTrade.Net;
 
-namespace PlayerTrade.Net
+namespace PlayerTrade.Labor.Packets
 {
     public class PacketConfirmLaborOffer : PacketForPlayer
     {

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using PlayerTrade.Labor.Packets;
 using PlayerTrade.Net;
 using RimWorld;
 using Verse;
@@ -39,6 +40,10 @@ namespace PlayerTrade.Labor
                     PacketConfirmLaborOffer confirmPacket = (PacketConfirmLaborOffer) e.Packet;
                     Log.Message("Received labor offer confirmation: " + confirmPacket.Guid);
                     break;
+
+                case Packet.ReturnLentColonistsPacketId:
+                    HandleReturnLentColonistsPacket((PacketReturnLentColonists) e.Packet);
+                    break;
             }
         }
 
@@ -62,6 +67,9 @@ namespace PlayerTrade.Labor
 
             Log.Message($"Received acceptance of labor offer {offer.Guid}. Fulfill = {fulfill}");
 
+            // Add as active labor offer
+            RimLinkComp.Find().ActiveLaborOffers.Add(offer);
+
             await Client.SendPacket(new PacketConfirmLaborOffer
             {
                 For = offer.For,
@@ -79,6 +87,19 @@ namespace PlayerTrade.Labor
             {
                 Find.LetterStack.ReceiveLetter($"Labor Offer Failed ({RimLinkComp.Find().Client.GetName(offer.For)})", "The pawns offered are not in the same condition as when they were initially offered.", LetterDefOf.NegativeEvent);
             }
+        }
+
+        private void HandleReturnLentColonistsPacket(PacketReturnLentColonists packet)
+        {
+            LaborOffer offer = RimLinkComp.Find().ActiveLaborOffers.FirstOrDefault(o => o.Guid == packet.Guid);
+            if (offer == null)
+            {
+                Log.Warn("Attempt to return colonists for an unknown labor offer! " + packet.Guid);
+                return;
+            }
+
+            Log.Message($"Returning lent colonists from {RimLinkComp.Find().Client.GetName(offer.For)}");
+            offer.ReturnedColonistsReceived(packet);
         }
     }
 }

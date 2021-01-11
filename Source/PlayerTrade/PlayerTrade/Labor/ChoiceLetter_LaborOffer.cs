@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using PlayerTrade.Labor.Packets;
 using PlayerTrade.Net;
 using RimWorld;
 using Verse;
@@ -58,7 +59,7 @@ namespace PlayerTrade.Labor
             }
         }
 
-        private async void Accept()
+        private async void Accept() // todo: move into LaborOffer class
         {
             if (!LaborOffer.Fresh)
                 return;
@@ -83,6 +84,8 @@ namespace PlayerTrade.Labor
             });
             Log.Message($"Labor offer {LaborOffer.Guid} confirmed");
 
+            RimLinkComp.Find().ActiveLaborOffers.Add(LaborOffer);
+
             if (packetConfirm.Confirm)
             {
                 LaborOffer.FulfillAsReceiver(Find.CurrentMap);
@@ -96,7 +99,7 @@ namespace PlayerTrade.Labor
             }
         }
 
-        private void Reject()
+        private void Reject() // todo: move into LaborOffer class
         {
             if (!LaborOffer.Fresh)
                 return;

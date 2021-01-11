@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using PlayerTrade.Labor;
 using PlayerTrade.Net;
 using PlayerTrade.Raids;
 using UnityEngine;
@@ -8,7 +9,7 @@ using Verse;
 
 namespace PlayerTrade
 {
-    public class RimLinkComp : GameComponent, IDisposable
+    public class RimLinkComp : GameComponent
     {
         /// <summary>
         /// The last known instance of the RimLink comp. This should never be used for normally accessing RimLink (use <see cref="Find"/> instead).<br />
@@ -27,6 +28,13 @@ namespace PlayerTrade
 
         public List<TradeOffer> TradeOffersPendingFulfillment = new List<TradeOffer>();
         public List<BountyRaid> RaidsPending = new List<BountyRaid>();
+
+        public List<LaborOffer> ActiveLaborOffers = new List<LaborOffer>();
+
+        /// <summary>
+        /// Pawns that have been sent and should be removed.
+        /// </summary>
+        public List<Pawn> PawnsToRemove = new List<Pawn>();
 
         public Client Client;
 
@@ -50,6 +58,8 @@ namespace PlayerTrade
                 TradeOffersPendingFulfillment = new List<TradeOffer>();
             if (RaidsPending == null)
                 RaidsPending = new List<BountyRaid>();
+            if (ActiveLaborOffers == null)
+                ActiveLaborOffers = new List<LaborOffer>();
 
             string ip = PlayerTradeMod.Instance.Settings.ServerIp;
             if (string.IsNullOrWhiteSpace(ip))
@@ -86,18 +96,23 @@ namespace PlayerTrade
                 Client?.MarkDirty();
             }
 
-            var toRemove = new List<BountyRaid>();
+            var raidsToRemove = new List<BountyRaid>();
             foreach (BountyRaid raid in RaidsPending)
             {
                 if (--raid.ArrivesInTicks <= 0)
                 {
                     // Trigger raid
                     raid.Execute();
-                    toRemove.Add(raid);
+                    raidsToRemove.Add(raid);
                 }
             }
-            foreach (BountyRaid raid in toRemove)
+            foreach (BountyRaid raid in raidsToRemove)
                 RaidsPending.Remove(raid);
+
+            // Remove sent pawns
+            foreach (Pawn pawn in PawnsToRemove)
+                pawn.Destroy(DestroyMode.Vanish);
+            PawnsToRemove.Clear();
         }
 
         public override void ExposeData()
@@ -107,11 +122,8 @@ namespace PlayerTrade
             Scribe_Values.Look(ref Secret, "secret");
             Scribe_Collections.Look(ref TradeOffersPendingFulfillment, "trade_offers_pending_fulfillment");
             Scribe_Collections.Look(ref RaidsPending, "raids_pending");
-        }
-
-        public void Dispose()
-        {
-            Log.Message("TODO: disconnect on game comp dispose (if that's a thing that works)");
+            Scribe_Collections.Look(ref ActiveLaborOffers, "active_labor_offers");
+            Scribe_Collections.Look(ref PawnsToRemove, "pawns_to_remove", LookMode.Reference);
         }
 
         /// <summary>

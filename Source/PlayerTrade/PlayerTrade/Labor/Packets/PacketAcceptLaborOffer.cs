@@ -1,4 +1,6 @@
-﻿namespace PlayerTrade.Net
+﻿using PlayerTrade.Net;
+
+namespace PlayerTrade.Labor.Packets
 {
     public class PacketAcceptLaborOffer : PacketForPlayer
     {

@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using PlayerTrade.Labor.Packets;
 
 namespace PlayerTrade.Net
 {
@@ -22,6 +23,7 @@ namespace PlayerTrade.Net
         public const int LaborOfferPacketId = 11;
         public const int AcceptLaborOfferPacketId = 12;
         public const int ConfirmLaborOfferPacketId = 13;
+        public const int ReturnLentColonistsPacketId = 14;
 
         public static Dictionary<int, Type> Packets = new Dictionary<int, Type>
         {
@@ -38,6 +40,7 @@ namespace PlayerTrade.Net
             {LaborOfferPacketId, typeof(PacketLaborOffer)},
             {AcceptLaborOfferPacketId, typeof(PacketAcceptLaborOffer)},
             {ConfirmLaborOfferPacketId, typeof(PacketConfirmLaborOffer)},
+            {ReturnLentColonistsPacketId, typeof(PacketReturnLentColonists)},
         };
 
         public abstract void Write(PacketBuffer buffer);
