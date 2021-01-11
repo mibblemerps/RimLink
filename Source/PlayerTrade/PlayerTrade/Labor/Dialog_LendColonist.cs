@@ -30,8 +30,9 @@ namespace PlayerTrade.Labor
         {
             Player = player;
 
-            doCloseButton = true;
+            doCloseX = true;
             forcePause = true;
+            closeOnAccept = false;
         }
 
         public override void PreOpen()
