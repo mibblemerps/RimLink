@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+	<SoundDef>
+		<defName>TornadoSiren</defName>  
+		<context>MapOnly</context>
+		<subSounds>
+			<li>
+				<onCamera>True</onCamera>      
+				<grains>
+					<li Class="AudioGrain_Clip">
+						<clipPath>LetterSounds/tornado_siren</clipPath>
+					</li>
+				</grains>
+				<volumeRange>9.705886~9.705877</volumeRange>      
+				<pitchRange>0.8529412~1.321177</pitchRange>
+				<sustainLoop>False</sustainLoop>
+			</li>
+		</subSounds>
+	</SoundDef>
+</Defs>

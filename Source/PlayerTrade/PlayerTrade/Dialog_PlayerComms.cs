@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using PlayerTrade.Labor;
+using PlayerTrade.Mail;
 using PlayerTrade.Net;
 using PlayerTrade.Raids;
 using PlayerTrade.Trade;
@@ -71,13 +72,20 @@ namespace PlayerTrade
 
             var node = new DiaNode($"{negotiator.NameShortColored} greets {player.Name.Colorize(ColoredText.FactionColor_Neutral)} over the comms console.");
 
+            var letterOption = new DiaOption("Send Letter")
+            {
+                resolveTree = true,
+                action = () => { Find.WindowStack.Add(new Dialog_SendLetter(player)); }
+            };
+            node.options.Add(letterOption);
+
             var tradeOption = new DiaOption("Trade")
             {
                 resolveTree = true,
                 action = async () => { await TradeUtil.InitiateTrade(negotiator, player); }
             };
             if (!canDoSocial)
-                tradeOption.Disable("WorkTypeDisablesOption".Translate((NamedArgument)SkillDefOf.Social.label));
+                tradeOption.Disable("WorkTypeDisablesOption".Translate(SkillDefOf.Social.label));
             if (!player.TradeableNow)
                 tradeOption.Disable("not tradeable currently");
             node.options.Add(tradeOption);
@@ -90,7 +98,7 @@ namespace PlayerTrade
             if (!Dialog_LendColonist.HasLendableColonist)
                 lendColonist.Disable("no lendable colonists");
             if (!canDoSocial)
-                lendColonist.Disable("WorkTypeDisablesOption".Translate((NamedArgument)SkillDefOf.Social.label));
+                lendColonist.Disable("WorkTypeDisablesOption".Translate(SkillDefOf.Social.label));
             node.options.Add(lendColonist);
 
             var bountyOption = new DiaOption("Place Bounty")
@@ -99,7 +107,7 @@ namespace PlayerTrade
                 action = () => { Find.WindowStack.Add(new Dialog_PlaceBounty(player)); }
             };
             if (!canDoSocial)
-                bountyOption.Disable("WorkTypeDisablesOption".Translate((NamedArgument)SkillDefOf.Social.label));
+                bountyOption.Disable("WorkTypeDisablesOption".Translate(SkillDefOf.Social.label));
             node.options.Add(bountyOption);
 
             var closeOption = new DiaOption($"({"Disconnect".Translate()})") {resolveTree = true};

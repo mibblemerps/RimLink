@@ -6,6 +6,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 using PlayerTrade.Labor;
+using PlayerTrade.Mail;
 using PlayerTrade.Raids;
 using PlayerTrade.Trade;
 using RimWorld;
@@ -58,6 +59,7 @@ namespace PlayerTrade.Net
             PlayerDisconnected += OnPlayerDisconnected;
 
             Labor = new LaborWorker(this);
+            new MailWorker(this);
         }
 
         public async Task Connect(string ip, int port = 35562)

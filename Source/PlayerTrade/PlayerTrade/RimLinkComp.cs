@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using PlayerTrade.Labor;
+using PlayerTrade.Mail;
 using PlayerTrade.Net;
 using PlayerTrade.Raids;
 using PlayerTrade.Trade;
@@ -29,7 +30,6 @@ namespace PlayerTrade
 
         public List<TradeOffer> TradeOffersPendingFulfillment = new List<TradeOffer>();
         public List<BountyRaid> RaidsPending = new List<BountyRaid>();
-
         public List<LaborOffer> ActiveLaborOffers = new List<LaborOffer>();
 
         /// <summary>

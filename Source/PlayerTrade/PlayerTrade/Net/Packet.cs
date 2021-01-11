@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using PlayerTrade.Labor.Packets;
+using PlayerTrade.Mail;
 
 namespace PlayerTrade.Net
 {
@@ -26,6 +27,7 @@ namespace PlayerTrade.Net
         public const int ReturnLentColonistsPacketId = 14;
         public const int PlayerDisconnectedPacketId = 15;
         public const int ConnectResponsePacketId = 16;
+        public const int MailPacketId = 17;
 
         public static Dictionary<int, Type> Packets = new Dictionary<int, Type>
         {
@@ -45,6 +47,7 @@ namespace PlayerTrade.Net
             {ReturnLentColonistsPacketId, typeof(PacketReturnLentColonists)},
             {PlayerDisconnectedPacketId, typeof(PacketPlayerDisconnected)},
             {ConnectResponsePacketId, typeof(PacketConnectResponse)},
+            {MailPacketId, typeof(PacketMail)},
         };
 
         public abstract void Write(PacketBuffer buffer);

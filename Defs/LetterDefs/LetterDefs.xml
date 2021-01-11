@@ -7,10 +7,17 @@
 		<letterClass>PlayerTrade.Trade.ChoiceLetter_TradeOffer</letterClass>
 	</LetterDef>
 	
-		<LetterDef ParentName="CustomChoiceLetterBase">
+	<LetterDef ParentName="CustomChoiceLetterBase">
 		<defName>LaborOffer</defName>
 		<color>(60, 140, 82)</color>
 		<letterClass>PlayerTrade.Labor.ChoiceLetter_LaborOffer</letterClass>
+	</LetterDef>
+	
+	<LetterDef>
+		<defName>PlayerMail</defName>
+		<color>(189, 182, 162)</color>
+		<flashColor>(219, 211, 186)</flashColor>
+		<flashInterval>90</flashInterval>
 	</LetterDef>
 
 </Defs>
