@@ -15,6 +15,8 @@ namespace PlayerTrade.Net
     public class Client : Connection
     {
         public event EventHandler<PlayerUpdateEventArgs> PlayerUpdated;
+        public event EventHandler<Player> PlayerConnected;
+        public event EventHandler<Player> PlayerDisconnected;
 
         public delegate bool PacketPredicate(Packet packet);
 
@@ -52,6 +54,8 @@ namespace PlayerTrade.Net
             MarkDirty(false);
 
             PlayerUpdated += OnPlayerUpdated;
+            PlayerConnected += OnPlayerConnected;
+            PlayerDisconnected += OnPlayerDisconnected;
 
             Labor = new LaborWorker(this);
         }
@@ -190,10 +194,26 @@ namespace PlayerTrade.Net
             {
                 case Packet.ColonyInfoId:
                     PacketColonyInfo infoPacket = (PacketColonyInfo) e.Packet;
-                    Log.Message($"Received colony info update for {infoPacket.Player.Name} (tradeable = {infoPacket.Player.TradeableNow})");
+                    //Log.Message($"Received colony info update for {infoPacket.Player.Name} (tradeable = {infoPacket.Player.TradeableNow})");
                     Player oldPlayer = Players.ContainsKey(infoPacket.Guid) ? Players[infoPacket.Guid] : null;
+                    if (oldPlayer == null)
+                    {
+                        // New connection
+                        Log.Message($"Player {infoPacket.Player.Name} connected");
+                        PlayerConnected?.Invoke(this, infoPacket.Player);
+                    }
                     Players[infoPacket.Guid] = infoPacket.Player;
                     PlayerUpdated?.Invoke(this, new PlayerUpdateEventArgs(oldPlayer, infoPacket.Player));
+                    break;
+
+                case Packet.PlayerDisconnectedPacketId:
+                    PacketPlayerDisconnected playerDisconnectedPacket = (PacketPlayerDisconnected) e.Packet;
+                    if (Players.ContainsKey(playerDisconnectedPacket.Player))
+                    {
+                        var disconnectedPlayer = Players[playerDisconnectedPacket.Player];
+                        Players.Remove(playerDisconnectedPacket.Player);
+                        PlayerDisconnected?.Invoke(this, disconnectedPlayer);
+                    }
                     break;
 
                 case Packet.ColonyResourcesId:
@@ -243,15 +263,25 @@ namespace PlayerTrade.Net
                 if (e.Player.TradeableNow)
                 {
                     Log.Message($"{e.Player.Name} is now tradable");
-                    Messages.Message($"{e.Player.Name} is now tradable", def: MessageTypeDefOf.NeutralEvent, historical: false);
+                    Messages.Message($"{e.Player.Name} is now tradable", def: MessageTypeDefOf.NeutralEvent, false);
 
                 }
                 else if (e.OldPlayer != null) // only show this message if the player previously existed
                 {
                     Log.Message($"{e.Player.Name} no longer tradable");
-                    Messages.Message($"{e.Player.Name} is no longer tradable", def: MessageTypeDefOf.NeutralEvent, historical: false);
+                    Messages.Message($"{e.Player.Name} is no longer tradable", def: MessageTypeDefOf.NeutralEvent, false);
                 }
             }
+        }
+
+        private void OnPlayerDisconnected(object sender, Player e)
+        {
+            Messages.Message($"{e.Name.Colorize(ColoredText.FactionColor_Neutral)} disconnected", MessageTypeDefOf.NeutralEvent, false);
+        }
+
+        private void OnPlayerConnected(object sender, Player e)
+        {
+            Messages.Message($"{e.Name.Colorize(ColoredText.FactionColor_Neutral)} connected", MessageTypeDefOf.NeutralEvent, false);
         }
 
         private async Task HandleAcceptTradePacket(PacketAcceptTrade packet)

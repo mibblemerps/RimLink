@@ -69,7 +69,7 @@ namespace TradeServer
 
         private async void OnPacketReceived(object sender, PacketReceivedEventArgs e)
         {
-            Log.Message($"Packet received {e.Id} from {Tcp.Client.RemoteEndPoint}");
+            Log.Message($"Packet received {e.GetType().Name} from {Tcp.Client.RemoteEndPoint}");
 
             if (State == ClientState.Auth)
             {
@@ -79,10 +79,18 @@ namespace TradeServer
                         PacketConnect connectPacket = (PacketConnect) e.Packet;
                         Player = connectPacket.Player;
 
+                        // Send connect response with connected player data
+                        var players = new List<Player>();
+                        foreach (var client in Program.Server.AuthenticatedClients.Where(c => c.Player != null))
+                            players.Add(client.Player);
+                        await SendPacket(new PacketConnectResponse
+                        {
+                            Success = true,
+                            ConnectedPlayers = players
+                        });
+
                         State = ClientState.Normal;
                         Authenticated?.Invoke(this, new ClientEventArgs(this));
-                        // todo: validate player secret
-
                         break;
                     default:
                         throw new Exception($"Unknown packet received! ID: {e.Id}");

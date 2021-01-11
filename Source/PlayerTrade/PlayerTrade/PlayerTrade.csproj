@@ -88,9 +88,11 @@
     <Compile Include="Net\NetHediff.cs" />
     <Compile Include="Net\NetHuman.cs" />
     <Compile Include="Labor\Packets\PacketAcceptLaborOffer.cs" />
+    <Compile Include="Net\PacketConnectResponse.cs" />
     <Compile Include="Net\PacketForPlayer.cs" />
     <Compile Include="Labor\Packets\PacketLaborOffer.cs" />
     <Compile Include="Labor\Packets\PacketConfirmLaborOffer.cs" />
+    <Compile Include="Net\PacketPlayerDisconnected.cs" />
     <Compile Include="Net\PacketRaidAccepted.cs" />
     <Compile Include="Patches\Patch_Current_Game.cs" />
     <Compile Include="Patches\Patch_Tradeable_Interactive.cs" />

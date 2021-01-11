@@ -24,6 +24,8 @@ namespace PlayerTrade.Net
         public const int AcceptLaborOfferPacketId = 12;
         public const int ConfirmLaborOfferPacketId = 13;
         public const int ReturnLentColonistsPacketId = 14;
+        public const int PlayerDisconnectedPacketId = 15;
+        public const int ConnectResponsePacketId = 16;
 
         public static Dictionary<int, Type> Packets = new Dictionary<int, Type>
         {
@@ -41,6 +43,8 @@ namespace PlayerTrade.Net
             {AcceptLaborOfferPacketId, typeof(PacketAcceptLaborOffer)},
             {ConfirmLaborOfferPacketId, typeof(PacketConfirmLaborOffer)},
             {ReturnLentColonistsPacketId, typeof(PacketReturnLentColonists)},
+            {PlayerDisconnectedPacketId, typeof(PacketPlayerDisconnected)},
+            {ConnectResponsePacketId, typeof(PacketConnectResponse)},
         };
 
         public abstract void Write(PacketBuffer buffer);

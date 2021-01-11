@@ -95,12 +95,6 @@ namespace TradeServer
             {
                 if (client.Player.Guid == e.Client.Player.Guid)
                     continue; // Skip self
-
-                await e.Client.SendPacket(new PacketColonyInfo
-                {
-                    Guid = client.Player.Guid,
-                    Player = client.Player
-                });
             }
 
             // Send queued packets
@@ -111,8 +105,21 @@ namespace TradeServer
         private void ClientOnDisconnected(object sender, Client.ClientEventArgs e)
         {
             if (e.Client.Player != null)
-                Console.WriteLine($"{e.Client.Player.Name} disconnected");
+                Log.Message($"{e.Client.Player.Name} disconnected");
             AuthenticatedClients.Remove(e.Client);
+
+            // Update other players on this player (so they can see they're no longer tradeable)
+            foreach (Client client in AuthenticatedClients)
+            {
+                if (e.Client.Player == null)
+                    continue; // Null player
+
+                _ = client.SendPacket(new PacketPlayerDisconnected
+                {
+                    Player = e.Client.Player.Guid,
+                    Reason = "Disconnected"
+                });
+            }
         }
 
         private void ClientOnColonyInfoReceived(object sender, Client.ClientEventArgs e)
