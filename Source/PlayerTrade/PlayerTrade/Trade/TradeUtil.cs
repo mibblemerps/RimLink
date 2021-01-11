@@ -4,7 +4,7 @@ using PlayerTrade.Net;
 using RimWorld;
 using Verse;
 
-namespace PlayerTrade
+namespace PlayerTrade.Trade
 {
     public static class TradeUtil
     {

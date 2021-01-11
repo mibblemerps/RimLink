@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using HarmonyLib;
+using PlayerTrade.Trade;
 using Verse;
 
 namespace PlayerTrade.Patches

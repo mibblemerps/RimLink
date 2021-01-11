@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using PlayerTrade.Trade;
 using Verse;
 
 namespace PlayerTrade.Net

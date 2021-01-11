@@ -8,7 +8,7 @@ using RimWorld;
 using UnityEngine;
 using Verse;
 
-namespace PlayerTrade
+namespace PlayerTrade.Trade
 {
     public class TradeOffer : IExposable
     {

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using PlayerTrade.Labor;
 using PlayerTrade.Net;
 using PlayerTrade.Raids;
+using PlayerTrade.Trade;
 using RimWorld;
 using UnityEngine;
 using Verse;

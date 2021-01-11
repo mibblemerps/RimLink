@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using PlayerTrade.Labor;
 using PlayerTrade.Raids;
+using PlayerTrade.Trade;
 using RimWorld;
 using Verse;
 

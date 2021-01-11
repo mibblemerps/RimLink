@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using PlayerTrade.Labor;
 using PlayerTrade.Net;
 using PlayerTrade.Raids;
+using PlayerTrade.Trade;
 using UnityEngine;
 using Verse;
 

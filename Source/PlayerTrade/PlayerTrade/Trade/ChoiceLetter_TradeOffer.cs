@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Verse;
 
-namespace PlayerTrade
+namespace PlayerTrade.Trade
 {
     public class ChoiceLetter_TradeOffer : ChoiceLetter
     {

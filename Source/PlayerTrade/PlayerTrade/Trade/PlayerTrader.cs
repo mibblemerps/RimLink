@@ -1,15 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using PlayerTrade.Net;
 using RimWorld;
-using UnityEngine;
 using Verse;
 
-namespace PlayerTrade
+namespace PlayerTrade.Trade
 {
     public class PlayerTrader : ITrader
     {

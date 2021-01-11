@@ -75,7 +75,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ChoiceLetter_TradeOffer.cs" />
+    <Compile Include="Trade\ChoiceLetter_TradeOffer.cs" />
     <Compile Include="Labor\ChoiceLetter_LaborOffer.cs" />
     <Compile Include="Labor\Dialog_LendColonist.cs" />
     <Compile Include="Labor\LaborOffer.cs" />
@@ -98,7 +98,7 @@
     <Compile Include="Patches\Patch_Tradeable_Interactive.cs" />
     <Compile Include="Raids\Dialog_PlaceBounty.cs" />
     <Compile Include="Dialog_PlayerComms.cs" />
-    <Compile Include="Dialog_TradeIntermission.cs" />
+    <Compile Include="Trade\Dialog_TradeIntermission.cs" />
     <Compile Include="HashUtil.cs" />
     <Compile Include="Log.cs" />
     <Compile Include="MathExtensions.cs" />
@@ -111,7 +111,7 @@
     <Compile Include="Net\PacketAcceptTrade.cs" />
     <Compile Include="Net\PacketBuffer.cs" />
     <Compile Include="Net\Client.cs" />
-    <Compile Include="Dialog_PlayerTrade.cs" />
+    <Compile Include="Trade\Dialog_PlayerTrade.cs" />
     <Compile Include="Net\PacketBufferExtensions.cs" />
     <Compile Include="Net\PacketColonyResources.cs" />
     <Compile Include="Net\PacketColonyInfo.cs" />
@@ -124,20 +124,16 @@
     <Compile Include="Net\PacketTriggerRaid.cs" />
     <Compile Include="Player.cs" />
     <Compile Include="Patches\Patch_CommsConsole.cs" />
-    <Compile Include="Patches\Patch_Game.cs" />
-    <Compile Include="Patches\Patch_ResourceCounter.cs" />
     <Compile Include="Patches\Patch_TickManager_DoSingleTick.cs" />
     <Compile Include="PlayerComms.cs" />
-    <Compile Include="PlayerTrade.cs" />
     <Compile Include="PlayerTradeMod.cs" />
-    <Compile Include="PlayerTrader.cs" />
+    <Compile Include="Trade\PlayerTrader.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="QuestNode_GenerateShuttleForSpecificThings.cs" />
     <Compile Include="Raids\BountyRaid.cs" />
     <Compile Include="Resources.cs" />
     <Compile Include="RimLinkComp.cs" />
-    <Compile Include="TradeOffer.cs" />
-    <Compile Include="TradeUtil.cs" />
+    <Compile Include="Trade\TradeOffer.cs" />
+    <Compile Include="Trade\TradeUtil.cs" />
     <Compile Include="LaunchUtil.cs" />
   </ItemGroup>
   <ItemGroup />

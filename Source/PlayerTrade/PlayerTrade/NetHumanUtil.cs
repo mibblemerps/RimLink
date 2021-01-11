@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using PlayerTrade.Net;
 using RimWorld;
 using Verse;
@@ -12,8 +9,6 @@ namespace PlayerTrade
 {
     public static class NetHumanUtil
     {
-        // private static FieldInfo GetsPermanent_PermanentDamageThreshold = typeof(HediffComp_GetsPermanent).GetField("permanentDamageThreshold", BindingFlags.NonPublic | BindingFlags.Instance);
-        // private static FieldInfo GetsPermanent_IsPermanentInt = typeof(HediffComp_GetsPermanent).GetField("isPermanentInt", BindingFlags.NonPublic | BindingFlags.Instance);
         private static FieldInfo GetsPermanent_PainCategory = typeof(HediffComp_GetsPermanent).GetField("painCategory", BindingFlags.NonPublic | BindingFlags.Instance);
 
         private static MethodInfo ImmunityHandler_TryAddImmunityRecord = typeof(ImmunityHandler).GetMethod("TryAddImmunityRecord", BindingFlags.NonPublic | BindingFlags.Instance);
