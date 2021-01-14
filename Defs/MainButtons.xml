@@ -1,0 +1,11 @@
+<Defs>
+	<MainButtonDef>
+		<defName>Server</defName>
+		<label>server</label>
+		<description>Trade server options.</description>
+		<tabWindowClass>PlayerTrade.MainTabWindow_Server</tabWindowClass>
+		<canBeTutorDenied>false</canBeTutorDenied>
+		<order>79</order>
+		<validWithoutMap>true</validWithoutMap>
+	</MainButtonDef>
+</Defs>
