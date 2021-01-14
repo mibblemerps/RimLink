@@ -78,6 +78,7 @@
     <Compile Include="Mail\Dialog_SendLetter.cs" />
     <Compile Include="Mail\MailWorker.cs" />
     <Compile Include="Mail\PacketMail.cs" />
+    <Compile Include="MainTabWindow_Server.cs" />
     <Compile Include="Patches\Patch_CameraDriver_Update.cs" />
     <Compile Include="Trade\ChoiceLetter_TradeOffer.cs" />
     <Compile Include="Labor\ChoiceLetter_LaborOffer.cs" />
