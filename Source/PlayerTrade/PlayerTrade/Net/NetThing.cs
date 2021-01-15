@@ -18,6 +18,8 @@ namespace PlayerTrade.Net
         public int StackCount;
         public int HitPoints;
 
+        public float[] Color;
+
         public NetThing MinifiedInnerThing;
 
         public QualityCategory? Quality;
@@ -40,6 +42,11 @@ namespace PlayerTrade.Net
             
             buffer.WriteInt(StackCount);
             buffer.WriteInt(HitPoints);
+
+            // Colors
+            buffer.WriteFloat(Color[0]);
+            buffer.WriteFloat(Color[1]);
+            buffer.WriteFloat(Color[2]);
 
             // Write minified inner thing (if applicable)
             if (MinifiedInnerThing == null)
@@ -75,6 +82,9 @@ namespace PlayerTrade.Net
             StackCount = buffer.ReadInt();
             HitPoints = buffer.ReadInt();
 
+            // Colors
+            Color = new []{ buffer.ReadFloat(), buffer.ReadFloat(), buffer.ReadFloat() };
+
             // Read minified inner thing
             if (buffer.ReadBoolean())
             {
@@ -99,6 +109,10 @@ namespace PlayerTrade.Net
             thing.stackCount = StackCount;
             thing.HitPoints = HitPoints;
 
+            var colorComp = thing.TryGetComp<CompColorable>();
+            if (colorComp != null)
+                colorComp.Color = Color.ToColor();
+
             if (thing is MinifiedThing minifiedThing)
                 minifiedThing.InnerThing = MinifiedInnerThing.ToThing();
 
@@ -121,6 +135,10 @@ namespace PlayerTrade.Net
             netThing.StackCount = thing.stackCount;
             netThing.HitPoints = thing.HitPoints;
 
+            var colorComp = thing.TryGetComp<CompColorable>();
+            if (colorComp != null)
+                netThing.Color = colorComp.Color.ToFloats();
+
             if (thing is MinifiedThing minifiedThing)
                 netThing.MinifiedInnerThing = FromThing(minifiedThing.InnerThing);
 
@@ -128,6 +146,20 @@ namespace PlayerTrade.Net
                 netThing.Quality = quality;
 
             return netThing;
+        }
+
+        [DebugAction("RimLink", "SendReceiveThing", actionType = DebugActionType.ToolMap, allowedGameStates = AllowedGameStates.PlayingOnMap)]
+        private static void DebugSendReceiveThing()
+        {
+            Thing thing = Find.CurrentMap.thingGrid.ThingsAt(UI.MouseCell()).FirstOrDefault(t => t.def.category == ThingCategory.Item);
+            if (thing == null)
+            {
+                Log.Message("Nothing here");
+                return;
+            }
+
+            TradeUtility.SpawnDropPod(UI.MouseCell(), Find.CurrentMap, FromThing(thing).ToThing());
+            thing.Destroy();
         }
     }
 }
