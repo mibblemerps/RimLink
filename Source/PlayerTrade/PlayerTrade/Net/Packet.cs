@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using PlayerTrade.Artifacts;
 using PlayerTrade.Labor.Packets;
 using PlayerTrade.Mail;
 
@@ -28,6 +29,7 @@ namespace PlayerTrade.Net
         public const int PlayerDisconnectedPacketId = 15;
         public const int ConnectResponsePacketId = 16;
         public const int MailPacketId = 17;
+        public const int ArtifactPacketId = 18;
 
         public static Dictionary<int, Type> Packets = new Dictionary<int, Type>
         {
@@ -48,6 +50,7 @@ namespace PlayerTrade.Net
             {PlayerDisconnectedPacketId, typeof(PacketPlayerDisconnected)},
             {ConnectResponsePacketId, typeof(PacketConnectResponse)},
             {MailPacketId, typeof(PacketMail)},
+            {ArtifactPacketId, typeof(PacketArtifact)},
         };
 
         public abstract void Write(PacketBuffer buffer);

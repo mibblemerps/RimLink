@@ -76,6 +76,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Anticheat\AnticheatUtil.cs" />
+    <Compile Include="Artifacts\ArtifactsWorker.cs" />
+    <Compile Include="Artifacts\ArtifactType.cs" />
+    <Compile Include="Artifacts\PacketArtifact.cs" />
     <Compile Include="Dialog_ConnectingToServer.cs" />
     <Compile Include="GameSettings.cs" />
     <Compile Include="Mail\Dialog_SendLetter.cs" />
@@ -83,6 +86,7 @@
     <Compile Include="Mail\PacketMail.cs" />
     <Compile Include="MainTabWindow_Server.cs" />
     <Compile Include="Patches\Patch_CameraDriver_Update.cs" />
+    <Compile Include="Patches\Patch_CompUsable.cs" />
     <Compile Include="Trade\ChoiceLetter_TradeOffer.cs" />
     <Compile Include="Labor\ChoiceLetter_LaborOffer.cs" />
     <Compile Include="Labor\Dialog_LendColonist.cs" />

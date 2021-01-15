@@ -32,6 +32,8 @@ namespace PlayerTrade
                         if (IsThingSameAs(launchThing, thing))
                         {
                             int toLaunch = Mathf.Min(thing.stackCount, count - launched);
+                            if (toLaunch <= 0)
+                                continue; // depleted stack
                             if (!dryRun)
                                 thing.SplitOff(toLaunch).Destroy(); // Remove amount
 

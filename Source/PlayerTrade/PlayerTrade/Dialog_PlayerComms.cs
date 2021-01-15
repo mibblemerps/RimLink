@@ -37,9 +37,9 @@ namespace PlayerTrade
         {
             GUI.BeginGroup(inRect);
             Rect rect1 = new Rect(0.0f, 0.0f, inRect.width / 2f, 70f);
-            Rect rect2 = new Rect(0.0f, rect1.yMax, rect1.width, 60f);
+            Rect rect2 = new Rect(0.0f, rect1.yMax, rect1.width, 70f);
             Rect rect3 = new Rect(inRect.width / 2f, 0.0f, inRect.width / 2f, 70f);
-            Rect rect4 = new Rect(inRect.width / 2f, rect1.yMax, rect1.width, 60f);
+            Rect rect4 = new Rect(inRect.width / 2f, rect1.yMax, rect1.width, 70f);
             Text.Font = GameFont.Medium;
             Widgets.Label(rect1, Negotiator.LabelCap);
             Text.Anchor = TextAnchor.UpperRight;
@@ -66,7 +66,7 @@ namespace PlayerTrade
             if (player.Weather != null)
                 sb.Append($" {WeatherDef.Named(player.Weather).LabelCap}");
             if (player.Temperature != int.MinValue)
-                sb.Append($", {GenText.ToStringTemperature(player.Temperature, "d")}");
+                sb.Append($", {GenText.ToStringTemperature(player.Temperature)}");
             sb.AppendLine();
             sb.Append($"Wealth: {("$" + Mathf.RoundToInt(player.Wealth)).Colorize(Color.green)}");
 

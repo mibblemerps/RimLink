@@ -24,7 +24,7 @@ namespace PlayerTrade
             {
                 try
                 {
-                    return RimLinkComp.Find().Client.Tcp.Connected;
+                    return RimLinkComp.Instance.Client.Tcp.Connected;
                 }
                 catch (Exception)
                 {

@@ -44,9 +44,17 @@ namespace PlayerTrade.Net
             buffer.WriteInt(HitPoints);
 
             // Colors
-            buffer.WriteFloat(Color[0]);
-            buffer.WriteFloat(Color[1]);
-            buffer.WriteFloat(Color[2]);
+            // if (Color != null)
+            // {
+            //     buffer.WriteBoolean(true);
+            //     buffer.WriteFloat(Color[0]);
+            //     buffer.WriteFloat(Color[1]);
+            //     buffer.WriteFloat(Color[2]);
+            // }
+            // else
+            // {
+            //     buffer.WriteBoolean(false);
+            // }
 
             // Write minified inner thing (if applicable)
             if (MinifiedInnerThing == null)
@@ -83,7 +91,8 @@ namespace PlayerTrade.Net
             HitPoints = buffer.ReadInt();
 
             // Colors
-            Color = new []{ buffer.ReadFloat(), buffer.ReadFloat(), buffer.ReadFloat() };
+            // if (buffer.ReadBoolean())
+            //     Color = new []{ buffer.ReadFloat(), buffer.ReadFloat(), buffer.ReadFloat() };
 
             // Read minified inner thing
             if (buffer.ReadBoolean())
@@ -109,9 +118,9 @@ namespace PlayerTrade.Net
             thing.stackCount = StackCount;
             thing.HitPoints = HitPoints;
 
-            var colorComp = thing.TryGetComp<CompColorable>();
-            if (colorComp != null)
-                colorComp.Color = Color.ToColor();
+            // var colorComp = thing.TryGetComp<CompColorable>();
+            // if (colorComp != null && Color != null)
+            //     colorComp.Color = Color.ToColor();
 
             if (thing is MinifiedThing minifiedThing)
                 minifiedThing.InnerThing = MinifiedInnerThing.ToThing();
@@ -135,9 +144,9 @@ namespace PlayerTrade.Net
             netThing.StackCount = thing.stackCount;
             netThing.HitPoints = thing.HitPoints;
 
-            var colorComp = thing.TryGetComp<CompColorable>();
-            if (colorComp != null)
-                netThing.Color = colorComp.Color.ToFloats();
+            // var colorComp = thing.TryGetComp<CompColorable>();
+            // if (colorComp != null && colorComp.Active)
+            //     netThing.Color = colorComp.Color.ToFloats();
 
             if (thing is MinifiedThing minifiedThing)
                 netThing.MinifiedInnerThing = FromThing(minifiedThing.InnerThing);
