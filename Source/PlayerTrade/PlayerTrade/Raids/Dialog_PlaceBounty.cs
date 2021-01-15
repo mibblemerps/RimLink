@@ -29,15 +29,15 @@ namespace PlayerTrade.Raids
         private static List<ArrivalMethod> _arrivalMethods = new List<ArrivalMethod>
         {
             new ArrivalMethod(PawnsArrivalModeDefOf.EdgeWalkIn, 0f, "Walk In"),
-            new ArrivalMethod(PawnsArrivalModeDefOf.EdgeDrop, 0.05f, "Edge Drop Pods", true),
-            new ArrivalMethod(PawnsArrivalModeDefOf.RandomDrop, 1f, "Random Drop Pods", true),
-            new ArrivalMethod(PawnsArrivalModeDefOf.CenterDrop, 3.5f, "Center Drop Pods", true),
+            new ArrivalMethod(PawnsArrivalModeDefOf.EdgeDrop, 0.04f, "Edge Drop Pods", true),
+            new ArrivalMethod(PawnsArrivalModeDefOf.RandomDrop, 0.33f, "Random Drop Pods", true),
+            new ArrivalMethod(PawnsArrivalModeDefOf.CenterDrop, 0.9f, "Center Drop Pods", true),
         };
 
         private static List<ArrivalSpeed> _arrivalSpeeds = new List<ArrivalSpeed>
         {
-            new ArrivalSpeed(0, 0.33f, "Immediate", true),
-            new ArrivalSpeed(2f, 0.2f, "2 hours", true),
+            new ArrivalSpeed(0, 0.25f, "Immediate", true),
+            new ArrivalSpeed(2f, 0.1f, "2 hours", true),
             new ArrivalSpeed(24f, 0f, "1 day"),
             new ArrivalSpeed(48f, -0.1f, "2 days"),
             new ArrivalSpeed(72f, -0.125f, "3 days"),
@@ -47,8 +47,8 @@ namespace PlayerTrade.Raids
         {
             new Strategy("StageThenAttack", "Prepare Then Attack", -0.1f),
             new Strategy("ImmediateAttack", "Immediate Attack", 0f),
-            new Strategy("ImmediateAttackSmart", "Immediate Attack Smart", 0.3f),
-            new Strategy("ImmediateAttackSappers", "Immediate Attack Sappers", 0.5f),
+            new Strategy("ImmediateAttackSmart", "Immediate Attack Smart", 0.15f),
+            new Strategy("ImmediateAttackSappers", "Immediate Attack Sappers", 0.36f),
             new Strategy("Siege", "Siege", 0.66f),
         };
 
@@ -130,7 +130,7 @@ namespace PlayerTrade.Raids
             }
 
             Rect strengthSliderRect = new Rect(0, stratRect.yMax + 10f, inRect.width, 35f);
-            _strength = Widgets.HorizontalSlider(strengthSliderRect, _strength, 20, DefaultMaxStrengthPercent, true, $"Raid Strength ({Mathf.RoundToInt(_strength)}%)", roundTo: 1f);
+            _strength = Widgets.HorizontalSlider(strengthSliderRect, _strength, 20, RimLinkComp.Instance.Client.GameSettings.RaidMaxStrengthPercent, true, $"Raid Strength ({Mathf.RoundToInt(_strength)}%)", roundTo: 1f);
 
             Rect dropdownsRect = new Rect(0, strengthSliderRect.yMax + 10f, inRect.width, 35f);
             // Arrival mode
@@ -257,7 +257,7 @@ namespace PlayerTrade.Raids
 
         private int CalculateCost()
         {
-            float cost = (_strength / 100f) * 2500f;
+            float cost = (_strength / 100f) * RimLinkComp.Instance.Client.GameSettings.RaidBasePrice;
             float multiplier = 1f;
             multiplier += _strategy.Cost;
             multiplier += _arrivalMode.Cost;
