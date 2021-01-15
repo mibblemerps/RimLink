@@ -15,13 +15,13 @@ namespace PlayerTrade.Anticheat
         {
             var msgBox = new Dialog_MessageBox("This server uses anticheat.\n\n" +
                                                "This will enable commitment mode and permanently disable developer mode on this save.\n\n" +
-                                               "This cannot be undone.");
+                                               "This cannot be undone.", title: "Anticheat");
 
             msgBox.buttonAText = "Confirm";
+            msgBox.buttonADestructive = true;
             msgBox.buttonAAction = () =>
             {
                 EnableAnticheat();
-                ApplyAnticheat();
                 msgBox.Close();
             };
 
@@ -40,8 +40,9 @@ namespace PlayerTrade.Anticheat
         public static void EnableAnticheat()
         {
             RimLinkComp.Find().Anticheat = true;
-
             Messages.Message("Anticheat enabled", MessageTypeDefOf.NeutralEvent, false);
+
+            ApplyAnticheat();
         }
 
         public static void ApplyAnticheat()

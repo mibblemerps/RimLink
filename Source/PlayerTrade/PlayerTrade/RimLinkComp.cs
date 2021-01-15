@@ -82,6 +82,10 @@ namespace PlayerTrade
                 Secret = BitConverter.ToString(System.Guid.NewGuid().ToByteArray()).Replace("-", "");
             }
 
+            // Apply anticheat
+            if (Anticheat)
+                AnticheatUtil.ApplyAnticheat();
+
             // Connect
             Log.Message("Connecting to: " + ip);
             Client = new Client(this);
