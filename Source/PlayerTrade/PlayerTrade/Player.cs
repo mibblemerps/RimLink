@@ -18,7 +18,7 @@ namespace PlayerTrade
         public int Wealth;
         public int Day;
         public string Weather;
-        public int Temperature;
+        public int Temperature = int.MinValue;
         public bool TradeableNow;
 
         public List<Faction> LocalFactions;
@@ -28,18 +28,19 @@ namespace PlayerTrade
             Guid = guid;
         }
 
-        public static Player Self()
+        public static Player Self(bool mapIndependent = false)
         {
-            RimLinkComp comp = RimLinkComp.Find();
-            var player = new Player(comp.Guid)
+            RimLinkComp comp = RimLinkComp.Instance;
+            var player = new Player(comp.Guid);
+            player.Name = RimWorld.Faction.OfPlayer.Name;
+            player.TradeableNow = CommsConsoleUtility.PlayerHasPoweredCommsConsole();
+            player.Wealth = Mathf.RoundToInt(TradeUtil.TotalWealth());
+            player.Day = Mathf.FloorToInt(Current.Game.tickManager.TicksGame / 60000f);
+            if (!mapIndependent)
             {
-                Name = RimWorld.Faction.OfPlayer.Name,
-                TradeableNow = CommsConsoleUtility.PlayerHasPoweredCommsConsole(),
-                Wealth = Mathf.RoundToInt(TradeUtil.TotalWealth()),
-                Day = Mathf.FloorToInt(Current.Game.tickManager.TicksGame / 60000f),
-                Weather = Find.CurrentMap.weatherManager.curWeather.defName,
-                Temperature = Mathf.RoundToInt(Find.CurrentMap.mapTemperature.OutdoorTemp),
-            };
+                player.Weather = Find.CurrentMap.weatherManager.curWeather.defName;
+                player.Temperature = Mathf.RoundToInt(Find.CurrentMap.mapTemperature.OutdoorTemp);
+            }
 
             // Populate factions
             player.LocalFactions = new List<Faction>();

@@ -102,5 +102,23 @@ namespace PlayerTrade.Anticheat
                 Log.Error("(Anticheat) Failed to reset dev mode!", e);
             }
         }
+
+        [DebugAction("RimLink", "ApplyAnticheat", actionType = DebugActionType.Action, allowedGameStates = AllowedGameStates.Playing)]
+        private static void DebugApplyAnticheat()
+        {
+            ApplyAnticheat();
+        }
+
+        [DebugAction("RimLink", "EnableAnticheat", actionType = DebugActionType.Action, allowedGameStates = AllowedGameStates.Playing)]
+        private static void DebugEnableAnticheat()
+        {
+            if (RimLinkComp.Instance.Anticheat)
+            {
+                Messages.Message("Anticheat is already enabled.", MessageTypeDefOf.NeutralEvent, false);
+                return;
+            }
+
+            ShowEnableAnticheatDialog();
+        }
     }
 }

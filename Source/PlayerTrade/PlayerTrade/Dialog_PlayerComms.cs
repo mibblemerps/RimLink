@@ -61,9 +61,19 @@ namespace PlayerTrade
 
         private string GetInfoText(Player player)
         {
-            return $"{player.Name.Colorize(ColoredText.FactionColor_Neutral)}\n" +
-                   $"Day {player.Day}, {(WeatherDef.Named(player.Weather)).LabelCap}, {GenText.ToStringTemperature(player.Temperature)}\n" +
-                   $"Wealth: {("$" + Mathf.RoundToInt(player.Wealth)).Colorize(Color.green)}";
+            var sb = new StringBuilder($"{player.Name.Colorize(ColoredText.FactionColor_Neutral)}\n");
+            sb.Append($"Day {player.Day}");
+            if (player.Weather != null)
+                sb.Append($" {WeatherDef.Named(player.Weather).LabelCap}");
+            if (player.Temperature != int.MinValue)
+                sb.Append($", {GenText.ToStringTemperature(player.Temperature, "d")}");
+            sb.AppendLine();
+            sb.Append($"Wealth: {("$" + Mathf.RoundToInt(player.Wealth)).Colorize(Color.green)}");
+
+            if (Prefs.DevMode)
+                sb.Append("\nGuid: " + player.Guid);
+
+            return sb.ToString();
         }
 
         public static DiaNode RootNodeForPlayer(Pawn negotiator, Player player)

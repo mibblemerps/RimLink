@@ -18,7 +18,7 @@ namespace PlayerTrade
         /// The last known instance of the RimLink comp. This should never be used for normally accessing RimLink (use <see cref="Find"/> instead).<br />
         /// This is used for the shutdown procedure.
         /// </summary>
-        public static RimLinkComp LastInstance;
+        public static RimLinkComp Instance;
 
         /// <summary>
         /// Uniquely identifies this player on the server(s) it plays on.
@@ -47,12 +47,13 @@ namespace PlayerTrade
 
         public RimLinkComp(Game game)
         {
-
         }
 
         public override void FinalizeInit()
         {
             base.FinalizeInit();
+
+            Instance = this;
 
             Log.Message("RimLink comp init");
 
@@ -89,12 +90,14 @@ namespace PlayerTrade
             // Connect
             Log.Message("Connecting to: " + ip);
             Client = new Client(this);
+            Log.Message("test 0");
             try
             {
                 await Client.Connect(PlayerTradeMod.Instance.Settings.ServerIp);
             }
             catch (Exception e)
             {
+                Log.Error($"Server connection failed", e);
                 var connectionFailedMsgBox = new Dialog_MessageBox(e.Message, title: "Server Connection Failed",
                     buttonAText: "Quit to Main Menu", buttonAAction: GenScene.GoToMainMenu,
                     buttonBText: "Close");
@@ -162,16 +165,10 @@ namespace PlayerTrade
         /// Find (get or create) the RimLink game component.
         /// </summary>
         /// <returns></returns>
+        [Obsolete("Use Instance instead")]
         public static RimLinkComp Find()
         {
-            RimLinkComp comp = Current.Game.GetComponent<RimLinkComp>();
-            if (comp == null)
-            {
-                comp = new RimLinkComp(Current.Game);
-                Current.Game.components.Add(comp);
-            }
-            LastInstance = comp;
-            return comp;
+            return Instance;
         }
 
         /// <summary>

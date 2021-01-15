@@ -55,7 +55,7 @@ namespace PlayerTrade.Net
         public Client(RimLinkComp rimLinkComp)
         {
             RimLinkComp = rimLinkComp;
-            MarkDirty(false);
+            MarkDirty(false, true);
 
             PlayerUpdated += OnPlayerUpdated;
             PlayerConnected += OnPlayerConnected;
@@ -119,9 +119,9 @@ namespace PlayerTrade.Net
             Log.Message($"Disconnected from Trade server");
         }
 
-        public void MarkDirty(bool sendPacket = true)
+        public void MarkDirty(bool sendPacket = true, bool mapIndependent = false)
         {
-            Player = Player.Self();
+            Player = Player.Self(mapIndependent);
             if (sendPacket)
                 _ = SendColonyInfo();
         }

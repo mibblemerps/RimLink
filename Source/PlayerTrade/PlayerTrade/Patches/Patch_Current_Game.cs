@@ -14,15 +14,15 @@ namespace PlayerTrade.Patches
     {
         private static void Postfix()
         {
-            if (RimLinkComp.LastInstance != null)
+            if (RimLinkComp.Instance != null)
             {
                 Log.Message("Game ended - shutdown RimLink.");
                 // Disconnect
                 try
                 {
-                    if (RimLinkComp.LastInstance.Client != null)
-                        RimLinkComp.LastInstance.Client.Disconnect().Wait(700);
-                    RimLinkComp.LastInstance.Client = null;
+                    if (RimLinkComp.Instance.Client != null)
+                        RimLinkComp.Instance.Client.Disconnect().Wait(700);
+                    RimLinkComp.Instance.Client = null;
                 }
                 catch (Exception e)
                 {
@@ -31,7 +31,7 @@ namespace PlayerTrade.Patches
 
                 AnticheatUtil.ShutdownAnticheat();
 
-                RimLinkComp.LastInstance = null;
+                RimLinkComp.Instance = null;
             }
         }
     }
