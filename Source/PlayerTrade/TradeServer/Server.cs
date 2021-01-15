@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 using PlayerTrade;
 using PlayerTrade.Net;
 
@@ -12,12 +14,22 @@ namespace TradeServer
 {
     public class Server
     {
+        public const string GameSettingsFile = "game-settings.json";
+
         public static int ProtocolVersion = 1;
 
         public List<Client> AuthenticatedClients = new List<Client>();
+
+        public GameSettings GameSettings;
         public QueuedPacketStorage QueuedPacketStorage = new QueuedPacketStorage();
 
         protected TcpListener Listener;
+
+        public Server()
+        {
+            LoadSettings();
+            SaveSettings();
+        }
 
         public async Task Run(int port = 35562)
         {
@@ -46,7 +58,7 @@ namespace TradeServer
         public string GetName(string guid)
         {
             var client = GetClient(guid);
-            if (client == null || client.Player == null || client.Player.Name == null)
+            if (client?.Player?.Name == null)
                 return "{" + guid + "}";
             return client.Player.Name;
         }
@@ -85,6 +97,42 @@ namespace TradeServer
             }
         }
 
+        public void LoadSettings()
+        {
+            try
+            {
+                GameSettings = JsonConvert.DeserializeObject<GameSettings>(File.ReadAllText("game-settings.json"));
+            }
+            catch (Exception e)
+            {
+                Log.Warn($"Couldn't load game settings ({e.Message}). A new game settings file will be used instead.");
+                GameSettings = new GameSettings();
+
+                // Attempt to backup old settings - if they exist
+                try
+                {
+                    if (File.Exists(GameSettingsFile))
+                        File.Copy(GameSettingsFile, GameSettingsFile + ".backup", true);
+                }
+                catch (Exception) { /* ignored */ }
+            }
+        }
+
+        public void SaveSettings()
+        {
+            try
+            {
+                File.WriteAllText(GameSettingsFile, JsonConvert.SerializeObject(GameSettings, new JsonSerializerSettings
+                {
+                    Formatting = Formatting.Indented
+                }));
+            }
+            catch (Exception e)
+            {
+                Log.Error($"Couldn't save game settings!", e);
+            }
+        }
+
         private async void ClientOnAuthenticated(object sender, Client.ClientEventArgs e)
         {
             Log.Message($"{e.Client.Player.Name} connected");
@@ -95,6 +143,11 @@ namespace TradeServer
             {
                 if (client.Player.Guid == e.Client.Player.Guid)
                     continue; // Skip self
+                await e.Client.SendPacket(new PacketColonyInfo
+                {
+                    Guid = client.Player.Guid,
+                    Player = client.Player
+                });
             }
 
             // Send queued packets

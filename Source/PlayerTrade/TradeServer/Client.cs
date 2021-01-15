@@ -83,10 +83,12 @@ namespace TradeServer
                         var players = new List<Player>();
                         foreach (var client in Program.Server.AuthenticatedClients.Where(c => c.Player != null))
                             players.Add(client.Player);
+
                         await SendPacket(new PacketConnectResponse
                         {
                             Success = true,
-                            ConnectedPlayers = players
+                            ConnectedPlayers = players,
+                            Settings = Program.Server.GameSettings
                         });
 
                         State = ClientState.Normal;

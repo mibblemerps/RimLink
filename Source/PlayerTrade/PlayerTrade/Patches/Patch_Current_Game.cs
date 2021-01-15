@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using HarmonyLib;
+using PlayerTrade.Anticheat;
 using Verse;
 
 namespace PlayerTrade.Patches
@@ -27,6 +28,8 @@ namespace PlayerTrade.Patches
                 {
                     Log.Warn("Failed to shutdown RimLink! " + e.Message);
                 }
+
+                AnticheatUtil.ShutdownAnticheat();
 
                 RimLinkComp.LastInstance = null;
             }

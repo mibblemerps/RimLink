@@ -11,6 +11,7 @@ namespace PlayerTrade.Net
         public bool Success;
         public string FailReason;
         public List<Player> ConnectedPlayers = new List<Player>();
+        public GameSettings Settings;
 
         public override void Write(PacketBuffer buffer)
         {
@@ -19,6 +20,7 @@ namespace PlayerTrade.Net
             buffer.WriteInt(ConnectedPlayers.Count);
             foreach (var connectedPlayer in ConnectedPlayers)
                 buffer.Write(connectedPlayer);
+            buffer.Write(Settings);
         }
 
         public override void Read(PacketBuffer buffer)
@@ -29,6 +31,7 @@ namespace PlayerTrade.Net
             ConnectedPlayers = new List<Player>(playerCount);
             for (int i = 0; i < playerCount; i++)
                 ConnectedPlayers.Add(buffer.Read<Player>());
+            Settings = buffer.Read<GameSettings>();
         }
     }
 }

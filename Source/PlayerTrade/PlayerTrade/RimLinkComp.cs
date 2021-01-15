@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using PlayerTrade.Anticheat;
 using PlayerTrade.Labor;
 using PlayerTrade.Mail;
 using PlayerTrade.Net;
@@ -27,6 +28,11 @@ namespace PlayerTrade
         /// A secret to prevent other people from impersonating our GUID.
         /// </summary>
         public string Secret;
+
+        /// <summary>
+        /// Is anticheat applied to this save?
+        /// </summary>
+        public bool Anticheat;
 
         public List<TradeOffer> TradeOffersPendingFulfillment = new List<TradeOffer>();
         public List<BountyRaid> RaidsPending = new List<BountyRaid>();
@@ -79,13 +85,26 @@ namespace PlayerTrade
             // Connect
             Log.Message("Connecting to: " + ip);
             Client = new Client(this);
-            await Client.Connect(PlayerTradeMod.Instance.Settings.ServerIp);
+            try
+            {
+                await Client.Connect(PlayerTradeMod.Instance.Settings.ServerIp);
+            }
+            catch (Exception e)
+            {
+                var connectionFailedMsgBox = new Dialog_MessageBox(e.Message, title: "Server Connection Failed",
+                    buttonAText: "Quit to Main Menu", buttonAAction: GenScene.GoToMainMenu,
+                    buttonBText: "Close");
+                connectionFailedMsgBox.forcePause = true;
+                Verse.Find.WindowStack.Add(connectionFailedMsgBox);
+            }
 
             Log.Message("Player trade active. GUID: " + Guid);
 
-            // Now tradable
-            Client.IsTradableNow = true;
+            if (!Anticheat && Client.GameSettings.Anticheat)
+                AnticheatUtil.ShowEnableAnticheatDialog();
 
+            // Now tradable todo: is this needed??
+            Client.IsTradableNow = true;
         }
 
         public override void GameComponentTick()
@@ -132,6 +151,7 @@ namespace PlayerTrade
             Scribe_Collections.Look(ref RaidsPending, "raids_pending");
             Scribe_Collections.Look(ref ActiveLaborOffers, "active_labor_offers");
             Scribe_Collections.Look(ref PawnsToRemove, "pawns_to_remove", LookMode.Reference);
+            Scribe_Values.Look(ref Anticheat, "anticheat", false, true);
         }
 
         /// <summary>

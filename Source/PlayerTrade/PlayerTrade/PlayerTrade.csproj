@@ -75,6 +75,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Anticheat\AnticheatUtil.cs" />
+    <Compile Include="Dialog_ConnectingToServer.cs" />
+    <Compile Include="GameSettings.cs" />
     <Compile Include="Mail\Dialog_SendLetter.cs" />
     <Compile Include="Mail\MailWorker.cs" />
     <Compile Include="Mail\PacketMail.cs" />

@@ -13,6 +13,9 @@ namespace PlayerTrade.Raids
 {
     public class Dialog_PlaceBounty : Window
     {
+        public const float DefaultBasePrice = 1000f;
+        public const int DefaultMaxStrengthPercent = 500;
+
         public Player Player;
 
         public override Vector2 InitialSize => new Vector2(512f, 512f);
@@ -127,7 +130,7 @@ namespace PlayerTrade.Raids
             }
 
             Rect strengthSliderRect = new Rect(0, stratRect.yMax + 10f, inRect.width, 35f);
-            _strength = Widgets.HorizontalSlider(strengthSliderRect, _strength, 20, 400, true, $"Raid Strength ({Mathf.RoundToInt(_strength)}%)", roundTo: 1f);
+            _strength = Widgets.HorizontalSlider(strengthSliderRect, _strength, 20, DefaultMaxStrengthPercent, true, $"Raid Strength ({Mathf.RoundToInt(_strength)}%)", roundTo: 1f);
 
             Rect dropdownsRect = new Rect(0, strengthSliderRect.yMax + 10f, inRect.width, 35f);
             // Arrival mode

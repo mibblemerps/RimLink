@@ -27,6 +27,7 @@ namespace PlayerTrade.Net
 
         public Player Player { get; private set; }
 
+        public GameSettings GameSettings;
         public Dictionary<string, Player> Players = new Dictionary<string, Player>();
 
         public string Guid => RimLinkComp.Guid; // Unique user ID
@@ -46,6 +47,8 @@ namespace PlayerTrade.Net
                 MarkDirty();
             }
         }
+
+        private Task _clientTcpTask;
 
         private bool _isTradableNow;
 
@@ -70,6 +73,7 @@ namespace PlayerTrade.Net
 
             PacketReceived += OnPacketReceived;
 
+            // Send connect request
             await SendPacket(new PacketConnect
             {
                 ProtocolVersion = 1,
@@ -78,7 +82,23 @@ namespace PlayerTrade.Net
                 Player = Player
             });
 
-            Run();
+            _clientTcpTask = Run();
+
+            // Await connection response
+            PacketConnectResponse response = (PacketConnectResponse) await AwaitPacket(packet => packet is PacketConnectResponse, 1000);
+            if (response == null)
+            {
+                Tcp.Close();
+                throw new Exception("No connect response received. Is the server running and reachable?");
+            }
+
+            if (!response.Success)
+            {
+                Tcp.Close();
+                throw new Exception("Server refused connection: " + response.FailReason);
+            }
+
+            GameSettings = response.Settings;
         }
 
         public async Task Run()
@@ -158,6 +178,7 @@ namespace PlayerTrade.Net
             });
 
             // Await response
+            // todo: use AwaitPacket
             PacketColonyResources packet = await _awaitColonyResources.Task;
             _awaitColonyResources = new TaskCompletionSource<PacketColonyResources>(); // reset task completion source for future requests
             return packet;
@@ -170,11 +191,32 @@ namespace PlayerTrade.Net
             await SendPacket(new PacketColonyResources(Guid, resources));
         }
 
-        public async Task<Packet> AwaitPacket(PacketPredicate predicate)
+        public async Task<Packet> AwaitPacket(PacketPredicate predicate, int timeout = 0)
         {
             var source = new TaskCompletionSource<Packet>();
             AwaitingPackets.Add(predicate, source);
-            return await source.Task;
+
+            if (timeout > 0)
+            {
+                if (await Task.WhenAny(source.Task, Task.Delay(timeout)) == source.Task)
+                {
+                    // Success
+                    Packet result = await source.Task;
+                    AwaitingPackets.Remove(predicate);
+                    return result;
+                }
+
+                // Timed out
+                return null;
+
+            }
+            else
+            {
+                // No timeout
+                Packet result = await source.Task;
+                AwaitingPackets.Remove(predicate);
+                return result;
+            }
         }
 
         private async void OnPacketReceived(object sender, PacketReceivedEventArgs e)
