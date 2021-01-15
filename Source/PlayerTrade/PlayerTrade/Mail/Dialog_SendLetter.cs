@@ -27,6 +27,7 @@ namespace PlayerTrade.Mail
             Player = player;
 
             doCloseX = true;
+            forcePause = true;
         }
 
         public override void DoWindowContents(Rect inRect)
