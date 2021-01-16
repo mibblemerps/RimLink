@@ -88,5 +88,12 @@ namespace PlayerTrade
 
             return true;
         }
+
+        public static int LaunchableThingCount(Map map, ThingDef def)
+        {
+            return TradeUtility.AllLaunchableThingsForTrade(map)
+                .Where(t => t.def == def)
+                .Sum((t => t.stackCount));
+        }
     }
 }

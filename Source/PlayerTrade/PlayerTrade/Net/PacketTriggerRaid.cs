@@ -11,7 +11,7 @@ namespace PlayerTrade.Net
     {
         public BountyRaid Raid;
 
-        public override bool ShouldQueue => false;
+        public override bool ShouldQueue => true;
 
         public override void Write(PacketBuffer buffer)
         {

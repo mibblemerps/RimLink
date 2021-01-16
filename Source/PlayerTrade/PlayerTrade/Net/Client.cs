@@ -266,13 +266,8 @@ namespace PlayerTrade.Net
                 case Packet.TriggerRaidPacketId:
                     PacketTriggerRaid raidPacket = (PacketTriggerRaid) e.Packet;
                     Log.Message($"Received raid from {GetName(raidPacket.Raid.From)}");
-                    RimLinkComp.Find().RaidsPending.Add(raidPacket.Raid);
+                    RimLinkComp.Instance.RaidsPending.Add(raidPacket.Raid);
                     raidPacket.Raid.InformTargetBountyPlaced();
-                    await SendPacket(new PacketRaidAccepted
-                    {
-                        For = raidPacket.Raid.From,
-                        Id = raidPacket.Raid.Id
-                    });
                     break;
             }
         }

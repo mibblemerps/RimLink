@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using PlayerTrade.Trade;
 using RimWorld;
 using RimWorld.QuestGen;
 using UnityEngine;
@@ -19,6 +20,8 @@ namespace PlayerTrade.Raids
         public Player Player;
 
         public override Vector2 InitialSize => new Vector2(512f, 512f);
+
+        private int _playerSilver;
 
         private Player.Faction _selectedFaction;
         private float _strength = 100f;
@@ -57,6 +60,9 @@ namespace PlayerTrade.Raids
             Player = player;
             _selectedFaction = player.LocalFactions.FirstOrDefault(faction => faction.Goodwill < 0f);
             doCloseX = true;
+            forcePause = true;
+
+            _playerSilver = LaunchUtil.LaunchableThingCount(Find.CurrentMap, ThingDefOf.Silver);
         }
 
         public override void PreOpen()
@@ -171,15 +177,22 @@ namespace PlayerTrade.Raids
             }
 
             int cost = CalculateCost();
+            bool insufficientSilver = cost > _playerSilver;
             Rect costRect = new Rect(0, dropdownsRect.yMax + 10f, inRect.width, 35f);
             Text.Font = GameFont.Medium;
-            Widgets.Label(costRect, "Cost: " + ("$" + cost).Colorize(ColoredText.CurrencyColor));
+            Widgets.Label(costRect, "Cost: " + ("$" + cost).Colorize(insufficientSilver ? ColoredText.RedReadable : ColoredText.CurrencyColor));
+            Text.Font = GameFont.Tiny;
+            Rect insufficientSilverRect = new Rect(0, costRect.yMax + 5f, inRect.width, 30f);
+            if (insufficientSilver)
+                Widgets.Label(insufficientSilverRect, "Insufficient silver");
             Text.Font = GameFont.Small;
 
             Rect sendRect = inRect.BottomPartPixels(35f).RightPartPixels(200f);
             sendRect.position -= new Vector2(10f, 10f);
-            if (Widgets.ButtonText(sendRect, "Place Bounty"))
+
+            if (Widgets.ButtonText(sendRect, "Place Bounty", active: !insufficientSilver))
             {
+                // Double check silver incase it somehow changed while paused
                 if (!TradeUtility.ColonyHasEnoughSilver(Find.CurrentMap, cost))
                 {
                     Find.WindowStack.Add(new Dialog_MessageBox("Ensure silver is located around a powered orbital trade beacon.", "Close", title: "Insufficient Silver"));
@@ -271,7 +284,7 @@ namespace PlayerTrade.Raids
             var raid = new BountyRaid
             {
                 Id = Guid.NewGuid().ToString(),
-                From = RimLinkComp.Find().Guid,
+                From = RimLinkComp.Instance.Guid,
                 ArrivalMode = _arrivalMode.Def,
                 Strategy = _strategy.DefName,
                 Strength = _strength / 100f,

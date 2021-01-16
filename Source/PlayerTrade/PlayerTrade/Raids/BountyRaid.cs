@@ -42,15 +42,11 @@ namespace PlayerTrade.Raids
 
         public async Task<bool> Send(string target)
         {
-            await RimLinkComp.Find().Client.SendPacket(new PacketTriggerRaid
+            await RimLinkComp.Instance.Client.SendPacket(new PacketTriggerRaid
             {
                 For = target,
                 Raid = this
             });
-
-            // Await acceptance
-            await RimLinkComp.Find().Client.AwaitPacket(p =>
-                p is PacketRaidAccepted raidAcceptPacket && (raidAcceptPacket.Id == Id));
 
             return true;
         }
