@@ -255,6 +255,10 @@ namespace PlayerTrade.Net
                     RimLinkComp.Instance.RaidsPending.Add(raidPacket.Raid);
                     raidPacket.Raid.InformTargetBountyPlaced();
                     break;
+
+                case Packet.AnnouncementPacketId:
+                    AnnouncementUtility.Show((PacketAnnouncement) e.Packet);
+                    break;
             }
         }
 

@@ -75,6 +75,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AnnouncementUtility.cs" />
     <Compile Include="Anticheat\AnticheatUtil.cs" />
     <Compile Include="Artifacts\ArtifactsWorker.cs" />
     <Compile Include="Artifacts\ArtifactType.cs" />
@@ -85,6 +86,7 @@
     <Compile Include="Mail\MailWorker.cs" />
     <Compile Include="Mail\PacketMail.cs" />
     <Compile Include="MainTabWindow_Server.cs" />
+    <Compile Include="Net\PacketAnnouncement.cs" />
     <Compile Include="Patches\Patch_CameraDriver_Update.cs" />
     <Compile Include="Patches\Patch_CompUsable.cs" />
     <Compile Include="Trade\ChoiceLetter_TradeOffer.cs" />

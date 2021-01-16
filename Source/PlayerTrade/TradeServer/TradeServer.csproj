@@ -51,6 +51,7 @@
     <Compile Include="ClientState.cs" />
     <Compile Include="Commands\Caller.cs" />
     <Compile Include="Commands\Command.cs" />
+    <Compile Include="Commands\CommandAnnouncement.cs" />
     <Compile Include="Commands\CommandException.cs" />
     <Compile Include="Commands\CommandKick.cs" />
     <Compile Include="Commands\CommandList.cs" />

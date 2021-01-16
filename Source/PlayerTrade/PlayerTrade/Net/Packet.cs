@@ -29,6 +29,7 @@ namespace PlayerTrade.Net
         public const int ConnectResponsePacketId = 16;
         public const int MailPacketId = 17;
         public const int ArtifactPacketId = 18;
+        public const int AnnouncementPacketId = 19;
 
         public static Dictionary<int, Type> Packets = new Dictionary<int, Type>
         {
@@ -49,6 +50,7 @@ namespace PlayerTrade.Net
             {ConnectResponsePacketId, typeof(PacketConnectResponse)},
             {MailPacketId, typeof(PacketMail)},
             {ArtifactPacketId, typeof(PacketArtifact)},
+            {AnnouncementPacketId, typeof(PacketAnnouncement)},
         };
 
         public abstract void Write(PacketBuffer buffer);
