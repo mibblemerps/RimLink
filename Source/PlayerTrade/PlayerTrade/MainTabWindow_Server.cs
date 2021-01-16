@@ -18,7 +18,16 @@ namespace PlayerTrade
         {
             base.DoWindowContents(inRect);
 
-            Widgets.ButtonText(inRect.TopPartPixels(30f).RightPart(0.33f), "Admin"); // todo: admin
+            if (Widgets.ButtonText(inRect.TopPartPixels(30f).RightPart(0.33f), "Reinit"))
+            {
+                try
+                {
+                    RimLinkComp.Instance.Client.Tcp.Close();
+                }
+                catch (Exception) {}
+
+                RimLinkComp.Instance.Init();
+            }
         }
 
         public override void PreOpen()
