@@ -78,6 +78,10 @@ namespace PlayerTrade.Anticheat
                 // ReSharper disable once PossibleNullReferenceException
                 typeof(DevModePermanentlyDisabledUtility).GetField("disabled",
                     BindingFlags.Static | BindingFlags.NonPublic).SetValue(null, disabled);
+
+                // ReSharper disable once PossibleNullReferenceException
+                typeof(DevModePermanentlyDisabledUtility).GetField("initialized",
+                    BindingFlags.Static | BindingFlags.NonPublic).SetValue(null, true);
             }
             catch (Exception e)
             {
