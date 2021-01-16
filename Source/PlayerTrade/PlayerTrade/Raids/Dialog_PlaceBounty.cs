@@ -182,17 +182,17 @@ namespace PlayerTrade.Raids
             {
                 if (!TradeUtility.ColonyHasEnoughSilver(Find.CurrentMap, cost))
                 {
-                    Find.WindowStack.Add(new Dialog_MessageBox("Insufficient silver.\n\nEnsure silver is located around a powered orbital trade beacon.", "Close", buttonADestructive: true));
+                    Find.WindowStack.Add(new Dialog_MessageBox("Ensure silver is located around a powered orbital trade beacon.", "Close", title: "Insufficient Silver"));
                     return;
                 }
 
                 Log.Message("Send bounty! Cost: " + cost);
+                TradeUtility.LaunchSilver(Find.CurrentMap, cost);
 
                 var raid = CreateRaidOptions();
                 raid.Send(Player.Guid).ContinueWith((t) =>
                 {
                     Messages.Message($"Bounty placed against {Player.Name}. {_selectedFaction.Name} will handle the matter {(_arrivalSpeed.Hours < 24 ? "shortly" : "soon")}.", MessageTypeDefOf.NeutralEvent);
-                    TradeUtility.LaunchSilver(Find.CurrentMap, cost);
                 });
                 
                 SoundDefOf.ExecuteTrade.PlayOneShotOnCamera();
