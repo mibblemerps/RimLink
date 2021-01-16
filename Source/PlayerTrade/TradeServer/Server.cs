@@ -40,13 +40,21 @@ namespace TradeServer
 
             while (true)
             {
-                TcpClient tcp = await Listener.AcceptTcpClientAsync();
-                Log.Message($"Accepted TCP connection from {tcp.Client.RemoteEndPoint}");
-                var client = new Client(tcp);
-                client.Authenticated += ClientOnAuthenticated;
-                client.Disconnected += ClientOnDisconnected;
-                client.ColonyInfoReceived += ClientOnColonyInfoReceived;
-                _ = client.Run();
+                try
+                {
+                    TcpClient tcp = await Listener.AcceptTcpClientAsync();
+                    Log.Message($"Accepted TCP connection from {tcp.Client.RemoteEndPoint}");
+
+                    var client = new Client(tcp);
+                    client.Authenticated += ClientOnAuthenticated;
+                    client.Disconnected += ClientOnDisconnected;
+                    client.ColonyInfoReceived += ClientOnColonyInfoReceived;
+                    _ = client.Run();
+                }
+                catch (Exception e)
+                {
+                    Log.Error("Exception in accept client loop!", e);
+                }
             }
         }
 

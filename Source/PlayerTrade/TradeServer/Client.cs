@@ -69,7 +69,7 @@ namespace TradeServer
 
         private async void OnPacketReceived(object sender, PacketReceivedEventArgs e)
         {
-            Log.Message($"Packet received {e.Packet.GetType().Name} from {Tcp.Client.RemoteEndPoint}");
+            //Log.Message($"Packet received {e.Packet.GetType().Name} from {(Player == null ? Tcp.Client.RemoteEndPoint.ToString() : Player.Name)}");
 
             if (State == ClientState.Auth)
             {
