@@ -13,6 +13,7 @@ namespace PlayerTrade.Net
     public class Connection
     {
         public event EventHandler<PacketReceivedEventArgs> PacketReceived;
+        public event EventHandler Disconnected;
 
         public TcpClient Tcp;
         public NetworkStream Stream;
@@ -55,13 +56,27 @@ namespace PlayerTrade.Net
             } catch (Exception){}
 
             Tcp?.Close();
+            //Disconnected?.Invoke(this, EventArgs.Empty);
         }
 
         public async Task<Packet> ReceivePacket()
         {
+            int readByteCount = 0;
+
             byte[] buffer = new byte[8];
-            // Read packet ID and length
-            await Stream.ReadAsync(buffer, 0, 8);
+            try
+            {
+                // Read packet ID and length
+                readByteCount = await Stream.ReadAsync(buffer, 0, 8);
+            }
+            catch (Exception) {}
+
+            if (readByteCount == 0)
+            {
+                Disconnected?.Invoke(this, EventArgs.Empty);
+                return null;
+            }
+
             int packetId = BitConverter.ToInt32(buffer, 0);
             int packetLength = BitConverter.ToInt32(buffer, 4);
 
@@ -69,6 +84,7 @@ namespace PlayerTrade.Net
             {
                 // Special disconnect packet ID. Handy because we get zeros when things go wrong so this just triggers a disconnect
                 Tcp.Close();
+                Disconnected?.Invoke(this, EventArgs.Empty);
                 return null;
             }
 
@@ -81,7 +97,20 @@ namespace PlayerTrade.Net
             // Read packet content
             byte[] packetContentBuffer = new byte[packetLength];
             if (packetLength > 0)
-                await Stream.ReadAsync(packetContentBuffer, 0, packetLength);
+            {
+                readByteCount = 0;
+                try
+                {
+                    readByteCount = await Stream.ReadAsync(packetContentBuffer, 0, packetLength);
+                }
+                catch (Exception) {}
+                if (readByteCount == 0)
+                {
+                    Log.Warn("Unexpected end of stream");
+                    Disconnected?.Invoke(this, EventArgs.Empty);
+                    return null;
+                }
+            }
 
             // Instantiate packet
             Packet packet = (Packet) Activator.CreateInstance(Packet.Packets[packetId]);

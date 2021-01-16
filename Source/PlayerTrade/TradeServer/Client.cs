@@ -13,7 +13,6 @@ namespace TradeServer
     public class Client : Connection
     {
         public event EventHandler<ClientEventArgs> Authenticated;
-        public event EventHandler<ClientEventArgs> Disconnected;
         public event EventHandler<ClientEventArgs> ColonyInfoReceived;
 
         public ClientState State { get; set; } = ClientState.Auth;
@@ -48,8 +47,6 @@ namespace TradeServer
                 Log.Error($"Exception with client {Tcp.Client.RemoteEndPoint}. Connection closed.", e);
                 Tcp.Close();
             }
-
-            Disconnected?.Invoke(this, new ClientEventArgs(this));
         }
 
         public async Task<Resources> GetColonyResourcesAsync()

@@ -16,6 +16,7 @@ namespace PlayerTrade.Net
 {
     public class Client : Connection
     {
+        public event EventHandler Connected;
         public event EventHandler<PlayerUpdateEventArgs> PlayerUpdated;
         public event EventHandler<Player> PlayerConnected;
         public event EventHandler<Player> PlayerDisconnected;
@@ -36,25 +37,14 @@ namespace PlayerTrade.Net
 
         public Dictionary<PacketPredicate, TaskCompletionSource<Packet>> AwaitingPackets = new Dictionary<PacketPredicate, TaskCompletionSource<Packet>>();
 
-        public bool IsTradableNow
-        {
-            get => _isTradableNow;
-            set
-            {
-                _isTradableNow = value;
-                MarkDirty();
-            }
-        }
-
         private Task _clientTcpTask;
-
-        private bool _isTradableNow;
 
         public Client(RimLinkComp rimLinkComp)
         {
             RimLinkComp = rimLinkComp;
             MarkDirty(false, true);
 
+            PacketReceived += OnPacketReceived;
             PlayerUpdated += OnPlayerUpdated;
             PlayerConnected += OnPlayerConnected;
             PlayerDisconnected += OnPlayerDisconnected;
@@ -68,8 +58,6 @@ namespace PlayerTrade.Net
             Tcp = new TcpClient();
             await Tcp.ConnectAsync(ip, port);
             Stream = Tcp.GetStream();
-
-            PacketReceived += OnPacketReceived;
 
             // Send connect request
             await SendPacket(new PacketConnect
@@ -97,6 +85,7 @@ namespace PlayerTrade.Net
             }
 
             GameSettings = response.Settings;
+            Connected?.Invoke(this, EventArgs.Empty);
         }
 
         public async Task Run()
@@ -107,14 +96,11 @@ namespace PlayerTrade.Net
                 {
                     await ReceivePacket();
                 }
-                catch (ObjectDisposedException) {} // don't care about object disposed exceptions, this just means the connection is closed now
                 catch (Exception e)
                 {
-                    Log.Error("Error receiving packet", e);
+                    Log.Error($"Error receiving packet ({e.GetType().Name})", e);
                 }
             }
-
-            Log.Message($"Disconnected from Trade server");
         }
 
         public void MarkDirty(bool sendPacket = true, bool mapIndependent = false)

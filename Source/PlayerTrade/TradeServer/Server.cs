@@ -47,7 +47,7 @@ namespace TradeServer
 
                     var client = new Client(tcp);
                     client.Authenticated += ClientOnAuthenticated;
-                    client.Disconnected += ClientOnDisconnected;
+                    client.Disconnected += (sender, args) => ClientOnDisconnected(this, new Client.ClientEventArgs(client));
                     client.ColonyInfoReceived += ClientOnColonyInfoReceived;
                     _ = client.Run();
                 }

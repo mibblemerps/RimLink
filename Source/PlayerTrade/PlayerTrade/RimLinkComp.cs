@@ -7,6 +7,7 @@ using PlayerTrade.Mail;
 using PlayerTrade.Net;
 using PlayerTrade.Raids;
 using PlayerTrade.Trade;
+using RimWorld;
 using UnityEngine;
 using Verse;
 
@@ -45,6 +46,9 @@ namespace PlayerTrade
 
         public Client Client;
 
+        private float _reconnectTime = -1f;
+        private float _currentReconnectTimeIncrement = 2f;
+
         public RimLinkComp(Game game)
         {
         }
@@ -61,8 +65,18 @@ namespace PlayerTrade
             RemoveExpiredOfferLetters();
         }
 
+        public async Task Connect()
+        {
+            Log.Message("Connecting to: " + PlayerTradeMod.Instance.Settings.ServerIp);
+            Client = new Client(this);
+            Client.Connected += OnClientConnected;
+            Client.Disconnected += ClientOnDisconnected;
+            await Client.Connect(PlayerTradeMod.Instance.Settings.ServerIp);
+        }
+
         public async void Init()
         {
+            // Initialize lists
             if (TradeOffersPendingFulfillment == null)
                 TradeOffersPendingFulfillment = new List<TradeOffer>();
             if (RaidsPending == null)
@@ -70,6 +84,15 @@ namespace PlayerTrade
             if (ActiveLaborOffers == null)
                 ActiveLaborOffers = new List<LaborOffer>();
 
+            // Generate a secret if we don't have one (not crytographically great - but it'll do for this)
+            if (string.IsNullOrWhiteSpace(Secret))
+                Secret = BitConverter.ToString(System.Guid.NewGuid().ToByteArray()).Replace("-", "");
+
+            // Apply anticheat
+            if (Anticheat)
+                AnticheatUtil.ApplyAnticheat();
+
+            // Get IP
             string ip = PlayerTradeMod.Instance.Settings.ServerIp;
             if (string.IsNullOrWhiteSpace(ip))
             {
@@ -77,22 +100,10 @@ namespace PlayerTrade
                 return;
             }
 
-            if (string.IsNullOrWhiteSpace(Secret))
-            {
-                // Generate a secret (not crytographically great - but it'll do for this)
-                Secret = BitConverter.ToString(System.Guid.NewGuid().ToByteArray()).Replace("-", "");
-            }
-
-            // Apply anticheat
-            if (Anticheat)
-                AnticheatUtil.ApplyAnticheat();
-
             // Connect
-            Log.Message("Connecting to: " + ip);
-            Client = new Client(this);
             try
             {
-                await Client.Connect(PlayerTradeMod.Instance.Settings.ServerIp);
+                await Connect();
             }
             catch (Exception e)
             {
@@ -103,14 +114,46 @@ namespace PlayerTrade
                 connectionFailedMsgBox.forcePause = true;
                 Verse.Find.WindowStack.Add(connectionFailedMsgBox);
             }
+        }
 
-            Log.Message("Player trade active. GUID: " + Guid);
+        public void OnClientConnected(object sender, EventArgs args)
+        {
+            Log.Message("Connected to server. GUID: " + Guid);
+            Messages.Message($"Connected to server", MessageTypeDefOf.NeutralEvent, false);
 
             if (!Anticheat && Client.GameSettings.Anticheat)
                 AnticheatUtil.ShowEnableAnticheatDialog();
 
-            // Now tradable todo: is this needed??
-            Client.IsTradableNow = true;
+            Client.MarkDirty();
+        }
+
+        private void ClientOnDisconnected(object sender, EventArgs e)
+        {
+            Messages.Message("Disconnected from server", MessageTypeDefOf.NeutralEvent, false);
+            _currentReconnectTimeIncrement = 2f;
+            _reconnectTime = _currentReconnectTimeIncrement;
+        }
+
+        public override void GameComponentUpdate()
+        {
+            base.GameComponentUpdate();
+
+            if (_reconnectTime > 0f && Time.time >= _reconnectTime)
+            {
+                // Attempt reconnect
+                Connect().ContinueWith(t =>
+                {
+                    if (t.IsFaulted || !Client.Tcp.Connected)
+                    {
+                        // Double the last retry time increment and try then
+                        _currentReconnectTimeIncrement = Mathf.Min(_currentReconnectTimeIncrement * 2, 30);
+                        _reconnectTime = Time.time + _currentReconnectTimeIncrement;
+                        Log.Message($"Reconnect attempt failed. Next retry in {_currentReconnectTimeIncrement} seconds.");
+                    }
+                });
+
+                _reconnectTime = -1f;
+            }
         }
 
         public override void GameComponentTick()
