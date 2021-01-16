@@ -16,9 +16,17 @@ namespace PlayerTrade
             if (!Enabled) return;
 
             if (RunningInRimWorld)
+            {
                 Verse.Log.Message(message, ignoreLimit);
+            }
             else
-                Console.WriteLine($"[{DateTime.Now}] [INFO]  {message}");
+            {
+                Console.ForegroundColor = ConsoleColor.Gray;
+                Console.Write($"[{DateTime.Now}] [INFO] ");
+                Console.ForegroundColor = ConsoleColor.White;
+                Console.WriteLine(message);
+                Console.ResetColor();
+            }
         }
 
         public static void Warn(string message, bool ignoreLimit = false)
@@ -26,9 +34,17 @@ namespace PlayerTrade
             if (!Enabled) return;
 
             if (RunningInRimWorld)
+            {
                 Verse.Log.Warning(message, ignoreLimit);
+            }
             else
-                Console.WriteLine($"[{DateTime.Now}] [WARN]  {message}");
+            {
+                Console.ForegroundColor = ConsoleColor.DarkYellow;
+                Console.Write($"[{DateTime.Now}] [WARN] ");
+                Console.ForegroundColor = ConsoleColor.White;
+                Console.WriteLine(message);
+                Console.ResetColor();
+            }
         }
 
         public static void Error(string message, Exception context = null, bool ignoreLimit = false)
@@ -41,9 +57,17 @@ namespace PlayerTrade
                 message += $"(InnerException) {context.InnerException.Message}\n{context.InnerException.StackTrace}\n";
 
             if (RunningInRimWorld)
+            {
                 Verse.Log.Error(message, ignoreLimit);
+            }
             else
-                Console.WriteLine($"[{DateTime.Now}] [ERROR] {message}");
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.Write($"[{DateTime.Now}] [ERROR] ");
+                Console.ForegroundColor = ConsoleColor.White;
+                Console.WriteLine(message);
+                Console.ResetColor();
+            }
         }
     }
 }
