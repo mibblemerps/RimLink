@@ -11,7 +11,6 @@ namespace PlayerTrade
         /// </summary>
         public bool Anticheat;
 
-        // todo: implement raid settings
         public float RaidBasePrice = Dialog_PlaceBounty.DefaultBasePrice;
         public int RaidMaxStrengthPercent = Dialog_PlaceBounty.DefaultMaxStrengthPercent;
     }

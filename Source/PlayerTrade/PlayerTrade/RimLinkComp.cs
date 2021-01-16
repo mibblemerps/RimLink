@@ -90,7 +90,6 @@ namespace PlayerTrade
             // Connect
             Log.Message("Connecting to: " + ip);
             Client = new Client(this);
-            Log.Message("test 0");
             try
             {
                 await Client.Connect(PlayerTradeMod.Instance.Settings.ServerIp);

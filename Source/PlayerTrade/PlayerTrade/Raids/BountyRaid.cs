@@ -59,7 +59,7 @@ namespace PlayerTrade.Raids
         {
             Log.Message($"Execute raid {Id}");
 
-            Map map = Find.RandomPlayerHomeMap; // todo: maybe deal with this better?
+            Map map = Find.RandomPlayerHomeMap;
 
             float points = StorytellerUtility.DefaultThreatPointsNow(map) * Strength;
 

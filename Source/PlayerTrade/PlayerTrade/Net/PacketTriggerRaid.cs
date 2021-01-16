@@ -7,20 +7,21 @@ using PlayerTrade.Raids;
 
 namespace PlayerTrade.Net
 {
-    public class PacketTriggerRaid : Packet
+    public class PacketTriggerRaid : PacketForPlayer
     {
-        public string For;
         public BountyRaid Raid;
+
+        public override bool ShouldQueue => false;
 
         public override void Write(PacketBuffer buffer)
         {
-            buffer.WriteString(For);
+            base.Write(buffer);
             buffer.Write(Raid);
         }
 
         public override void Read(PacketBuffer buffer)
         {
-            For = buffer.ReadString();
+            base.Read(buffer);
             Raid = buffer.Read<BountyRaid>();
         }
     }

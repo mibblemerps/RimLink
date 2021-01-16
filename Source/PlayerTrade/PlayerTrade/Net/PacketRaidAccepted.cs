@@ -1,25 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace PlayerTrade.Net
+﻿namespace PlayerTrade.Net
 {
-    public class PacketRaidAccepted : Packet
+    public class PacketRaidAccepted : PacketForPlayer
     {
-        public string For;
         public string Id;
+
+        public override bool ShouldQueue => false;
 
         public override void Write(PacketBuffer buffer)
         {
-            buffer.WriteString(For);
+            base.Write(buffer);
             buffer.WriteString(Id);
         }
 
         public override void Read(PacketBuffer buffer)
         {
-            For = buffer.ReadString();
+            base.Read(buffer);
             Id = buffer.ReadString();
         }
     }

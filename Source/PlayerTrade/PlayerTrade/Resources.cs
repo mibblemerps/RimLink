@@ -17,16 +17,6 @@ namespace PlayerTrade
         public List<NetThing> Things = new List<NetThing>();
         //public List<Pawn> Pawns = new List<Pawn>(); // todo: animals and prisoners
 
-        public float CalculateMarketValue()
-        {
-            float marketValue = 0f;
-            foreach (NetThing thing in Things)
-            {
-                // todo: fix
-            }
-            return marketValue;
-        }
-
         public void Write(PacketBuffer buffer)
         {
             // Write things

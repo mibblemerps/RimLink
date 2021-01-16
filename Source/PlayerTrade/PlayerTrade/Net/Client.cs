@@ -36,8 +36,6 @@ namespace PlayerTrade.Net
 
         public Dictionary<PacketPredicate, TaskCompletionSource<Packet>> AwaitingPackets = new Dictionary<PacketPredicate, TaskCompletionSource<Packet>>();
 
-        private TaskCompletionSource<PacketColonyResources> _awaitColonyResources = new TaskCompletionSource<PacketColonyResources>();
-
         public bool IsTradableNow
         {
             get => _isTradableNow;
@@ -152,20 +150,8 @@ namespace PlayerTrade.Net
             TradeOffer tradeOffer = TradeUtil.FormTradeOffer();
             ActiveTradeOffers.Add(tradeOffer);
 
-            Log.Message("Forming trade packet...");
-            PacketTradeOffer tradeReqPacket = null;
-            try
-            {
-                tradeReqPacket = PacketTradeOffer.MakePacket(tradeOffer);
-            }
-            catch (Exception e)
-            {
-                Log.Error("Exception making trade offer packet", e);
-                return;
-            }
-
             Log.Message("Sending trade offer...");
-            await SendPacket(tradeReqPacket);
+            await SendPacket(PacketTradeOffer.MakePacket(tradeOffer));
             Log.Message("Trade offer sent");
         }
 
@@ -178,10 +164,7 @@ namespace PlayerTrade.Net
             });
 
             // Await response
-            // todo: use AwaitPacket
-            PacketColonyResources packet = await _awaitColonyResources.Task;
-            _awaitColonyResources = new TaskCompletionSource<PacketColonyResources>(); // reset task completion source for future requests
-            return packet;
+            return (PacketColonyResources) await AwaitPacket(p => p is PacketColonyResources resourcePacket && resourcePacket.Guid == player.Guid);
         }
 
         public async Task SendColonyResources()
@@ -258,11 +241,6 @@ namespace PlayerTrade.Net
                         Players.Remove(playerDisconnectedPacket.Player);
                         PlayerDisconnected?.Invoke(this, disconnectedPlayer);
                     }
-                    break;
-
-                case Packet.ColonyResourcesId:
-                    PacketColonyResources resourcesPacket = (PacketColonyResources) e.Packet;
-                    _awaitColonyResources.TrySetResult(resourcesPacket);
                     break;
 
                 case Packet.RequestColonyResourcesId:

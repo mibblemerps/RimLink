@@ -1,21 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
 using PlayerTrade.Trade;
-using Verse;
 
 namespace PlayerTrade.Net
 {
-    public class PacketTradeOffer : Packet
+    public class PacketTradeOffer : PacketForPlayer
     {
         public Guid Guid;
-        public string For;
         public string From;
         public List<NetTradeThing> TradeThings = new List<NetTradeThing>();
 
+        public override bool ShouldQueue => false;
+
         public override void Write(PacketBuffer buffer)
         {
+            base.Write(buffer);
             buffer.WriteGuid(Guid);
-            buffer.WriteString(For);
             buffer.WriteString(From);
 
             buffer.WriteInt(TradeThings.Count);
@@ -25,8 +25,8 @@ namespace PlayerTrade.Net
 
         public override void Read(PacketBuffer buffer)
         {
+            base.Read(buffer);
             Guid = buffer.ReadGuid();
-            For = buffer.ReadString();
             From = buffer.ReadString();
 
             TradeThings.Clear();

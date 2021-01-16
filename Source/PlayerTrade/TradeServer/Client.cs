@@ -146,16 +146,7 @@ namespace TradeServer
                         PacketTradeOffer tradeOfferPacket = (PacketTradeOffer) e.Packet;
                         TradeOffers.Add(tradeOfferPacket.Guid, tradeOfferPacket.For);
                         Log.Message($"Received trade offer from {Player.Name} for {Program.Server.GetName(tradeOfferPacket.For)}");
-
-                        try
-                        {
-                            // Pass trade offer on to other player. Packet can be relayed verbatim
-                            await Program.Server.GetClient(tradeOfferPacket.For).SendPacket(tradeOfferPacket);
-                        }
-                        catch (Exception ex)
-                        {
-                            Log.Error($"Error passing on trade offer", ex);
-                        }
+                        // Packet will already have been forwarded since it's a PacketForPlayer
                         break;
 
                     case Packet.AcceptTradePacketId:
@@ -214,28 +205,6 @@ namespace TradeServer
 
                         Log.Message($"{Player.Name} {(packetTradeConfirm.Confirm ? "confirmed" : "aborted")} trade offer {packetTradeConfirm.Trade} for {tradeClient.Player.Name}.");
 
-                        break;
-
-                    case Packet.TriggerRaidPacketId:
-                        PacketTriggerRaid triggerRaidPacket = (PacketTriggerRaid) e.Packet;
-                        Client target = Program.Server.GetClient(triggerRaidPacket.For);
-                        if (target == null)
-                        {
-                            Log.Warn($"Player ({Player.Name}) tried to sent raid to an unknown client ({triggerRaidPacket.For}).");
-                            return;
-                        }
-
-                        Log.Message($"Player {Player.Name} has sent a raid to {target.Player.Name}");
-
-                        // Forward packet
-                        await target.SendPacket(triggerRaidPacket);
-                        break;
-
-                    case Packet.RaidAcceptedPacketId:
-                        PacketRaidAccepted acceptRaidPacket = (PacketRaidAccepted) e.Packet;
-                        Log.Message($"Player {Player.Name} acknowledged raid {acceptRaidPacket.Id}");
-                        // Pass on packet
-                        Program.Server.GetClient(acceptRaidPacket.For)?.SendPacket(acceptRaidPacket);
                         break;
                 }
             }

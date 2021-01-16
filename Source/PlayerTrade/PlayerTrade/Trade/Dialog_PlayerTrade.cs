@@ -231,10 +231,7 @@ namespace PlayerTrade.Trade
 
         }
 
-        private void CountToTransferChanged()
-        {
-            // todo: possibly not needed
-        }
+        private void CountToTransferChanged() {}
 
         internal class TradeableInteractive : Tradeable
         {
