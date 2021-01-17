@@ -24,10 +24,8 @@ namespace PlayerTrade.Patches
             comms.AddRange(__result);
 
             // Add player traders
-            foreach (Player player in RimLinkComp.Find().Client.Players.Values)
-            {
+            foreach (Player player in RimLinkComp.Instance.Client.OtherPlayers)
                 comms.Add(new PlayerComms(player));
-            }
 
             __result = comms;
         }

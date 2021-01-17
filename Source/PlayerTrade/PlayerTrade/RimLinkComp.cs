@@ -46,6 +46,9 @@ namespace PlayerTrade
 
         public Client Client;
 
+        public float TimeUntilReconnect => Time.time - _reconnectTime;
+
+        private bool _connecting;
         private float _reconnectTime = -1f;
         private float _currentReconnectTimeIncrement = 2f;
 
@@ -67,11 +70,25 @@ namespace PlayerTrade
 
         public async Task Connect()
         {
+            if (_connecting)
+            {
+                Log.Warn("Attempt to connect while we're already trying to connect!");
+                return;
+            }
+
             Log.Message("Connecting to: " + PlayerTradeMod.Instance.Settings.ServerIp);
+            _connecting = true;
             Client = new Client(this);
             Client.Connected += OnClientConnected;
             Client.Disconnected += ClientOnDisconnected;
-            await Client.Connect(PlayerTradeMod.Instance.Settings.ServerIp);
+            try
+            {
+                await Client.Connect(PlayerTradeMod.Instance.Settings.ServerIp);
+            }
+            finally
+            {
+                _connecting = false;
+            }
         }
 
         public async void Init()

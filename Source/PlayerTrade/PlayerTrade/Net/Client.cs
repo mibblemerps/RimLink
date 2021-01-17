@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
+using PlayerTrade.Chat;
 using PlayerTrade.Labor;
 using PlayerTrade.Mail;
 using PlayerTrade.Raids;
@@ -25,13 +26,15 @@ namespace PlayerTrade.Net
 
         public RimLinkComp RimLinkComp;
         public LaborWorker Labor;
+        public ChatWorker Chat;
 
         public Player Player { get; private set; }
+        public string Guid => RimLinkComp.Guid; // Unique user ID
 
         public GameSettings GameSettings;
-        public Dictionary<string, Player> Players = new Dictionary<string, Player>();
 
-        public string Guid => RimLinkComp.Guid; // Unique user ID
+        public Dictionary<string, Player> Players = new Dictionary<string, Player>();
+        public IEnumerable<Player> OtherPlayers => Players.Values.Where(p => !p.IsUs);
 
         public List<TradeOffer> ActiveTradeOffers = new List<TradeOffer>();
 
@@ -51,6 +54,7 @@ namespace PlayerTrade.Net
 
             Labor = new LaborWorker(this);
             new MailWorker(this);
+            Chat = new ChatWorker(this);
         }
 
         public async Task Connect(string ip, int port = 35562)
@@ -94,7 +98,8 @@ namespace PlayerTrade.Net
             {
                 try
                 {
-                    await ReceivePacket();
+                    if (await ReceivePacket() == null)
+                        break;
                 }
                 catch (Exception e)
                 {
@@ -106,6 +111,7 @@ namespace PlayerTrade.Net
         public void MarkDirty(bool sendPacket = true, bool mapIndependent = false)
         {
             Player = Player.Self(mapIndependent);
+            Players[Guid] = Player; // add ourselves to the player list
             if (sendPacket)
                 _ = SendColonyInfo();
         }

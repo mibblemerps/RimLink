@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using PlayerTrade.Artifacts;
+using PlayerTrade.Chat;
 using PlayerTrade.Labor.Packets;
 using PlayerTrade.Mail;
 
@@ -30,6 +31,8 @@ namespace PlayerTrade.Net
         public const int MailPacketId = 17;
         public const int ArtifactPacketId = 18;
         public const int AnnouncementPacketId = 19;
+        public const int SendChatMessagePacketId = 20;
+        public const int ReceiveChatMessagePacketId = 21;
 
         public static Dictionary<int, Type> Packets = new Dictionary<int, Type>
         {
@@ -51,6 +54,8 @@ namespace PlayerTrade.Net
             {MailPacketId, typeof(PacketMail)},
             {ArtifactPacketId, typeof(PacketArtifact)},
             {AnnouncementPacketId, typeof(PacketAnnouncement)},
+            {SendChatMessagePacketId, typeof(PacketSendChatMessage)},
+            {ReceiveChatMessagePacketId, typeof(PacketReceiveChatMessage)},
         };
 
         public abstract void Write(PacketBuffer buffer);

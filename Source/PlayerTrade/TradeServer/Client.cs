@@ -6,6 +6,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 using PlayerTrade;
+using PlayerTrade.Chat;
 using PlayerTrade.Net;
 
 namespace TradeServer
@@ -39,7 +40,8 @@ namespace TradeServer
             {
                 while (Tcp.Connected)
                 {
-                    await ReceivePacket();
+                    if (await ReceivePacket() == null)
+                        break;
                 }
             }
             catch (Exception e)
@@ -202,6 +204,24 @@ namespace TradeServer
 
                         Log.Message($"{Player.Name} {(packetTradeConfirm.Confirm ? "confirmed" : "aborted")} trade offer {packetTradeConfirm.Trade} for {tradeClient.Player.Name}.");
 
+                        break;
+
+                    case Packet.SendChatMessagePacketId:
+                        var sendMsgPacket = (PacketSendChatMessage) e.Packet;
+                        Log.Message($"[Chat] <{Player.Name}> {sendMsgPacket.Message}");
+                        // Send message to all other clients
+                        foreach (Client client in Program.Server.AuthenticatedClients)
+                            _ = client.SendPacket(new PacketReceiveChatMessage
+                            {
+                                Messages = new List<PacketReceiveChatMessage.NetMessage>(new[]
+                                {
+                                    new PacketReceiveChatMessage.NetMessage
+                                    {
+                                        From = Player.Guid,
+                                        Message = sendMsgPacket.Message
+                                    }
+                                })
+                            });
                         break;
                 }
             }

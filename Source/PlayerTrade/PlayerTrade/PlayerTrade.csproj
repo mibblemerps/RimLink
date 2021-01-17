@@ -53,6 +53,14 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\..\RimWorldWin64_Data\Managed\UnityEngine.IMGUIModule.dll</HintPath>
     </Reference>
+    <Reference Include="UnityEngine.InputLegacyModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\RimWorldWin64_Data\Managed\UnityEngine.InputLegacyModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.InputModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\RimWorldWin64_Data\Managed\UnityEngine.InputModule.dll</HintPath>
+    </Reference>
     <Reference Include="UnityEngine.TextCoreModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\..\RimWorldWin64_Data\Managed\UnityEngine.TextCoreModule.dll</HintPath>
@@ -80,6 +88,10 @@
     <Compile Include="Artifacts\ArtifactsWorker.cs" />
     <Compile Include="Artifacts\ArtifactType.cs" />
     <Compile Include="Artifacts\PacketArtifact.cs" />
+    <Compile Include="Chat\ChatMessage.cs" />
+    <Compile Include="Chat\ChatWorker.cs" />
+    <Compile Include="Chat\PacketReceiveChatMessage.cs" />
+    <Compile Include="Chat\PacketSendChatMessage.cs" />
     <Compile Include="Dialog_ConnectingToServer.cs" />
     <Compile Include="GameSettings.cs" />
     <Compile Include="Mail\Dialog_SendLetter.cs" />

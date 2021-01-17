@@ -15,6 +15,7 @@ namespace PlayerTrade
     {
         public readonly string Guid;
         public string Name;
+        public float[] Color = ColoredText.FactionColor_Neutral.ToFloats();
         public int Wealth;
         public int Day;
         public string Weather;
@@ -22,6 +23,8 @@ namespace PlayerTrade
         public bool TradeableNow;
 
         public List<Faction> LocalFactions;
+
+        public bool IsUs => Guid == RimLinkComp.Instance.Guid;
 
         public Player(string guid)
         {
