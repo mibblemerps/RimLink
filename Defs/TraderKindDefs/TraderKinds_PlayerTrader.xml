@@ -4,7 +4,7 @@
 	<TraderKindDef>
 		<defName>PlayerTrader</defName>
 		<label>player trader</label>
-		<orbital>true</orbital>
+		<orbital>false</orbital>
 		<stockGenerators>
 			<li Class="StockGenerator_SingleDef">
 				<thingDef>Silver</thingDef>
