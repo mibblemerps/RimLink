@@ -1,8 +1,8 @@
 <Defs>
 	<MainButtonDef>
 		<defName>Server</defName>
-		<label>server</label>
-		<description>Trade server options.</description>
+		<label>RimLink</label>
+		<description>RimLink players, chat, and options.</description>
 		<tabWindowClass>PlayerTrade.MainTabWindow_Server</tabWindowClass>
 		<canBeTutorDenied>false</canBeTutorDenied>
 		<order>79</order>
