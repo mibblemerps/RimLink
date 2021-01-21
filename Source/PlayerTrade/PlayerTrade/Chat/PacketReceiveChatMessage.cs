@@ -16,7 +16,7 @@ namespace PlayerTrade.Chat
             buffer.WriteInt(Messages.Count);
             foreach (var msg in Messages)
             {
-                buffer.WriteString(msg.From);
+                buffer.WriteString(msg.From, true);
                 buffer.WriteString(msg.Message);
             }
         }
@@ -29,7 +29,7 @@ namespace PlayerTrade.Chat
             {
                 Messages.Add(new NetMessage
                 {
-                    From = buffer.ReadString(),
+                    From = buffer.ReadString(true),
                     Message = buffer.ReadString()
                 });
             }

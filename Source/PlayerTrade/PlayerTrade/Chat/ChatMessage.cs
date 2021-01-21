@@ -8,11 +8,13 @@ namespace PlayerTrade.Chat
         public string Content;
         public DateTime Received = DateTime.Now;
 
+        public bool IsServer => From == null;
+
         public Player Player
         {
             get
             {
-                if (!RimLinkComp.Instance.Client.Players.ContainsKey(From))
+                if (From == null || !RimLinkComp.Instance.Client.Players.ContainsKey(From))
                     return null;
                 return RimLinkComp.Instance.Client.Players[From];
             }

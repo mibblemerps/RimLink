@@ -56,6 +56,7 @@
     <Compile Include="Commands\CommandGiveThing.cs" />
     <Compile Include="Commands\CommandKick.cs" />
     <Compile Include="Commands\CommandList.cs" />
+    <Compile Include="Commands\CommandSay.cs" />
     <Compile Include="Commands\CommandSendLetter.cs" />
     <Compile Include="Commands\CommandTest.cs" />
     <Compile Include="Commands\CommandUtility.cs" />

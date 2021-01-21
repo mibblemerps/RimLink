@@ -73,7 +73,7 @@ namespace PlayerTrade
             Widgets.Label(reconnectingLabelRect, $"Reconnecting in {Mathf.Max(0f, RimLinkComp.Instance.TimeUntilReconnect)} seconds...");
             Text.Anchor = TextAnchor.UpperLeft;
 
-            Rect buttonRect = new Rect(0, reconnectingLabelRect.yMax + 20f, 150f, 35f);
+            Rect buttonRect = new Rect((rect.width / 2f - 75f), reconnectingLabelRect.yMax + 20f, 150f, 35f);
             if (Widgets.ButtonText(buttonRect, "Reconnect"))
             {
                 _ = RimLinkComp.Instance.Connect();
@@ -142,21 +142,25 @@ namespace PlayerTrade
                 SendMessage();
             }
 
+            if (Event.current.type == EventType.KeyUp && Event.current.keyCode == KeyCode.Return)
+            {
+                SendMessage();
+            }
+
             GUI.EndGroup();
         }
 
         private float DrawMessage(Rect viewRect, float currentHeight, ChatMessage message, bool dryRun)
         {
-            if (message.Player == null)
-                return 0f; // no player
-
             float height = Mathf.Max(25f, Text.CalcHeight(message.Content, viewRect.width));
             if (dryRun)
                 return height;
 
             Rect messageRect = new Rect(10f, currentHeight, viewRect.width - 10f, height);
-            Widgets.Label(messageRect.LeftPart(0.26f), message.Player.Name.Colorize(message.Player.Color.ToColor()));
-            Widgets.Label(messageRect.RightPart(0.74f), message.Content);
+            if (message.IsServer)
+                Widgets.Label(messageRect, $"{message.Content}");
+            else
+                Widgets.Label(messageRect, $"<b>{message.Player.Name.Colorize(message.Player.Color.ToColor())}</b>  {message.Content}");
 
             return height;
         }
@@ -180,13 +184,8 @@ namespace PlayerTrade
         {
             base.WindowUpdate();
 
-            if (!IsOpen)
-                return;
-
-            if (Input.GetKey(KeyCode.Return) || Input.GetKey(KeyCode.KeypadEnter))
-            {
-                SendMessage();
-            }
+            if (IsOpen) // Causes messages to become "read"
+                RimLinkComp.Instance.Client.Chat.ReadMessages();
         }
 
         private static void ChangeFactionName()
