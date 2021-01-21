@@ -265,6 +265,29 @@ namespace PlayerTrade.Net
                 case Packet.AnnouncementPacketId:
                     AnnouncementUtility.Show((PacketAnnouncement) e.Packet);
                     break;
+
+                case Packet.GiveItemPacketId:
+                    var giveItemPacket = (PacketGiveItem) e.Packet;
+                    try
+                    {
+                        giveItemPacket.GiveItem();
+
+                        await SendPacket(new PacketAcknowledgement
+                        {
+                            Guid = giveItemPacket.Reference,
+                            Success = true
+                        });
+                    }
+                    catch (Exception giveException)
+                    {
+                        await SendPacket(new PacketAcknowledgement
+                        {
+                            Guid = giveItemPacket.Reference,
+                            Success = false,
+                            FailReason = giveException.Message
+                        });
+                    }
+                    break;
             }
         }
 

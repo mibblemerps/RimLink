@@ -18,13 +18,12 @@ namespace TradeServer.Commands
             if (args.Length < 1)
                 throw new CommandException("Invalid arguments");
 
-            Client target = CommandUtility.GetClientFromInput(args[0]);
-            if (target == null)
-                throw new CommandException("Player not found");
 
-            await target.Disconnect();
-
-            caller.Output("Kicked " + target.Player.Name);
+            foreach (Client client in CommandUtility.GetClientsFromInput(args[0]))
+            {
+                await client.Disconnect();
+                caller.Output("Kicked " + client.Player.Name);
+            }
         }
     }
 }

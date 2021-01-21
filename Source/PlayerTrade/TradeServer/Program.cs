@@ -19,6 +19,7 @@ namespace TradeServer
             new CommandSendLetter(),
             new CommandKick(),
             new CommandAnnouncement(),
+            new CommandGiveThing(),
         };
 
         private static Caller ServerCaller = new ServerCaller();

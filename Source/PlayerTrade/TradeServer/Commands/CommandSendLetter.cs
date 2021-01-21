@@ -19,10 +19,6 @@ namespace TradeServer.Commands
             if (args.Length < 1)
                 throw new CommandException("Invalid arguments");
 
-            Client target = CommandUtility.GetClientFromInput(args[0]);
-            if (target == null)
-                throw new CommandException("Player not found");
-
             string title = "";
             if (args.Length >= 2)
                 title = args[1];
@@ -31,13 +27,16 @@ namespace TradeServer.Commands
             if (args.Length >= 3)
                 body = string.Join(" ", args.Skip(2).ToArray());
 
-            await target.SendPacket(new PacketMail
+            foreach (Client client in CommandUtility.GetClientsFromInput(args[0]))
             {
-                For = target.Player.Guid,
-                From = "Server",
-                Title = title,
-                Body = body
-            });
+                await client.SendPacket(new PacketMail
+                {
+                    For = client.Player.Guid,
+                    From = "Server",
+                    Title = title,
+                    Body = body
+                });
+            }
 
             caller.Output("Letter sent");
         }

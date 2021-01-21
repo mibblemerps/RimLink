@@ -98,7 +98,9 @@
     <Compile Include="Mail\MailWorker.cs" />
     <Compile Include="Mail\PacketMail.cs" />
     <Compile Include="MainTabWindow_Server.cs" />
+    <Compile Include="Net\PacketAcknowledgement.cs" />
     <Compile Include="Net\PacketAnnouncement.cs" />
+    <Compile Include="Net\PacketGiveItem.cs" />
     <Compile Include="Patches\Patch_CameraDriver_Update.cs" />
     <Compile Include="Patches\Patch_CompUsable.cs" />
     <Compile Include="Trade\ChoiceLetter_TradeOffer.cs" />

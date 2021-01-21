@@ -53,6 +53,7 @@
     <Compile Include="Commands\Command.cs" />
     <Compile Include="Commands\CommandAnnouncement.cs" />
     <Compile Include="Commands\CommandException.cs" />
+    <Compile Include="Commands\CommandGiveThing.cs" />
     <Compile Include="Commands\CommandKick.cs" />
     <Compile Include="Commands\CommandList.cs" />
     <Compile Include="Commands\CommandSendLetter.cs" />
