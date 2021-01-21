@@ -155,6 +155,8 @@ namespace PlayerTrade
         {
             base.GameComponentUpdate();
 
+            Client?.Update();
+
             if (_reconnectTime > 0f && Time.time >= _reconnectTime)
             {
                 // Attempt reconnect

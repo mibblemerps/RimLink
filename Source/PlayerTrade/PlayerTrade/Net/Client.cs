@@ -22,6 +22,8 @@ namespace PlayerTrade.Net
         public event EventHandler<Player> PlayerConnected;
         public event EventHandler<Player> PlayerDisconnected;
 
+        public new event EventHandler<PacketReceivedEventArgs> PacketReceived; 
+
         public delegate bool PacketPredicate(Packet packet);
 
         public RimLinkComp RimLinkComp;
@@ -40,6 +42,7 @@ namespace PlayerTrade.Net
 
         public Dictionary<PacketPredicate, TaskCompletionSource<Packet>> AwaitingPackets = new Dictionary<PacketPredicate, TaskCompletionSource<Packet>>();
 
+        private Queue<Packet> _pendingPackets = new Queue<Packet>();
         private Task _clientTcpTask;
 
         public Client(RimLinkComp rimLinkComp)
@@ -73,9 +76,13 @@ namespace PlayerTrade.Net
             });
 
             _clientTcpTask = Run();
-
+            _ = Task.Delay(1000).ContinueWith(t =>
+            {
+                Update();
+            });
+            
             // Await connection response
-            PacketConnectResponse response = (PacketConnectResponse) await AwaitPacket(packet => packet is PacketConnectResponse, 1000);
+            PacketConnectResponse response = (PacketConnectResponse) await AwaitPacket(packet => packet is PacketConnectResponse, 2000);
             if (response == null)
             {
                 Tcp.Close();
@@ -98,13 +105,24 @@ namespace PlayerTrade.Net
             {
                 try
                 {
-                    if (await ReceivePacket() == null)
+                    Packet packet = await ReceivePacket();
+                    if (packet == null)
                         break;
+                    _pendingPackets.Enqueue(packet);
                 }
                 catch (Exception e)
                 {
                     Log.Error($"Error receiving packet ({e.GetType().Name})", e);
                 }
+            }
+        }
+
+        public void Update()
+        {
+            while (_pendingPackets.Count > 0)
+            {
+                Packet packet = _pendingPackets.Dequeue();
+                PacketReceived?.Invoke(this, new PacketReceivedEventArgs(Packet.Packets.First(p => p.Value == packet.GetType()).Key, packet));
             }
         }
 
