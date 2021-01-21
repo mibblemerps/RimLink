@@ -50,35 +50,7 @@ namespace TradeServer
         public static void ReadCommand()
         {
             string input = Console.ReadLine();
-            List<string> split = new List<string>(CommandUtility.SplitArguments(input));
-            if (split.Count == 0)
-                return; // no command
-            string commandName = split.First();
-            string[] args = split.Skip(1).ToArray();
-
-            Command command = Commands.FirstOrDefault(cmd => cmd.Name.Equals(commandName, StringComparison.InvariantCultureIgnoreCase));
-            if (command == null)
-            {
-                ServerCaller.Error($"Command \"{commandName}\" not found!");
-                return;
-            }
-
-            try
-            {
-                command.Execute(ServerCaller, args).Wait();
-            }
-            catch (Exception e)
-            {
-                if (e.InnerException != null)
-                {
-                    if (e.InnerException is CommandException cmdException)
-                    {
-                        Log.Error(cmdException.Message);
-                        return;
-                    }
-                }
-                Log.Error($"Exception running command \"{command.Name}\"!", e);
-            }
+            CommandUtility.ExecuteCommand(ServerCaller, input);
         }
     }
 }

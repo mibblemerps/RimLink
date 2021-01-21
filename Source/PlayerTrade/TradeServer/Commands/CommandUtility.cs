@@ -5,11 +5,45 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Verse;
+using Log = PlayerTrade.Log;
 
 namespace TradeServer.Commands
 {
     public static class CommandUtility
     {
+        public static void ExecuteCommand(Caller caller, string input)
+        {
+            List<string> split = new List<string>(SplitArguments(input.TrimStart('/')));
+            if (split.Count == 0)
+                return; // no command
+            string commandName = split.First();
+            string[] args = split.Skip(1).ToArray();
+
+            Command command = Program.Commands.FirstOrDefault(cmd => cmd.Name.Equals(commandName, StringComparison.InvariantCultureIgnoreCase));
+            if (command == null)
+            {
+                caller.Error($"Command \"{commandName}\" not found!");
+                return;
+            }
+
+            try
+            {
+                command.Execute(caller, args).Wait();
+            }
+            catch (Exception e)
+            {
+                if (e.InnerException != null)
+                {
+                    if (e.InnerException is CommandException cmdException)
+                    {
+                        caller.Error(cmdException.Message);
+                        return;
+                    }
+                }
+                Log.Error($"Exception running command \"{command.Name}\"!", e);
+            }
+        }
+
         public static string[] SplitArguments(string input)
         {
             return Regex.Matches(input, @"[\""].+?[\""]|[^ ]+")

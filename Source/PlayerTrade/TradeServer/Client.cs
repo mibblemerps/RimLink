@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using PlayerTrade;
 using PlayerTrade.Chat;
 using PlayerTrade.Net;
+using TradeServer.Commands;
 
 namespace TradeServer
 {
@@ -21,6 +22,8 @@ namespace TradeServer
         public Player Player;
         //public string Username;
 
+        public Caller CommandCaller;
+
         // [Trade GUID, Target username]
         public Dictionary<Guid, string> TradeOffers = new Dictionary<Guid, string>();
 
@@ -32,6 +35,8 @@ namespace TradeServer
             Stream = connection.GetStream();
 
             PacketReceived += OnPacketReceived;
+
+            CommandCaller = new ClientCaller(this);
         }
 
         public async Task Run()
@@ -208,20 +213,31 @@ namespace TradeServer
 
                     case Packet.SendChatMessagePacketId:
                         var sendMsgPacket = (PacketSendChatMessage) e.Packet;
-                        Log.Message($"[Chat] <{Player.Name}> {sendMsgPacket.Message}");
-                        // Send message to all other clients
-                        foreach (Client client in Program.Server.AuthenticatedClients)
-                            _ = client.SendPacket(new PacketReceiveChatMessage
-                            {
-                                Messages = new List<PacketReceiveChatMessage.NetMessage>(new[]
+
+                        if (sendMsgPacket.Message.StartsWith("/"))
+                        {
+                            // Command
+                            Log.Message($"{Player.Name} executing: " + sendMsgPacket.Message);
+                            CommandUtility.ExecuteCommand(CommandCaller, sendMsgPacket.Message);
+                        }
+                        else
+                        {
+                            // Chat message
+                            Log.Message($"[Chat] <{Player.Name}> {sendMsgPacket.Message}");
+                            // Send message to all other clients
+                            foreach (Client client in Program.Server.AuthenticatedClients)
+                                _ = client.SendPacket(new PacketReceiveChatMessage
                                 {
-                                    new PacketReceiveChatMessage.NetMessage
+                                    Messages = new List<PacketReceiveChatMessage.NetMessage>(new[]
                                     {
-                                        From = Player.Guid,
-                                        Message = sendMsgPacket.Message
-                                    }
-                                })
-                            });
+                                        new PacketReceiveChatMessage.NetMessage
+                                        {
+                                            From = Player.Guid,
+                                            Message = sendMsgPacket.Message
+                                        }
+                                    })
+                                });
+                        }
                         break;
                 }
             }
