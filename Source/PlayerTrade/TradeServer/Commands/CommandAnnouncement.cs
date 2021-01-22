@@ -11,7 +11,10 @@ namespace TradeServer.Commands
     {
         public override string Name => "announce";
         public override async Task Execute(Caller caller, string[] args)
-        { 
+        {
+            if (!caller.IsAdmin)
+                throw new CommandException("Admin required");
+
             if (args.Length == 0)
                 throw new CommandException("Invalid arguments");
 
