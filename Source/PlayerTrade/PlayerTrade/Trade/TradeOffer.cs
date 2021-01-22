@@ -45,7 +45,7 @@ namespace PlayerTrade.Trade
                 hyperlinks.Add(thing.OfferedThings.First().def);
             }
             if (offerCount == 0)
-                builder.AppendFormat("      (nothing)");
+                builder.AppendLine("      (nothing)");
 
             builder.AppendLine("In exchange for...");
 
@@ -106,6 +106,7 @@ namespace PlayerTrade.Trade
             
             var toGive = new List<Thing>();
 
+            // Give/receive things
             foreach (TradeThing trade in Things)
             {
                 try
@@ -163,6 +164,19 @@ namespace PlayerTrade.Trade
         {
             foreach (TradeThing trade in Things)
             {
+                if (trade.IsPawn)
+                {
+                    foreach (var thing in trade.AllThings)
+                    {
+                        if (!(thing is Pawn pawn))
+                            continue;
+                        if (pawn.health.Dead)
+                            return false; // Pawn died
+                    }
+
+                    continue;
+                }
+
                 // Take requested things
                 int countToTake = asReceiver ? -trade.CountOffered : trade.CountOffered;
                 if (countToTake > 0)
@@ -235,11 +249,34 @@ namespace PlayerTrade.Trade
             /// </summary>
             public int CountOffered;
 
+            public bool IsPawn
+            {
+                get
+                {
+                    var offered = OfferedThings.FirstOrDefault();
+                    if (offered is Pawn)
+                        return true;
+                    var requested = RequestedThings.FirstOrDefault();
+                    return requested is Pawn;
+                }
+            }
+
             public TradeThing(List<Thing> offeredThings, List<Thing> requestedThings, int countOffered)
             {
                 OfferedThings = offeredThings;
                 RequestedThings = requestedThings;
                 CountOffered = countOffered;
+            }
+
+            public IEnumerable<Thing> AllThings
+            {
+                get
+                {
+                    foreach (var thing in OfferedThings)
+                        yield return thing;
+                    foreach (var thing in RequestedThings)
+                        yield return thing;
+                }
             }
 
             public void ExposeData()

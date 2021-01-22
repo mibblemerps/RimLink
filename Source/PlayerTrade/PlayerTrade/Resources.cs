@@ -12,19 +12,22 @@ namespace PlayerTrade
     /// <summary>
     /// Represents a colonies resources.
     /// </summary>
-    public class Resources
+    public class Resources : IPacketable
     {
         public List<NetThing> Things = new List<NetThing>();
-        //public List<Pawn> Pawns = new List<Pawn>(); // todo: animals and prisoners
+        public List<NetHuman> Pawns = new List<NetHuman>();
 
         public void Write(PacketBuffer buffer)
         {
             // Write things
             buffer.WriteInt(Things.Count);
             foreach (NetThing netThing in Things)
-            {
                 netThing.Write(buffer);
-            }
+
+            // Write pawns
+            buffer.WriteInt(Pawns.Count);
+            foreach (NetHuman netHuman in Pawns)
+                buffer.WritePacketable(netHuman);
         }
 
         public void Read(PacketBuffer buffer)
@@ -33,12 +36,15 @@ namespace PlayerTrade
 
             // Read things
             int thingsCount = buffer.ReadInt();
+            Things = new List<NetThing>(thingsCount);
             for (int i = 0; i < thingsCount; i++)
-            {
-                var newThing = new NetThing();
-                newThing.Read(buffer);
-                Things.Add(newThing);
-            }
+                Things.Add(buffer.ReadPacketable<NetThing>());
+
+            // Read pawns
+            int pawnsCount = buffer.ReadInt();
+            Pawns = new List<NetHuman>(pawnsCount);
+            for (int i = 0; i < pawnsCount; i++)
+                Pawns.Add(buffer.ReadPacketable<NetHuman>());
         }
 
         public void Update(Map map)
@@ -46,19 +52,10 @@ namespace PlayerTrade
             Things.Clear();
 
             foreach (Thing thing in TradeUtility.AllLaunchableThingsForTrade(map))
-            {
                 Things.Add(NetThing.FromThing(thing));
-            }
 
-            // Old code for getting all resources, rather than ones within range of a trade beacon
-            /*List<SlotGroup> groupsListForReading = map.haulDestinationManager.AllGroupsListForReading;
-            foreach (SlotGroup slotGroup in groupsListForReading)
-            {
-                foreach (Thing thing in slotGroup.HeldThings)
-                {
-                    Things.Add(NetThing.FromThing(thing));
-                }
-            }*/
+            foreach (Pawn pawn in TradeUtility.AllSellableColonyPawns(map).Where(p => p.RaceProps.Humanlike))
+                Pawns.Add(pawn.ToNetHuman());
         }
     }
 }

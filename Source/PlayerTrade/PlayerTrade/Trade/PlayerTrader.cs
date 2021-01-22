@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using PlayerTrade.Net;
 using RimWorld;
 using Verse;
@@ -22,7 +23,7 @@ namespace PlayerTrade.Trade
         public Faction Faction { get; }
         public TradeCurrency TradeCurrency => TradeCurrency.Silver;
 
-        private List<Thing> _goodsCache = new List<Thing>();
+        private List<Thing> _goodsCache;
 
         public PlayerTrader(Player player, Resources resources)
         {
@@ -34,12 +35,17 @@ namespace PlayerTrade.Trade
             _goodsCache = new List<Thing>();
             foreach (NetThing netThing in resources.Things)
                 _goodsCache.Add(netThing.ToThing());
+            foreach (NetHuman netHuman in resources.Pawns)
+                _goodsCache.Add(netHuman.ToPawn());
         }
 
+        // Things that the other player is "willing" to buy
         public IEnumerable<Thing> ColonyThingsWillingToBuy(Pawn playerNegotiator)
         {
             foreach (Thing thing in TradeUtility.AllLaunchableThingsForTrade(playerNegotiator.Map, this))
                 yield return thing;
+            foreach (Pawn pawn in TradeUtility.AllSellableColonyPawns(playerNegotiator.Map).Where(p => p.RaceProps.Humanlike))
+                yield return pawn;
         }
 
         public void GiveSoldThingToTrader(Thing toGive, int countToGive, Pawn playerNegotiator)

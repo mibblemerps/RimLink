@@ -18,6 +18,7 @@
 				<thingDefCountRange>5~10</thingDefCountRange>
 				<totalPriceRange>300~900</totalPriceRange>
 			</li>
+			<li Class="StockGenerator_BuySlaves" />
 		</stockGenerators>
 	</TraderKindDef>
 </Defs>

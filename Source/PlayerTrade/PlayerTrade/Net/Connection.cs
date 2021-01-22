@@ -120,7 +120,14 @@ namespace PlayerTrade.Net
                 // Parse packet data
                 using (var gzip = new GZipStream(new MemoryStream(packetContentBuffer), CompressionMode.Decompress))
                 {
-                    packet.Read(new PacketBuffer(gzip));
+                    try
+                    {
+                        packet.Read(new PacketBuffer(gzip));
+                    }
+                    catch (Exception e)
+                    {
+                        Log.Error($"Exception reading packet.", e);
+                    }
                 }
             }
 

@@ -17,28 +17,25 @@ namespace PlayerTrade.Net
 
         public Resources Resources;
 
-        public PacketColonyResources()
-        {
-        }
-
         public PacketColonyResources(string guid, Resources resources)
         {
             Guid = guid;
             Resources = resources;
         }
 
+        // Empty constructor needed for packet to be instantiated when received
+        public PacketColonyResources() {}
+
         public override void Write(PacketBuffer buffer)
         {
             buffer.WriteString(Guid);
-            Resources.Write(buffer);
+            buffer.WritePacketable(Resources);
         }
 
         public override void Read(PacketBuffer buffer)
         {
             Guid = buffer.ReadString();
-
-            Resources = new Resources();
-            Resources.Read(buffer);
+            Resources = buffer.ReadPacketable<Resources>();
         }
     }
 }

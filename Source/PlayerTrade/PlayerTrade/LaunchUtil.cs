@@ -62,6 +62,11 @@ namespace PlayerTrade
         /// <returns>Is same thing?</returns>
         public static bool IsThingSameAs(Thing thingA, Thing thingB, bool ignoreStackCount = true)
         {
+            if (thingA is Pawn pawnA && thingB is Pawn pawnB)
+            {
+                return IsPawnSameAs(pawnA, pawnB);
+            }
+
             if (thingA.def != thingB.def)
                 return false;
 
@@ -87,6 +92,13 @@ namespace PlayerTrade
             }
 
             return true;
+        }
+
+        public static bool IsPawnSameAs(Pawn pawnA, Pawn pawnB)
+        {
+            return pawnA.ThingID == pawnB.ThingID
+                   && Mathf.Abs(pawnA.MarketValue - pawnB.MarketValue) < 10f 
+                   && Mathf.Abs(pawnA.ageTracker.AgeChronologicalTicks - pawnB.ageTracker.AgeChronologicalTicks) < 100;
         }
 
         public static int LaunchableThingCount(Map map, ThingDef def)

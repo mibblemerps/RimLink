@@ -179,9 +179,17 @@ namespace PlayerTrade.Net
 
         public async Task SendColonyResources()
         {
-            var resources = new Resources();
-            resources.Update(Find.CurrentMap);
-            await SendPacket(new PacketColonyResources(Guid, resources));
+            try
+            {
+                var resources = new Resources();
+                resources.Update(Find.CurrentMap);
+                await SendPacket(new PacketColonyResources(Guid, resources));
+            }
+            catch (Exception e)
+            {
+                Log.Error("Exception sending colony resources!", e);
+                throw;
+            }
         }
 
         public async Task<Packet> AwaitPacket(PacketPredicate predicate, int timeout = 0)
@@ -227,85 +235,95 @@ namespace PlayerTrade.Net
             foreach (var predicate in toRemove)
                 AwaitingPackets.Remove(predicate);
 
-            switch (e.Id)
+            try
             {
-                case Packet.ColonyInfoId:
-                    PacketColonyInfo infoPacket = (PacketColonyInfo) e.Packet;
-                    //Log.Message($"Received colony info update for {infoPacket.Player.Name} (tradeable = {infoPacket.Player.TradeableNow})");
-                    Player oldPlayer = Players.ContainsKey(infoPacket.Guid) ? Players[infoPacket.Guid] : null;
-                    if (oldPlayer == null)
-                    {
-                        // New connection
-                        Log.Message($"Player {infoPacket.Player.Name} connected");
-                        PlayerConnected?.Invoke(this, infoPacket.Player);
-                    }
-                    Players[infoPacket.Guid] = infoPacket.Player;
-                    PlayerUpdated?.Invoke(this, new PlayerUpdateEventArgs(oldPlayer, infoPacket.Player));
-                    break;
-
-                case Packet.PlayerDisconnectedPacketId:
-                    PacketPlayerDisconnected playerDisconnectedPacket = (PacketPlayerDisconnected) e.Packet;
-                    if (Players.ContainsKey(playerDisconnectedPacket.Player))
-                    {
-                        var disconnectedPlayer = Players[playerDisconnectedPacket.Player];
-                        Players.Remove(playerDisconnectedPacket.Player);
-                        PlayerDisconnected?.Invoke(this, disconnectedPlayer);
-                    }
-                    break;
-
-                case Packet.RequestColonyResourcesId:
-                    // Send server our current resources
-                    Log.Message($"Fulfilling request for colony resources...");
-                    await SendColonyResources();
-                    break;
-
-                case Packet.TradeOfferPacketId:
-                    TradeOffer newTradeOffer = ((PacketTradeOffer) e.Packet).ToTradeOffer();
-                    ActiveTradeOffers.Add(newTradeOffer);
-                    TradeUtil.PresentTradeOffer(newTradeOffer);
-                    break;
-
-                case Packet.AcceptTradePacketId:
-                    await HandleAcceptTradePacket((PacketAcceptTrade) e.Packet);
-                    break;
-
-                case Packet.ConfirmTradePacketId:
-                    await HandleConfirmTradePacket((PacketTradeConfirm) e.Packet);
-                    break;
-
-                case Packet.TriggerRaidPacketId:
-                    PacketTriggerRaid raidPacket = (PacketTriggerRaid) e.Packet;
-                    Log.Message($"Received raid from {GetName(raidPacket.Raid.From)}");
-                    RimLinkComp.Instance.RaidsPending.Add(raidPacket.Raid);
-                    raidPacket.Raid.InformTargetBountyPlaced();
-                    break;
-
-                case Packet.AnnouncementPacketId:
-                    AnnouncementUtility.Show((PacketAnnouncement) e.Packet);
-                    break;
-
-                case Packet.GiveItemPacketId:
-                    var giveItemPacket = (PacketGiveItem) e.Packet;
-                    try
-                    {
-                        giveItemPacket.GiveItem();
-
-                        await SendPacket(new PacketAcknowledgement
+                switch (e.Id)
+                {
+                    case Packet.ColonyInfoId:
+                        PacketColonyInfo infoPacket = (PacketColonyInfo) e.Packet;
+                        //Log.Message($"Received colony info update for {infoPacket.Player.Name} (tradeable = {infoPacket.Player.TradeableNow})");
+                        Player oldPlayer = Players.ContainsKey(infoPacket.Guid) ? Players[infoPacket.Guid] : null;
+                        if (oldPlayer == null)
                         {
-                            Guid = giveItemPacket.Reference,
-                            Success = true
-                        });
-                    }
-                    catch (Exception giveException)
-                    {
-                        await SendPacket(new PacketAcknowledgement
+                            // New connection
+                            Log.Message($"Player {infoPacket.Player.Name} connected");
+                            PlayerConnected?.Invoke(this, infoPacket.Player);
+                        }
+
+                        Players[infoPacket.Guid] = infoPacket.Player;
+                        PlayerUpdated?.Invoke(this, new PlayerUpdateEventArgs(oldPlayer, infoPacket.Player));
+                        break;
+
+                    case Packet.PlayerDisconnectedPacketId:
+                        PacketPlayerDisconnected playerDisconnectedPacket = (PacketPlayerDisconnected) e.Packet;
+                        if (Players.ContainsKey(playerDisconnectedPacket.Player))
                         {
-                            Guid = giveItemPacket.Reference,
-                            Success = false,
-                            FailReason = giveException.Message
-                        });
-                    }
-                    break;
+                            var disconnectedPlayer = Players[playerDisconnectedPacket.Player];
+                            Players.Remove(playerDisconnectedPacket.Player);
+                            PlayerDisconnected?.Invoke(this, disconnectedPlayer);
+                        }
+
+                        break;
+
+                    case Packet.RequestColonyResourcesId:
+                        // Send server our current resources
+                        Log.Message($"Fulfilling request for colony resources...");
+                        await SendColonyResources();
+                        break;
+
+                    case Packet.TradeOfferPacketId:
+                        TradeOffer newTradeOffer = ((PacketTradeOffer) e.Packet).ToTradeOffer();
+                        ActiveTradeOffers.Add(newTradeOffer);
+                        TradeUtil.PresentTradeOffer(newTradeOffer);
+                        break;
+
+                    case Packet.AcceptTradePacketId:
+                        await HandleAcceptTradePacket((PacketAcceptTrade) e.Packet);
+                        break;
+
+                    case Packet.ConfirmTradePacketId:
+                        await HandleConfirmTradePacket((PacketTradeConfirm) e.Packet);
+                        break;
+
+                    case Packet.TriggerRaidPacketId:
+                        PacketTriggerRaid raidPacket = (PacketTriggerRaid) e.Packet;
+                        Log.Message($"Received raid from {GetName(raidPacket.Raid.From)}");
+                        RimLinkComp.Instance.RaidsPending.Add(raidPacket.Raid);
+                        raidPacket.Raid.InformTargetBountyPlaced();
+                        break;
+
+                    case Packet.AnnouncementPacketId:
+                        AnnouncementUtility.Show((PacketAnnouncement) e.Packet);
+                        break;
+
+                    case Packet.GiveItemPacketId:
+                        var giveItemPacket = (PacketGiveItem) e.Packet;
+                        try
+                        {
+                            giveItemPacket.GiveItem();
+
+                            await SendPacket(new PacketAcknowledgement
+                            {
+                                Guid = giveItemPacket.Reference,
+                                Success = true
+                            });
+                        }
+                        catch (Exception giveException)
+                        {
+                            await SendPacket(new PacketAcknowledgement
+                            {
+                                Guid = giveItemPacket.Reference,
+                                Success = false,
+                                FailReason = giveException.Message
+                            });
+                        }
+
+                        break;
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Error($"Exception handling packet! ({e.Packet.GetType().Name})", ex);
             }
         }
 

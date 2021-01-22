@@ -24,6 +24,9 @@ namespace PlayerTrade
 
         public static NetHuman ToNetHuman(this Pawn pawn)
         {
+            if (!pawn.RaceProps.Humanlike)
+                throw new ArgumentException("Attempt to convert non-human to NetHuman", nameof(pawn));
+
             NetHuman human = new NetHuman();
 
             // Name
