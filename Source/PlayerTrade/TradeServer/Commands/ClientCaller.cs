@@ -13,7 +13,7 @@ namespace TradeServer.Commands
         public Client Client;
 
         public override string Guid => Client.Player.Guid;
-        public override bool IsAdmin => true;
+        public override bool IsAdmin => false;
 
         public ClientCaller(Client client)
         {
