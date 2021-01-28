@@ -19,6 +19,8 @@ namespace TradeServer.Commands
 
         public override async Task Execute(Caller caller, string[] args)
         {
+            CommandUtility.AdminRequired(caller);
+
             if (args.Length >= 1 && args[0].Equals("cancel", StringComparison.InvariantCultureIgnoreCase))
             {
                 // Cancel stop
