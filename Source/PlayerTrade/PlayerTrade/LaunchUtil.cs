@@ -23,6 +23,13 @@ namespace PlayerTrade
         {
             int launched = 0;
 
+            if (launchThing is Pawn pawn)
+            {
+                if (!dryRun)
+                    pawn.Destroy();
+                return 1;
+            }
+
             foreach (Building_OrbitalTradeBeacon orbitalTradeBeacon in Building_OrbitalTradeBeacon.AllPowered(map))
             {
                 foreach (IntVec3 tradeableCell in orbitalTradeBeacon.TradeableCells)

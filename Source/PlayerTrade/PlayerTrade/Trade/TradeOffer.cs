@@ -27,6 +27,29 @@ namespace PlayerTrade.Trade
 
         public bool IsForUs => For == RimLinkComp.Find().Client.Guid;
 
+        public float OfferedMarketValue
+        {
+            get
+            {
+                if (_offeredMarketValueCached < 0f)
+                    _offeredMarketValueCached = CalculateMarketValue(true);
+                return _offeredMarketValueCached;
+            }
+        }
+
+        public float RequestedMarketValue
+        {
+            get
+            {
+                if (_requestedMarketValueCached < 0f)
+                    _requestedMarketValueCached = CalculateMarketValue(false);
+                return _requestedMarketValueCached;
+            }
+        }
+
+        private float _offeredMarketValueCached = -1;
+        private float _requestedMarketValueCached = -1;
+
         public string GetTradeOfferString(out List<ThingDef> hyperlinks)
         {
             hyperlinks = new List<ThingDef>();
@@ -197,6 +220,23 @@ namespace PlayerTrade.Trade
             return true;
         }
 
+        private float CalculateMarketValue(bool offered)
+        {
+            float value = 0f;
+            foreach (TradeThing trade in Things)
+            {
+                // If we want requested market value, negate the count offered
+                int count = offered ? trade.CountOffered : -trade.CountOffered;
+
+                if (count > 0)
+                {
+                    value += trade.MarketValue;
+                }
+            }
+
+            return value;
+        }
+
         private List<Thing> GetQuantityFromThings(List<Thing> things, int count, bool exceptionIfNotEnough)
         {
             var result = new List<Thing>();
@@ -249,6 +289,18 @@ namespace PlayerTrade.Trade
             /// </summary>
             public int CountOffered;
 
+            private float _cachedMarketValue = -1f;
+
+            public float MarketValue
+            {
+                get
+                {
+                    if (_cachedMarketValue < 0f)
+                        _cachedMarketValue = CalculateMarketValue();
+                    return _cachedMarketValue;
+                }
+            }
+
             public bool IsPawn
             {
                 get
@@ -260,6 +312,8 @@ namespace PlayerTrade.Trade
                     return requested is Pawn;
                 }
             }
+
+            public TradeThing() {}
 
             public TradeThing(List<Thing> offeredThings, List<Thing> requestedThings, int countOffered)
             {
@@ -281,9 +335,21 @@ namespace PlayerTrade.Trade
 
             public void ExposeData()
             {
-                Scribe_Collections.Look(ref OfferedThings, "offered_things");
-                Scribe_Collections.Look(ref RequestedThings, "requested_things");
+                Scribe_Collections.Look(ref OfferedThings, "offered_things", LookMode.Deep);
+                Scribe_Collections.Look(ref RequestedThings, "requested_things", LookMode.Deep);
                 Scribe_Values.Look(ref CountOffered, "count");
+            }
+
+            private float CalculateMarketValue()
+            {
+                if (CountOffered == 0)
+                    return 0;
+
+                Thing thing = AllThings.FirstOrDefault();
+                if (thing == null)
+                    return 0;
+
+                return thing.MarketValue * Mathf.Abs(CountOffered);
             }
         }
     }

@@ -14,9 +14,8 @@ namespace PlayerTrade.Trade
             Offer = offer;
 
             def = DefDatabase<LetterDef>.GetNamed("PlayerTradeOffer");
-            label = $"Trade Offer ({RimLinkComp.Find().Client.GetName(Offer.From)})";
-            text = offer.GetTradeOfferString(out var hyperlinks);
-            hyperlinkThingDefs = hyperlinks.Take(Math.Min(hyperlinks.Count, 5)).ToList();
+            label = $"Trade Offer ({RimLinkComp.Instance.Client.GetName(Offer.From)})";
+            text = $"{RimLinkComp.Instance.Client.GetName(offer.From)} has presented a trade offer.";
         }
 
         public ChoiceLetter_TradeOffer() { }
@@ -62,8 +61,21 @@ namespace PlayerTrade.Trade
             if (Offer.Fresh)
             {
                 _ = Offer.Reject(); // send rejection
-                RimLinkComp.Find().Client.ActiveTradeOffers.Remove(Offer);
+                RimLinkComp.Instance.Client.ActiveTradeOffers.Remove(Offer);
             }
+        }
+
+        public override void ExposeData()
+        {
+            base.ExposeData();
+            Scribe_Deep.Look(ref Offer, "trade_offer");
+        }
+
+        public override void OpenLetter()
+        {
+            DiaNode nodeRoot = new DiaNode(text);
+            nodeRoot.options.AddRange(Choices);
+            Find.WindowStack.Add(new Dialog_TradeOffer(nodeRoot, Offer, false, radioMode, title));
         }
     }
 }
