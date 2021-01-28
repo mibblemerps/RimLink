@@ -108,5 +108,11 @@ namespace TradeServer.Commands
             if (throwOnNoneFound)
                 throw new CommandException("No players found with selector: " + input);
         }
+
+        public static void AdminRequired(Caller caller)
+        {
+            if (!caller.IsAdmin)
+                throw new CommandAdminRequiredException();
+        }
     }
 }

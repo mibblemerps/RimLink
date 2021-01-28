@@ -9,16 +9,15 @@ namespace TradeServer.Commands
     public class CommandKick : Command
     {
         public override string Name => "kick";
+        public override string Usage => "<target>";
 
         public override async Task Execute(Caller caller, string[] args)
         {
-            if (!caller.IsAdmin)
-                throw new CommandException("Admin required");
+            CommandUtility.AdminRequired(caller);
 
             if (args.Length < 1)
-                throw new CommandException("Invalid arguments");
-
-
+                throw new CommandUsageException(this);
+            
             foreach (Client client in CommandUtility.GetClientsFromInput(args[0]))
             {
                 await client.Disconnect();

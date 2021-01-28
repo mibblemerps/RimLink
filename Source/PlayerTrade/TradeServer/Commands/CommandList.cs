@@ -9,6 +9,7 @@ namespace TradeServer.Commands
     public class CommandList : Command
     {
         public override string Name => "list";
+        public override string Usage => "{more}";
 
         public override async Task Execute(Caller caller, string[] args)
         {

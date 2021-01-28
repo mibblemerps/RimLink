@@ -14,7 +14,8 @@ namespace TradeServer
 
         public static List<Command> Commands = new List<Command>
         {
-            new CommandTest(),
+            new CommandHelp(),
+            new CommandStop(),
             new CommandList(),
             new CommandSendLetter(),
             new CommandKick(),

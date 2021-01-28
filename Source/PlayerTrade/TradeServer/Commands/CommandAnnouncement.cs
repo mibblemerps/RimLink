@@ -10,13 +10,14 @@ namespace TradeServer.Commands
     public class CommandAnnouncement : Command
     {
         public override string Name => "announce";
+        public override string Usage => "<message>";
+
         public override async Task Execute(Caller caller, string[] args)
         {
-            if (!caller.IsAdmin)
-                throw new CommandException("Admin required");
+            CommandUtility.AdminRequired(caller);
 
             if (args.Length == 0)
-                throw new CommandException("Invalid arguments");
+                throw new CommandUsageException(this);
 
             int startIndex = 0;
             PacketAnnouncement.MessageType type = PacketAnnouncement.MessageType.Dialog;

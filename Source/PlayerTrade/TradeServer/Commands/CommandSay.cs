@@ -11,10 +11,11 @@ namespace TradeServer.Commands
     public class CommandSay : Command
     {
         public override string Name => "say";
+        public override string Usage => "(message)";
+
         public override async Task Execute(Caller caller, string[] args)
         {
-            if (!caller.IsAdmin)
-                throw new CommandException("Requires admin");
+            CommandUtility.AdminRequired(caller);
 
             string msg = string.Join(" ", args);
             var packet = new PacketReceiveChatMessage

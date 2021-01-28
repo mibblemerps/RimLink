@@ -11,15 +11,16 @@ namespace TradeServer.Commands
     public class CommandGiveThing : Command
     {
         public override string Name => "give";
+        public override string Usage => "<target> <thing> (stuff) (quantity) (hitpoints%) (awful|poor|normal|good|excellent|masterwork|legendary)";
+
         public override async Task Execute(Caller caller, string[] args)
         {
-            if (!caller.IsAdmin)
-                throw new CommandException("Admin required");
+            CommandUtility.AdminRequired(caller);
 
             // give <target> <thing> <stuff> 10 50% awful
 
             if (args.Length <= 0)
-                throw new CommandException("Invalid usage");
+                throw new CommandUsageException(this);
 
             Client[] targets = new Client[0];
 
