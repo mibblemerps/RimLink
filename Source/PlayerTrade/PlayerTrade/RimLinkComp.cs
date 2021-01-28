@@ -35,6 +35,8 @@ namespace PlayerTrade
         /// </summary>
         public bool Anticheat;
 
+        public List<Player> RememberedPlayers;
+
         public List<TradeOffer> TradeOffersPendingFulfillment = new List<TradeOffer>();
         public List<BountyRaid> RaidsPending = new List<BountyRaid>();
         public List<LaborOffer> ActiveLaborOffers = new List<LaborOffer>();
@@ -81,6 +83,7 @@ namespace PlayerTrade
             Client = new Client(this);
             Client.Connected += OnClientConnected;
             Client.Disconnected += ClientOnDisconnected;
+            Client.PlayerConnected += OnPlayerConnected;
             try
             {
                 await Client.Connect(PlayerTradeMod.Instance.Settings.ServerIp);
@@ -94,6 +97,8 @@ namespace PlayerTrade
         public async void Init()
         {
             // Initialize lists
+            if (RememberedPlayers == null)
+                RememberedPlayers = new List<Player>();
             if (TradeOffersPendingFulfillment == null)
                 TradeOffersPendingFulfillment = new List<TradeOffer>();
             if (RaidsPending == null)
@@ -210,11 +215,19 @@ namespace PlayerTrade
             PawnsToRemove.Clear();
         }
 
+        private void OnPlayerConnected(object sender, Player e)
+        {
+            // Remove and re-add player to remembered players list
+            RememberedPlayers.RemoveAll(player => player.Guid == e.Guid);
+            RememberedPlayers.Add(e);
+        }
+
         public override void ExposeData()
         {
             base.ExposeData();
             Scribe_Values.Look(ref Guid, "guid");
             Scribe_Values.Look(ref Secret, "secret");
+            Scribe_Collections.Look(ref RememberedPlayers, "players", LookMode.Deep);
             Scribe_Collections.Look(ref TradeOffersPendingFulfillment, "trade_offers_pending_fulfillment");
             Scribe_Collections.Look(ref RaidsPending, "raids_pending");
             Scribe_Collections.Look(ref ActiveLaborOffers, "active_labor_offers");

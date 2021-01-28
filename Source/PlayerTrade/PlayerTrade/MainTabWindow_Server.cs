@@ -86,7 +86,7 @@ namespace PlayerTrade
         {
             Widgets.DrawBoxSolid(rect, new Color(0.179f, 0.214f, 0.246f));
 
-            List<Player> players = RimLinkComp.Instance.Client.Players.Values.ToList();
+            List<Player> players = RimLinkComp.Instance.Client.OnlinePlayers.Values.ToList();
 
             Rect viewRect = new Rect(0, 0, rect.width - 16f, 25f * players.Count);
             Widgets.BeginScrollView(rect, ref _playersScrollPos, viewRect);

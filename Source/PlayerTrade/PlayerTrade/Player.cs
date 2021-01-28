@@ -11,11 +11,12 @@ using Verse;
 namespace PlayerTrade
 {
     [Serializable]
-    public class Player
+    public class Player : IExposable
     {
-        public readonly string Guid;
+        public string Guid;
         public string Name;
         public float[] Color = ColoredText.FactionColor_Neutral.ToFloats();
+
         public int Wealth;
         public int Day;
         public string Weather;
@@ -25,10 +26,15 @@ namespace PlayerTrade
         public List<Faction> LocalFactions;
 
         public bool IsUs => Guid == RimLinkComp.Instance.Guid;
+        public bool IsOnline => RimLinkComp.Instance.Client.OnlinePlayers.ContainsKey(Guid);
 
         public Player(string guid)
         {
             Guid = guid;
+        }
+
+        public Player()
+        {
         }
 
         public static Player Self(bool mapIndependent = false)
@@ -64,8 +70,18 @@ namespace PlayerTrade
             return player;
         }
 
+        public void ExposeData()
+        {
+            Scribe_Values.Look(ref Guid, "guid");
+            Scribe_Values.Look(ref Name, "name");
+            Scribe_Values.Look(ref Color[0], "color_r");
+            Scribe_Values.Look(ref Color[1], "color_g");
+            Scribe_Values.Look(ref Color[2], "color_b");
+            Scribe_Collections.Look(ref LocalFactions, "local_factions");
+        }
+
         [Serializable]
-        public class Faction
+        public class Faction : IExposable
         {
             public string Name;
             public int Goodwill;
@@ -90,6 +106,16 @@ namespace PlayerTrade
             public FactionDef FindDef()
             {
                 return RimWorld.FactionDef.Named(FactionDef);
+            }
+
+            public void ExposeData()
+            {
+                Scribe_Values.Look(ref Name, "name");
+                Scribe_Values.Look(ref Goodwill, "goodwill");
+                Scribe_Values.Look(ref FactionDef, "faction_def");
+                Scribe_Values.Look(ref FactionColorR, "color_r");
+                Scribe_Values.Look(ref FactionColorG, "color_g");
+                Scribe_Values.Look(ref FactionColorB, "color_b");
             }
         }
     }

@@ -27,8 +27,8 @@ namespace PlayerTrade
             Negotiator = negotiator;
 
             // Mark dirty so we can have up-to-date info about ourselves in the comms window
-            RimLinkComp.Find().Client.MarkDirty();
-            _self = RimLinkComp.Find().Client.Player;
+            RimLinkComp.Instance.Client.MarkDirty();
+            _self = RimLinkComp.Instance.Client.Player;
 
             forcePause = true;
         }
@@ -62,13 +62,20 @@ namespace PlayerTrade
         private string GetInfoText(Player player)
         {
             var sb = new StringBuilder($"{player.Name.Colorize(ColoredText.FactionColor_Neutral)}\n");
-            sb.Append($"Day {player.Day}");
-            if (player.Weather != null)
-                sb.Append($" {WeatherDef.Named(player.Weather).LabelCap}");
-            if (player.Temperature != int.MinValue)
-                sb.Append($", {GenText.ToStringTemperature(player.Temperature)}");
-            sb.AppendLine();
-            sb.Append($"Wealth: {("$" + Mathf.RoundToInt(player.Wealth)).Colorize(Color.green)}");
+            if (player.IsOnline)
+            {
+                sb.Append($"Day {player.Day}");
+                if (player.Weather != null)
+                    sb.Append($" {WeatherDef.Named(player.Weather).LabelCap}");
+                if (player.Temperature != int.MinValue)
+                    sb.Append($", {GenText.ToStringTemperature(player.Temperature)}");
+                sb.AppendLine();
+                sb.Append($"Wealth: {("$" + Mathf.RoundToInt(player.Wealth)).Colorize(Color.green)}");
+            }
+            else
+            {
+                sb.Append("Offline".Colorize(Color.gray));
+            }
 
             if (Prefs.DevMode)
                 sb.Append("\nGuid: " + player.Guid);
@@ -89,6 +96,15 @@ namespace PlayerTrade
             };
             node.options.Add(letterOption);
 
+            var bountyOption = new DiaOption("Place Bounty")
+            {
+                resolveTree = true,
+                action = () => { Find.WindowStack.Add(new Dialog_PlaceBounty(player)); }
+            };
+            if (!canDoSocial)
+                bountyOption.Disable("WorkTypeDisablesOption".Translate(SkillDefOf.Social.label));
+            node.options.Add(bountyOption);
+
             var tradeOption = new DiaOption("Trade")
             {
                 resolveTree = true,
@@ -98,6 +114,8 @@ namespace PlayerTrade
                 tradeOption.Disable("WorkTypeDisablesOption".Translate(SkillDefOf.Social.label));
             if (!player.TradeableNow)
                 tradeOption.Disable("not tradeable currently");
+            if (!player.IsOnline)
+                tradeOption.Disable("offline");
             node.options.Add(tradeOption);
 
             var lendColonist = new DiaOption("Lend Colonist")
@@ -109,16 +127,9 @@ namespace PlayerTrade
                 lendColonist.Disable("no lendable colonists");
             if (!canDoSocial)
                 lendColonist.Disable("WorkTypeDisablesOption".Translate(SkillDefOf.Social.label));
+            if (!player.IsOnline)
+                lendColonist.Disable("offline");
             node.options.Add(lendColonist);
-
-            var bountyOption = new DiaOption("Place Bounty")
-            {
-                resolveTree = true,
-                action = () => { Find.WindowStack.Add(new Dialog_PlaceBounty(player)); }
-            };
-            if (!canDoSocial)
-                bountyOption.Disable("WorkTypeDisablesOption".Translate(SkillDefOf.Social.label));
-            node.options.Add(bountyOption);
 
             var closeOption = new DiaOption($"({"Disconnect".Translate()})") {resolveTree = true};
             node.options.Add(closeOption);

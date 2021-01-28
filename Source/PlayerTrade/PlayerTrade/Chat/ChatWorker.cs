@@ -74,7 +74,7 @@ namespace PlayerTrade.Chat
                 PacketReceiveChatMessage receivePacket = (PacketReceiveChatMessage) e.Packet;
                 foreach (var msg in receivePacket.Messages)
                 {
-                    if (msg.From != null && !Client.Players.ContainsKey(msg.From) && msg.From != RimLinkComp.Instance.Guid)
+                    if (msg.From != null && Client.GetPlayer(msg.From) == null)
                     {
                         Log.Warn("Message from unknown player! " + msg.From);
                         continue;

@@ -35,9 +35,8 @@ namespace PlayerTrade.Net
 
         public GameSettings GameSettings;
 
-        public Dictionary<string, Player> Players = new Dictionary<string, Player>();
-        public IEnumerable<Player> OtherPlayers => Players.Values.Where(p => !p.IsUs);
-
+        public Dictionary<string, Player> OnlinePlayers = new Dictionary<string, Player>();
+        
         public List<TradeOffer> ActiveTradeOffers = new List<TradeOffer>();
 
         public Dictionary<PacketPredicate, TaskCompletionSource<Packet>> AwaitingPackets = new Dictionary<PacketPredicate, TaskCompletionSource<Packet>>();
@@ -129,16 +128,53 @@ namespace PlayerTrade.Net
         public void MarkDirty(bool sendPacket = true, bool mapIndependent = false)
         {
             Player = Player.Self(mapIndependent);
-            Players[Guid] = Player; // add ourselves to the player list
+            OnlinePlayers[Guid] = Player; // add ourselves to the player list
             if (sendPacket)
                 _ = SendColonyInfo();
         }
 
+        public Player GetPlayer(string guid)
+        {
+            foreach (Player player in GetPlayers(includeSelf: true))
+            {
+                if (player.Guid == guid)
+                    return player;
+            }
+
+            return null;
+        }
+
         public string GetName(string guid, bool colored = false)
         {
-            if (Players.ContainsKey(guid))
-                return colored ? Players[guid].Name.Colorize(Players[guid].Color.ToColor()) : Players[guid].Name;
+            Player player = GetPlayer(guid);
+            if (player != null)
+                return colored ? player.Name.Colorize(player.Color.ToColor()) : player.Name;
+
+            // Fallback to just showing GUID
             return "{" + guid + "}";
+        }
+
+        public IEnumerable<Player> GetPlayers(bool online = false, bool includeSelf = false)
+        {
+            // Get online playres
+            foreach (Player player in OnlinePlayers.Values)
+            {
+                if (!includeSelf && player.IsUs)
+                    continue; // Skip self
+                yield return player;
+            }
+
+            if (!online)
+            {
+                // Get offline players
+                foreach (Player player in RimLinkComp.RememberedPlayers.Where(p => !p.IsOnline))
+                {
+                    if (OnlinePlayers.ContainsKey(player.Guid))
+                        continue; // This player is online
+
+                    yield return player;
+                }
+            }
         }
 
         public async Task SendColonyInfo()
@@ -237,7 +273,7 @@ namespace PlayerTrade.Net
                     case Packet.ColonyInfoId:
                         PacketColonyInfo infoPacket = (PacketColonyInfo) e.Packet;
                         //Log.Message($"Received colony info update for {infoPacket.Player.Name} (tradeable = {infoPacket.Player.TradeableNow})");
-                        Player oldPlayer = Players.ContainsKey(infoPacket.Guid) ? Players[infoPacket.Guid] : null;
+                        Player oldPlayer = OnlinePlayers.ContainsKey(infoPacket.Guid) ? OnlinePlayers[infoPacket.Guid] : null;
                         if (oldPlayer == null)
                         {
                             // New connection
@@ -245,16 +281,16 @@ namespace PlayerTrade.Net
                             PlayerConnected?.Invoke(this, infoPacket.Player);
                         }
 
-                        Players[infoPacket.Guid] = infoPacket.Player;
+                        OnlinePlayers[infoPacket.Guid] = infoPacket.Player;
                         PlayerUpdated?.Invoke(this, new PlayerUpdateEventArgs(oldPlayer, infoPacket.Player));
                         break;
 
                     case Packet.PlayerDisconnectedPacketId:
                         PacketPlayerDisconnected playerDisconnectedPacket = (PacketPlayerDisconnected) e.Packet;
-                        if (Players.ContainsKey(playerDisconnectedPacket.Player))
+                        if (OnlinePlayers.ContainsKey(playerDisconnectedPacket.Player))
                         {
-                            var disconnectedPlayer = Players[playerDisconnectedPacket.Player];
-                            Players.Remove(playerDisconnectedPacket.Player);
+                            var disconnectedPlayer = OnlinePlayers[playerDisconnectedPacket.Player];
+                            OnlinePlayers.Remove(playerDisconnectedPacket.Player);
                             PlayerDisconnected?.Invoke(this, disconnectedPlayer);
                         }
 

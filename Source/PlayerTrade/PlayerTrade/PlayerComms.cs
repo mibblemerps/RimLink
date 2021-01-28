@@ -1,4 +1,5 @@
 ﻿using RimWorld;
+using UnityEngine;
 using Verse;
 
 namespace PlayerTrade
@@ -28,7 +29,7 @@ namespace PlayerTrade
 
         public FloatMenuOption CommFloatMenuOption(Building_CommsConsole console, Pawn negotiator)
         {
-            return new FloatMenuOption("Contact " + Player.Name.Colorize(ColoredText.FactionColor_Neutral), () =>
+            return new FloatMenuOption("Contact " + Player.Name.Colorize(ColoredText.FactionColor_Neutral) + (Player.IsOnline ? "" : " <i>(offline)</i>".Colorize(Color.gray)), () =>
             {
                 console.GiveUseCommsJob(negotiator, this);
             });

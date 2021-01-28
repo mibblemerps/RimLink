@@ -14,9 +14,9 @@ namespace PlayerTrade.Chat
         {
             get
             {
-                if (From == null || !RimLinkComp.Instance.Client.Players.ContainsKey(From))
+                if (From == null)
                     return null;
-                return RimLinkComp.Instance.Client.Players[From];
+                return RimLinkComp.Instance.Client.GetPlayer(From);
             }
         }
 
