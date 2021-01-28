@@ -17,12 +17,16 @@ namespace TradeServer
             new CommandHelp(),
             new CommandStop(),
             new CommandList(),
+            new CommandOp(),
+            new CommandDeop(),
             new CommandSendLetter(),
             new CommandKick(),
             new CommandAnnouncement(),
             new CommandGiveThing(),
             new CommandSay(),
         };
+
+        public static ClientPermissions Permissions = new ClientPermissions();
 
         private static Caller ServerCaller = new ServerCaller();
         private static Task _serverTask;
@@ -36,6 +40,8 @@ namespace TradeServer
             int port = 35562;
             Console.WriteLine("    Port: " + port);
             Console.WriteLine();
+
+            Permissions.Load();
 
             Server = new Server();
             _serverTask = Server.Run(port);
