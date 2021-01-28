@@ -125,6 +125,7 @@
     <Compile Include="Patches\Patch_Tradeable_Interactive.cs" />
     <Compile Include="Raids\Dialog_PlaceBounty.cs" />
     <Compile Include="Dialog_PlayerComms.cs" />
+    <Compile Include="Trade\Dialog_ConfirmTrade.cs" />
     <Compile Include="Trade\Dialog_TradeIntermission.cs" />
     <Compile Include="HashUtil.cs" />
     <Compile Include="Log.cs" />
@@ -162,6 +163,7 @@
     <Compile Include="Trade\TradeOffer.cs" />
     <Compile Include="Trade\TradeUtil.cs" />
     <Compile Include="LaunchUtil.cs" />
+    <Compile Include="Trade\TradeOfferUI.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

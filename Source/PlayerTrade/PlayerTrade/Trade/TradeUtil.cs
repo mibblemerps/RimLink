@@ -45,7 +45,7 @@ namespace PlayerTrade.Trade
             var tradeOffer = new TradeOffer
             {
                 For = ((PlayerTrader)TradeSession.trader).Player.Guid,
-                From = RimLinkComp.Find().Guid,
+                From = RimLinkComp.Instance.Guid,
                 Fresh = true,
                 Guid = Guid.NewGuid()
             };

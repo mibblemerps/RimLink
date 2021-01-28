@@ -134,10 +134,10 @@ namespace PlayerTrade.Net
                 _ = SendColonyInfo();
         }
 
-        public string GetName(string guid)
+        public string GetName(string guid, bool colored = false)
         {
             if (Players.ContainsKey(guid))
-                return Players[guid].Name;
+                return colored ? Players[guid].Name.Colorize(Players[guid].Color.ToColor()) : Players[guid].Name;
             return "{" + guid + "}";
         }
 
@@ -151,13 +151,8 @@ namespace PlayerTrade.Net
             await SendPacket(colonyInfo);
         }
 
-        /// <summary>
-        /// Send the current trade deal
-        /// </summary>
-        /// <returns></returns>
-        public async Task SendTradeOffer()
+        public async void SendTradeOffer(TradeOffer tradeOffer)
         {
-            TradeOffer tradeOffer = TradeUtil.FormTradeOffer();
             ActiveTradeOffers.Add(tradeOffer);
 
             Log.Message("Sending trade offer...");
