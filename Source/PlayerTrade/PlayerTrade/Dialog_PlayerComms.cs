@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using PlayerTrade.Labor;
 using PlayerTrade.Mail;
+using PlayerTrade.Mechanoids.Designer;
 using PlayerTrade.Net;
 using PlayerTrade.Raids;
 using PlayerTrade.Trade;
@@ -104,6 +105,13 @@ namespace PlayerTrade
             if (!canDoSocial)
                 bountyOption.Disable("WorkTypeDisablesOption".Translate(SkillDefOf.Social.label));
             node.options.Add(bountyOption);
+
+            var mechClusterOption = new DiaOption("Send Mech Cluster")
+            {
+                resolveTree = true,
+                action = () => { Find.WindowStack.Add(new Dialog_DesignMechCluster(player)); }
+            };
+            node.options.Add(mechClusterOption);
 
             var tradeOption = new DiaOption("Trade")
             {

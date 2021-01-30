@@ -98,6 +98,13 @@
     <Compile Include="Mail\MailWorker.cs" />
     <Compile Include="Mail\PacketMail.cs" />
     <Compile Include="MainTabWindow_Server.cs" />
+    <Compile Include="Mechanoids\Designer\Dialog_DesignMechCluster.cs" />
+    <Compile Include="Mechanoids\Designer\MechCluster.cs" />
+    <Compile Include="Mechanoids\Designer\MechPart.cs" />
+    <Compile Include="Mechanoids\Designer\MechPartConfig.cs" />
+    <Compile Include="Mechanoids\Designer\MechPartConfigCountdownActivator.cs" />
+    <Compile Include="Mechanoids\Designer\MechPartConfigProximityActivator.cs" />
+    <Compile Include="Mechanoids\Designer\MechPartConfigQuantity.cs" />
     <Compile Include="Net\PacketAcknowledgement.cs" />
     <Compile Include="Net\PacketAnnouncement.cs" />
     <Compile Include="Net\PacketGiveItem.cs" />
