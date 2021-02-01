@@ -40,7 +40,7 @@ namespace PlayerTrade.Net
         
         public List<TradeOffer> ActiveTradeOffers = new List<TradeOffer>();
 
-        public Dictionary<PacketPredicate, TaskCompletionSource<Packet>> AwaitingPackets = new Dictionary<PacketPredicate, TaskCompletionSource<Packet>>();
+        private readonly List<AwaitPacketRequest> _awaitingPackets = new List<AwaitPacketRequest>();
 
         private Queue<Packet> _pendingPackets = new Queue<Packet>();
         private Task _clientTcpTask;
@@ -228,7 +228,12 @@ namespace PlayerTrade.Net
         public async Task<Packet> AwaitPacket(PacketPredicate predicate, int timeout = 0)
         {
             var source = new TaskCompletionSource<Packet>();
-            AwaitingPackets.Add(predicate, source);
+            var request = new AwaitPacketRequest
+            {
+                Predicate = predicate,
+                CompletionSource = source
+            };
+            _awaitingPackets.Add(request);
 
             if (timeout > 0)
             {
@@ -236,7 +241,7 @@ namespace PlayerTrade.Net
                 {
                     // Success
                     Packet result = await source.Task;
-                    AwaitingPackets.Remove(predicate);
+                    _awaitingPackets.Remove(request);
                     return result;
                 }
 
@@ -248,7 +253,7 @@ namespace PlayerTrade.Net
             {
                 // No timeout
                 Packet result = await source.Task;
-                AwaitingPackets.Remove(predicate);
+                _awaitingPackets.Remove(request);
                 return result;
             }
         }
@@ -258,13 +263,13 @@ namespace PlayerTrade.Net
             Log.Message($"Packet received #{e.Id} ({e.Packet.GetType().Name})");
 
             // Check awaiting packets
-            while (AwaitingPackets.Count > 0)
+            while (_awaitingPackets.Count > 0)
             {
-                var awaiting = AwaitingPackets.First();
-                if (awaiting.Key(e.Packet))
+                var awaiting = _awaitingPackets.First();
+                if (awaiting.Predicate(e.Packet))
                 {
-                    AwaitingPackets.Remove(awaiting.Key);
-                    awaiting.Value.TrySetResult(e.Packet);
+                    awaiting.CompletionSource?.TrySetResult(e.Packet);
+                    _awaitingPackets.Remove(awaiting);
                 }
             }
 
@@ -475,6 +480,12 @@ namespace PlayerTrade.Net
             offer.TradeAccepted?.TrySetResult(confirm);
 
             ActiveTradeOffers.Remove(offer);
+        }
+
+        public class AwaitPacketRequest
+        {
+            public PacketPredicate Predicate;
+            public TaskCompletionSource<Packet> CompletionSource;
         }
 
         public class PlayerUpdateEventArgs : EventArgs
