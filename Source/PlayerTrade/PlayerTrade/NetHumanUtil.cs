@@ -183,7 +183,11 @@ namespace PlayerTrade
             // Schedule
             human.Schedule = new List<string>(24);
             for (int i = 0; i < 24; i++)
-                human.Schedule.Add(pawn.timetable.GetAssignment(i).defName);
+            {
+                human.Schedule.Add(pawn.IsColonist
+                    ? pawn.timetable.GetAssignment(i).defName
+                    : TimeAssignmentDefOf.Anything.defName);
+            }
 
             // Needs
             human.Needs = new List<NetHuman.NetNeed>();
