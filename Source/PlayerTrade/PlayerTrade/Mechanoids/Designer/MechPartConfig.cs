@@ -3,17 +3,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using PlayerTrade.Net;
 using UnityEngine;
 using Verse;
 
 namespace PlayerTrade.Mechanoids.Designer
 {
     [StaticConstructorOnStartup]
-    public abstract class MechPartConfig
+    public class MechPartConfig : IPacketable
     {
         public static readonly Texture2D DeleteX = ContentFinder<Texture2D>.Get("UI/Buttons/Delete", true);
 
-        public MechCluster MechCluster;
         public MechPart MechPart;
 
         public virtual float Price => MechPart.BasePrice;
@@ -23,10 +23,8 @@ namespace PlayerTrade.Mechanoids.Designer
         /// </summary>
         public bool Remove;
 
-        protected MechPartConfig(MechCluster mechCluster, MechPart mechPart)
+        public MechPartConfig()
         {
-            MechCluster = mechCluster;
-            MechPart = mechPart;
         }
 
         public virtual Rect Draw(Rect rect) // Assumed height of 35
@@ -61,6 +59,16 @@ namespace PlayerTrade.Mechanoids.Designer
             Rect remainingRect = rect.LeftPartPixels(rect.width - 65f); // price and remove button removed
             remainingRect.xMin = rect.x + labelWidth + 10f;
             return remainingRect;
+        }
+
+        public virtual void Write(PacketBuffer buffer)
+        {
+            buffer.WriteInt(Dialog_DesignMechCluster.AvailableParts.IndexOf(MechPart));
+        }
+
+        public virtual void Read(PacketBuffer buffer)
+        {
+            MechPart = Dialog_DesignMechCluster.AvailableParts[buffer.ReadInt()];
         }
     }
 }

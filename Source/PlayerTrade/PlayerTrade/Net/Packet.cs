@@ -8,6 +8,7 @@ using PlayerTrade.Artifacts;
 using PlayerTrade.Chat;
 using PlayerTrade.Labor.Packets;
 using PlayerTrade.Mail;
+using PlayerTrade.Mechanoids;
 
 namespace PlayerTrade.Net
 {
@@ -35,6 +36,7 @@ namespace PlayerTrade.Net
         public const int ReceiveChatMessagePacketId = 21;
         public const int GiveItemPacketId = 22;
         public const int AcknowledgementPacketId = 23;
+        public const int MechanoidClusterPacketId = 24;
 
         public static Dictionary<int, Type> Packets = new Dictionary<int, Type>
         {
@@ -60,6 +62,7 @@ namespace PlayerTrade.Net
             {ReceiveChatMessagePacketId, typeof(PacketReceiveChatMessage)},
             {GiveItemPacketId, typeof(PacketGiveItem)},
             {AcknowledgementPacketId, typeof(PacketAcknowledgement)},
+            {MechanoidClusterPacketId, typeof(PacketMechanoidCluster)},
         };
 
         public abstract void Write(PacketBuffer buffer);

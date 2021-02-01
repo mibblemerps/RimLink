@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using PlayerTrade.Chat;
 using PlayerTrade.Labor;
 using PlayerTrade.Mail;
+using PlayerTrade.Mechanoids;
 using PlayerTrade.Raids;
 using PlayerTrade.Trade;
 using RimWorld;
@@ -57,6 +58,7 @@ namespace PlayerTrade.Net
             Labor = new LaborWorker(this);
             new MailWorker(this);
             Chat = new ChatWorker(this);
+            new MechanoidWorker(this);
         }
 
         public async Task Connect(string ip, int port = 35562)
@@ -256,15 +258,15 @@ namespace PlayerTrade.Net
             Log.Message($"Packet received #{e.Id} ({e.Packet.GetType().Name})");
 
             // Check awaiting packets
-            var toRemove = new List<PacketPredicate>();
-            foreach (var awaiting in AwaitingPackets)
+            while (AwaitingPackets.Count > 0)
             {
+                var awaiting = AwaitingPackets.First();
                 if (awaiting.Key(e.Packet))
+                {
+                    AwaitingPackets.Remove(awaiting.Key);
                     awaiting.Value.TrySetResult(e.Packet);
-                toRemove.Add(awaiting.Key);
+                }
             }
-            foreach (var predicate in toRemove)
-                AwaitingPackets.Remove(predicate);
 
             try
             {

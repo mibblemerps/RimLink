@@ -27,9 +27,11 @@ namespace PlayerTrade.Mechanoids.Designer
                 ConfigType = typeof(MechPartConfigQuantity); // Default to basic quantity config
         }
 
-        public MechPartConfig CreateConfig(MechCluster cluster)
+        public MechPartConfig CreateConfig()
         {
-            return (MechPartConfig) Activator.CreateInstance(ConfigType, cluster, this);
+            var part = (MechPartConfig) Activator.CreateInstance(ConfigType);
+            part.MechPart = this;
+            return part;
         }
     }
 }

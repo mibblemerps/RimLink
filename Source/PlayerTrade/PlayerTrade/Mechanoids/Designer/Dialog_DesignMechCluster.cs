@@ -19,7 +19,7 @@ namespace PlayerTrade.Mechanoids.Designer
 
         private Vector2 _scrollPosition = Vector2.zero;
 
-        private static List<MechPart> AvailableParts = new List<MechPart>
+        public static List<MechPart> AvailableParts = new List<MechPart>
         {
             // Buildings
             new MechPart(DefDatabase<ThingDef>.GetNamed("Turret_AutoChargeBlaster"), 600),
@@ -74,12 +74,20 @@ namespace PlayerTrade.Mechanoids.Designer
 
             DrawParts(partsRect);
 
-            Rect buttonsRect = inRect.BottomPartPixels(35f).RightHalf();
-            if (Widgets.ButtonText(buttonsRect.RightPart(0.45f), "Send Mech Cluster"))
+            Rect buttonsRect = inRect.BottomPartPixels(35f);
+            if (Widgets.ButtonText(buttonsRect.RightPart(0.33f), "Send Mech Cluster"))
             {
-                // todo: send cluster
+                RimLinkComp.Instance.Client.SendPacket(new PacketMechanoidCluster
+                {
+                    Cluster = MechCluster,
+                    For = Player.Guid,
+                    From = RimLinkComp.Instance.Guid
+                }).ContinueWith(t =>
+                {
+                    Messages.Message($"The mechanoids will deploy a cluster to {Player.Name} according to your specifications.", MessageTypeDefOf.PositiveEvent);
+                });
             }
-            if (Widgets.ButtonText(buttonsRect.LeftPart(0.45f), "Cancel"))
+            if (Widgets.ButtonText(buttonsRect.LeftPart(0.33f), "Cancel"))
             {
                 Close();
             }
@@ -89,7 +97,7 @@ namespace PlayerTrade.Mechanoids.Designer
 
         public void AddPart(MechPart part)
         {
-            MechCluster.Parts.Add(part.CreateConfig(MechCluster));
+            MechCluster.Parts.Add(part.CreateConfig());
         }
 
         private void DrawParts(Rect rect)

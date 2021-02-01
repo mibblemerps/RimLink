@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using System;
+using PlayerTrade.Net;
+using UnityEngine;
 using Verse;
 
 namespace PlayerTrade.Mechanoids.Designer
@@ -11,7 +13,9 @@ namespace PlayerTrade.Mechanoids.Designer
 
         private string _quantityBuffer = "1";
 
-        public MechPartConfigQuantity(MechCluster mechCluster, MechPart mechPart) : base(mechCluster, mechPart) {}
+        public MechPartConfigQuantity()
+        {
+        }
 
         public override Rect Draw(Rect rect)
         {
@@ -23,6 +27,18 @@ namespace PlayerTrade.Mechanoids.Designer
                 Quantity = 1;
 
             return drawRect;
+        }
+
+        public new void Write(PacketBuffer buffer)
+        {
+            base.Write(buffer);
+            buffer.WriteInt(Quantity);
+        }
+
+        public new void Read(PacketBuffer buffer)
+        {
+            base.Read(buffer);
+            Quantity = buffer.ReadInt();
         }
     }
 }

@@ -3,14 +3,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using PlayerTrade.Net;
 using UnityEngine;
 using Verse;
 
 namespace PlayerTrade.Mechanoids.Designer
 {
+    [Serializable]
     public class MechPartConfigCountdownActivator : MechPartConfig
     {
         public float Days = 3;
+
+        [NonSerialized]
         private string _daysBuffer = "3";
 
         public override float Price => Mathf.Round(base.Price * Curve.Evaluate(Days)); // Increase price closer to 0 days we get
@@ -26,8 +30,6 @@ namespace PlayerTrade.Mechanoids.Designer
             new CurvePoint(float.MaxValue, 1f), 
         });
 
-        public MechPartConfigCountdownActivator(MechCluster mechCluster, MechPart mechPart) : base(mechCluster, mechPart) {}
-
         public override Rect Draw(Rect rect)
         {
             rect = base.Draw(rect);
@@ -35,6 +37,18 @@ namespace PlayerTrade.Mechanoids.Designer
             Widgets.TextFieldNumericLabeled(rect, "Countdown (days)", ref Days, ref _daysBuffer, 0.1f, 90f);
 
             return Rect.zero;
+        }
+
+        public new void Write(PacketBuffer buffer)
+        {
+            base.Write(buffer);
+            buffer.WriteFloat(Days);
+        }
+
+        public new void Read(PacketBuffer buffer)
+        {
+            base.Read(buffer);
+            Days = buffer.ReadFloat();
         }
     }
 }
