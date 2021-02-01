@@ -8,8 +8,12 @@ namespace PlayerTrade
 {
     public static class Log
     {
+        public const int InnerExceptionNestLimit = 8;
+
         public static bool Enabled = true;
         public static bool RunningInRimWorld => PlayerTradeMod.Instance != null;
+
+        private static int _innerExceptionCounter;
 
         public static void Message(string message, bool ignoreLimit = false)
         {
@@ -51,10 +55,15 @@ namespace PlayerTrade
         {
             if (!Enabled) return;
 
+            if (_innerExceptionCounter >= InnerExceptionNestLimit)
+            {
+                _innerExceptionCounter = 0;
+                Error($"Reached inner exception nesting limit! ({InnerExceptionNestLimit})");
+                return;
+            }
+
             if (context != null)
                 message += $"\n{context.Message}\n{context.StackTrace}\n";
-            if (context != null && context.InnerException != null)
-                message += $"(InnerException) {context.InnerException.Message}\n{context.InnerException.StackTrace}\n";
 
             if (RunningInRimWorld)
             {
@@ -67,6 +76,17 @@ namespace PlayerTrade
                 Console.ForegroundColor = ConsoleColor.White;
                 Console.WriteLine(message);
                 Console.ResetColor();
+            }
+
+            // Log inner exception also
+            if (context != null && context.InnerException != null)
+            {
+                _innerExceptionCounter++;
+                Error($"InnerException: {context.InnerException.Message}\n{context.InnerException.StackTrace}\n");
+            }
+            else
+            {
+                _innerExceptionCounter = 0;
             }
         }
     }
