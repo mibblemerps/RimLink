@@ -37,6 +37,8 @@ namespace PlayerTrade.Net
         public const int GiveItemPacketId = 22;
         public const int AcknowledgementPacketId = 23;
         public const int MechanoidClusterPacketId = 24;
+        public const int BugReportPacketId = 25;
+        public const int RequestBugReportPacketId = 26;
 
         public static Dictionary<int, Type> Packets = new Dictionary<int, Type>
         {
@@ -63,6 +65,8 @@ namespace PlayerTrade.Net
             {GiveItemPacketId, typeof(PacketGiveItem)},
             {AcknowledgementPacketId, typeof(PacketAcknowledgement)},
             {MechanoidClusterPacketId, typeof(PacketMechanoidCluster)},
+            {BugReportPacketId, typeof(PacketBugReport)},
+            {RequestBugReportPacketId, typeof(PacketRequestBugReport)},
         };
 
         public abstract void Write(PacketBuffer buffer);

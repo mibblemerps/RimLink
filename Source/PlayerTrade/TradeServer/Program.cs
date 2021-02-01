@@ -24,6 +24,7 @@ namespace TradeServer
             new CommandAnnouncement(),
             new CommandGiveThing(),
             new CommandSay(),
+            new CommandBugReport(),
         };
 
         public static ClientPermissions Permissions = new ClientPermissions();

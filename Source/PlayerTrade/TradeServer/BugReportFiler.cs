@@ -1,0 +1,69 @@
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using PlayerTrade;
+using PlayerTrade.Net;
+using UnityEngine;
+
+namespace TradeServer
+{
+    public static class BugReportFiler
+    {
+        public static string BugReportDir = "bug-reports";
+
+        public static void FileReport(Player sender, PacketBugReport report)
+        {
+            string name = $"BugReport" +
+                          $"-{Sanitize(sender.Guid.Substring(0, Mathf.Min(8, sender.Guid.Length)))}" +
+                          $"-{Sanitize(sender.Name.Substring(0, Mathf.Min(16, sender.Name.Length)))}" +
+                          $"-";
+            int i;
+            for (i = 0; i < 2500; i++)
+            {
+                if (!File.Exists(BugReportDir + Path.DirectorySeparatorChar + name + i + ".txt"))
+                    break;
+            }
+
+            name += i + ".txt";
+
+            try
+            {
+                Directory.CreateDirectory(BugReportDir);
+
+                var reportText = new StringBuilder();
+                reportText.AppendLine($"*** RimLink Bug Report ***\n" +
+                              $"Filed by {sender.Name} ({sender.Guid}) at {DateTime.Now}");
+
+                // Report description
+                if (!string.IsNullOrWhiteSpace(report.Description))
+                    reportText.AppendLine("Description:\n" + report.Description);
+                else
+                    reportText.AppendLine("No description provided.");
+                reportText.AppendLine();
+
+                // Body
+                reportText.AppendLine("Log:");
+                reportText.AppendLine(report.Log);
+
+                // Save
+                string path = BugReportDir + Path.DirectorySeparatorChar + name;
+                File.WriteAllText(path, reportText.ToString());
+
+                Log.Message($"Bug report from {sender.Name} ({sender.Guid}) filed to: {path}");
+                
+            }
+            catch (Exception e)
+            {
+                Log.Error("Error filing bug report.", e);
+            }
+        }
+
+        private static string Sanitize(string str)
+        {
+            return string.Join("_", str.Split(Path.GetInvalidFileNameChars(), StringSplitOptions.RemoveEmptyEntries)).TrimEnd('.');
+        }
+    }
+}

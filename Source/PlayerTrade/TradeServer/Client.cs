@@ -245,6 +245,11 @@ namespace TradeServer
                             }
 
                             break;
+                            
+                        case Packet.BugReportPacketId:
+                            Log.Message($"Received bug report from {Player.Name} ({Player.Guid})!");
+                            BugReportFiler.FileReport(Player, (PacketBugReport) e.Packet);
+                            break;
                     }
                 }
             }

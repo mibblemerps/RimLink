@@ -48,6 +48,7 @@
     <Reference Include="UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BugReportFiler.cs" />
     <Compile Include="Client.cs" />
     <Compile Include="ClientPermissions.cs" />
     <Compile Include="ClientState.cs" />
@@ -56,6 +57,7 @@
     <Compile Include="Commands\Command.cs" />
     <Compile Include="Commands\CommandAdminRequiredException.cs" />
     <Compile Include="Commands\CommandAnnouncement.cs" />
+    <Compile Include="Commands\CommandBugReport.cs" />
     <Compile Include="Commands\CommandDeop.cs" />
     <Compile Include="Commands\CommandException.cs" />
     <Compile Include="Commands\CommandGiveThing.cs" />

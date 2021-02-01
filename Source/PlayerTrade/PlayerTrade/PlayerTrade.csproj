@@ -88,6 +88,7 @@
     <Compile Include="Artifacts\ArtifactsWorker.cs" />
     <Compile Include="Artifacts\ArtifactType.cs" />
     <Compile Include="Artifacts\PacketArtifact.cs" />
+    <Compile Include="BugReport.cs" />
     <Compile Include="Chat\ChatMessage.cs" />
     <Compile Include="Chat\ChatWorker.cs" />
     <Compile Include="Chat\PacketReceiveChatMessage.cs" />
@@ -109,7 +110,9 @@
     <Compile Include="Mechanoids\PacketMechanoidCluster.cs" />
     <Compile Include="Net\PacketAcknowledgement.cs" />
     <Compile Include="Net\PacketAnnouncement.cs" />
+    <Compile Include="Net\PacketBugReport.cs" />
     <Compile Include="Net\PacketGiveItem.cs" />
+    <Compile Include="Net\PacketRequestBugReport.cs" />
     <Compile Include="Patches\Patch_CameraDriver_Update.cs" />
     <Compile Include="Patches\Patch_CompUsable.cs" />
     <Compile Include="Trade\ChoiceLetter_TradeOffer.cs" />

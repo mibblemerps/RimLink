@@ -357,6 +357,10 @@ namespace PlayerTrade.Net
                         }
 
                         break;
+
+                    case Packet.RequestBugReportPacketId:
+                        BugReport.Send("Bug report requested via command.");
+                        break;
                 }
             }
             catch (Exception ex)
