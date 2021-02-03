@@ -41,7 +41,16 @@ namespace PlayerTrade.Net
             buffer.WriteInt(ConnectedPlayers.Count);
             foreach (var connectedPlayer in ConnectedPlayers)
                 buffer.Write(connectedPlayer);
-            buffer.Write(Settings);
+
+            if (Settings == null)
+            {
+                buffer.WriteBoolean(false);
+            }
+            else
+            {
+                buffer.WriteBoolean(true);
+                buffer.Write(Settings);
+            }
         }
 
         public override void Read(PacketBuffer buffer)
@@ -53,7 +62,9 @@ namespace PlayerTrade.Net
             ConnectedPlayers = new List<Player>(playerCount);
             for (int i = 0; i < playerCount; i++)
                 ConnectedPlayers.Add(buffer.Read<Player>());
-            Settings = buffer.Read<GameSettings>();
+
+            if (buffer.ReadBoolean())
+                Settings = buffer.Read<GameSettings>();
         }
     }
 }

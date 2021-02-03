@@ -94,23 +94,7 @@ namespace TradeServer
                     switch (e.Id)
                     {
                         case Packet.ConnectId:
-                            PacketConnect connectPacket = (PacketConnect) e.Packet;
-                            Player = connectPacket.Player;
-
-                            // Send connect response with connected player data
-                            var players = new List<Player>();
-                            foreach (var client in Program.Server.AuthenticatedClients.Where(c => c.Player != null))
-                                players.Add(client.Player);
-
-                            SendPacket(new PacketConnectResponse
-                            {
-                                Success = true,
-                                ConnectedPlayers = players,
-                                Settings = Program.Server.GameSettings
-                            });
-
-                            State = ClientState.Normal;
-                            Authenticated?.Invoke(this, new ClientEventArgs(this));
+                            await HandleConnectPacket((PacketConnect) e.Packet);
                             break;
                         default:
                             throw new Exception($"Unknown packet received! ID: {e.Id}");
@@ -272,6 +256,40 @@ namespace TradeServer
                 Log.Error($"Error handling packet from {Player.Name} ({Player.Guid})! Connection terminated.", ex);
                 Tcp.Close();
             }
+        }
+
+        private async Task HandleConnectPacket(PacketConnect packet)
+        {
+            Player = packet.Player;
+
+            Client conflictClient = Program.Server.GetClient(packet.Guid);
+            if (conflictClient != null)
+            {
+                // Already logged in - reject connection
+                await SendPacketDirect(new PacketConnectResponse
+                {
+                    Success = false,
+                    FailReason = "This game is already connected to the server.",
+                    AllowReconnect = false
+                });
+                Tcp.Close();
+                return;
+            }
+
+            // Send connect response with connected player data
+            var players = new List<Player>();
+            foreach (var client in Program.Server.AuthenticatedClients.Where(c => c.Player != null))
+                players.Add(client.Player);
+
+            SendPacket(new PacketConnectResponse
+            {
+                Success = true,
+                ConnectedPlayers = players,
+                Settings = Program.Server.GameSettings
+            });
+
+            State = ClientState.Normal;
+            Authenticated?.Invoke(this, new ClientEventArgs(this));
         }
 
         public class ClientEventArgs : EventArgs

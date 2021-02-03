@@ -85,7 +85,6 @@ namespace PlayerTrade
             _connecting = true;
             Client = new Client(this);
             Client.Connected += OnClientConnected;
-            Client.Disconnected += ClientOnDisconnected;
             Client.PlayerConnected += OnPlayerConnected;
             try
             {
@@ -141,6 +140,8 @@ namespace PlayerTrade
             _connecting = false;
             _failedAttempts = 0; // reset failed attempts
 
+            Client.Disconnected += ClientOnDisconnected;
+
             Log.Message("Connected to server. GUID: " + Guid);
             Messages.Message($"Connected to server", MessageTypeDefOf.NeutralEvent, false);
 
@@ -175,8 +176,8 @@ namespace PlayerTrade
                             if (!connectionException.AllowReconnect)
                             {
                                 // Cannot auto reconnect. Abort reconnecting and show connection failed dialog.
-                                ShowConnectionFailedDialog(connectionException);
                                 _reconnectIn = float.NaN;
+                                ShowConnectionFailedDialog(connectionException);
                                 return;
                             }
                         }

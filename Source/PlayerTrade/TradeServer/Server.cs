@@ -47,8 +47,6 @@ namespace TradeServer
 
                     var client = new Client(tcp);
                     client.Authenticated += ClientOnAuthenticated;
-                    client.Disconnected += (sender, args) => ClientOnDisconnected(this, new Client.ClientEventArgs(client));
-                    client.ColonyInfoReceived += ClientOnColonyInfoReceived;
                     client.Run();
                 }
                 catch (Exception e)
@@ -145,6 +143,9 @@ namespace TradeServer
         {
             Log.Message($"{e.Client.Player.Name} connected");
             AuthenticatedClients.Add(e.Client);
+
+            e.Client.Disconnected += (s, args) => ClientOnDisconnected(this, new Client.ClientEventArgs(e.Client));
+            e.Client.ColonyInfoReceived += ClientOnColonyInfoReceived;
 
             // Send other colonies
             foreach (Client client in AuthenticatedClients)
