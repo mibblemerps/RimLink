@@ -262,10 +262,30 @@ namespace TradeServer
         {
             Player = packet.Player;
 
+            // Check protocol version
+            if (packet.ProtocolVersion != RimLinkMod.ProtocolVersion)
+            {
+                // Mismatch!
+                Log.Warn($"Player {packet.Guid} attempted to connect with an incorrect version of RimLink!");
+                string failReason = packet.ProtocolVersion < RimLinkMod.ProtocolVersion 
+                    ? "You are running an out-of-date version of RimLink!"
+                    : "The server is running an out-of-date version of RimLink!";
+                await SendPacketDirect(new PacketConnectResponse
+                {
+                    Success = false,
+                    FailReason = failReason,
+                    AllowReconnect = false
+                });
+                Tcp.Close();
+                return;
+            }
+
+            // Check this GUID isn't already connected
             Client conflictClient = Program.Server.GetClient(packet.Guid);
             if (conflictClient != null)
             {
                 // Already logged in - reject connection
+                Log.Warn($"Player {packet.Player.Name} ({packet.Guid}) attempted to connect whilst being connected from another location.");
                 await SendPacketDirect(new PacketConnectResponse
                 {
                     Success = false,

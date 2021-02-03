@@ -34,7 +34,7 @@ namespace PlayerTrade
         {
             base.DoWindowContents(inRect);
 
-            if (!PlayerTradeMod.Connected)
+            if (!RimLinkMod.Connected)
             {
                 DrawDisconnectedFromServer(inRect);
                 return;

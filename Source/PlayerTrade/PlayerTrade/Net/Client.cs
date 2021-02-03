@@ -77,7 +77,7 @@ namespace PlayerTrade.Net
             // Send connect request
             SendPacket(new PacketConnect
             {
-                ProtocolVersion = 1,
+                ProtocolVersion = RimLinkMod.ProtocolVersion,
                 Guid = Guid,
                 Secret = RimLinkComp.Secret,
                 Player = Player

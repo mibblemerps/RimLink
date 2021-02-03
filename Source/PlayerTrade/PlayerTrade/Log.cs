@@ -11,7 +11,7 @@ namespace PlayerTrade
         public const int InnerExceptionNestLimit = 8;
 
         public static bool Enabled = true;
-        public static bool RunningInRimWorld => PlayerTradeMod.Instance != null;
+        public static bool RunningInRimWorld => RimLinkMod.Instance != null;
 
         private static int _innerExceptionCounter;
 

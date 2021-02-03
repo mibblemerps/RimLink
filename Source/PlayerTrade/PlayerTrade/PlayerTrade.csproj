@@ -166,7 +166,7 @@
     <Compile Include="Player.cs" />
     <Compile Include="Patches\Patch_CommsConsole.cs" />
     <Compile Include="PlayerComms.cs" />
-    <Compile Include="PlayerTradeMod.cs" />
+    <Compile Include="RimLinkMod.cs" />
     <Compile Include="Trade\Dialog_TradeOffer.cs" />
     <Compile Include="Trade\PlayerTrader.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

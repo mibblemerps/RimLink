@@ -12,9 +12,11 @@ using Verse;
 
 namespace PlayerTrade
 {
-    public class PlayerTradeMod : Mod
+    public class RimLinkMod : Mod
     {
-        public static PlayerTradeMod Instance { get; private set; }
+        public static readonly int ProtocolVersion = 1;
+
+        public static RimLinkMod Instance { get; private set; }
 
         public ModSettings Settings;
 
@@ -33,7 +35,7 @@ namespace PlayerTrade
             }
         }
 
-        public PlayerTradeMod(ModContentPack content) : base(content)
+        public RimLinkMod(ModContentPack content) : base(content)
         {
             Instance = this;
 

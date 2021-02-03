@@ -81,14 +81,14 @@ namespace PlayerTrade
                 return;
             }
 
-            Log.Message("Connecting to: " + PlayerTradeMod.Instance.Settings.ServerIp);
+            Log.Message("Connecting to: " + RimLinkMod.Instance.Settings.ServerIp);
             _connecting = true;
             Client = new Client(this);
             Client.Connected += OnClientConnected;
             Client.PlayerConnected += OnPlayerConnected;
             try
             {
-                await Client.Connect(PlayerTradeMod.Instance.Settings.ServerIp);
+                await Client.Connect(RimLinkMod.Instance.Settings.ServerIp);
                 // _connecting is set back to false in OnClientConnected
             }
             catch (ConnectionFailedException e)
@@ -119,7 +119,7 @@ namespace PlayerTrade
                 AnticheatUtil.ApplyAnticheat();
 
             // Get IP
-            string ip = PlayerTradeMod.Instance.Settings.ServerIp;
+            string ip = RimLinkMod.Instance.Settings.ServerIp;
             if (string.IsNullOrWhiteSpace(ip))
             {
                 Log.Message("Not connecting to trade server: No IP set");
@@ -215,7 +215,7 @@ namespace PlayerTrade
         {
             base.GameComponentTick();
 
-            if (Current.Game.tickManager.TicksGame % 300 == 0 && PlayerTradeMod.Connected)
+            if (Current.Game.tickManager.TicksGame % 300 == 0 && RimLinkMod.Connected)
             {
                 // Mark dirty (send update packet)
                 Client?.MarkDirty();
