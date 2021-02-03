@@ -26,7 +26,7 @@ namespace PlayerTrade
                     log = reader.ReadToEnd();
                 }
 
-                _ = RimLinkComp.Instance.Client.SendPacket(new PacketBugReport
+                RimLinkComp.Instance.Client.SendPacket(new PacketBugReport
                 {
                     Log = log,
                     Description = description

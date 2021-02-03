@@ -69,7 +69,7 @@ namespace PlayerTrade.Labor
             Client client = RimLinkComp.Find().Client;
 
             // Send acceptance
-            _ = client.SendPacket(new PacketAcceptLaborOffer
+            client.SendPacket(new PacketAcceptLaborOffer
             {
                 For = LaborOffer.From,
                 Accept = true,
@@ -109,7 +109,7 @@ namespace PlayerTrade.Labor
             Find.LetterStack.RemoveLetter(this);
 
             // Send rejection
-            _ = RimLinkComp.Find().Client.SendPacket(new PacketAcceptLaborOffer
+            RimLinkComp.Instance.Client.SendPacket(new PacketAcceptLaborOffer
             {
                 For = LaborOffer.From,
                 Accept = false, // reject

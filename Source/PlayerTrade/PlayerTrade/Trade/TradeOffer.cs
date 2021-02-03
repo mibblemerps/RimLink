@@ -88,7 +88,7 @@ namespace PlayerTrade.Trade
             return builder.ToString();
         }
 
-        public async Task Accept()
+        public void Accept()
         {
             if (!IsForUs)
             {
@@ -96,23 +96,23 @@ namespace PlayerTrade.Trade
                 return;
             }
 
-            Client client = RimLinkComp.Find().Client;
+            Client client = RimLinkComp.Instance.Client;
 
             Fresh = false; // Make trade no longer "fresh" (acceptable)
 
             // Send accept packet
-            await client.SendPacket(new PacketAcceptTrade
+            client.SendPacket(new PacketAcceptTrade
             {
                 Trade = Guid,
                 Accept = true
             });
         }
 
-        public async Task Reject()
+        public void Reject()
         {
             Fresh = false; // Make trade no longer "fresh" (acceptable)
 
-            await RimLinkComp.Find().Client.SendPacket(new PacketAcceptTrade
+            RimLinkComp.Instance.Client.SendPacket(new PacketAcceptTrade
             {
                 Trade = Guid,
                 Accept = false

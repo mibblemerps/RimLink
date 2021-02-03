@@ -110,7 +110,7 @@ namespace PlayerTrade.Mail
                 mail.SoundDefName = _sound.Def.defName;
             Log.Message("Selected sound: " + mail.SoundDefName);
 
-            await RimLinkComp.Find().Client.SendPacket(mail);
+            RimLinkComp.Instance.Client.SendPacket(mail);
         }
 
         public class Sound

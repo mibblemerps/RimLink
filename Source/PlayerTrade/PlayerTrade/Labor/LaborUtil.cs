@@ -16,10 +16,10 @@ namespace PlayerTrade.Labor
             Find.LetterStack.ReceiveLetter(letter);
         }
 
-        public static async Task SendOffer(LaborOffer offer)
+        public static void SendOffer(LaborOffer offer)
         {
-            RimLinkComp.Find().Client.Labor.Offers.Add(offer);
-            await RimLinkComp.Find().Client.SendPacket(offer.ToPacket());
+            RimLinkComp.Instance.Client.Labor.Offers.Add(offer);
+            RimLinkComp.Instance.Client.SendPacket(offer.ToPacket());
         }
     }
 }

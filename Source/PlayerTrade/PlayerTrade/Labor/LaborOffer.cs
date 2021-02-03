@@ -153,7 +153,7 @@ namespace PlayerTrade.Labor
         /// </summary>
         public async Task ReturnColonists(List<Pawn> pawns)
         {
-            Client client = RimLinkComp.Find().Client;
+            Client client = RimLinkComp.Instance.Client;
 
             var netPawns = new List<NetHuman>();
             foreach (Pawn pawn in pawns)
@@ -166,9 +166,9 @@ namespace PlayerTrade.Labor
                 ReturnedColonists = netPawns
             };
 
-            await client.SendPacket(packet);
+            client.SendPacket(packet);
 
-            RimLinkComp.Find().ActiveLaborOffers.Remove(this);
+            RimLinkComp.Instance.ActiveLaborOffers.Remove(this);
         }
 
         /// <summary>

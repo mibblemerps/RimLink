@@ -22,7 +22,7 @@ namespace TradeServer.Commands
 
         public override void Output(string output)
         {
-            _ = Client.SendPacket(new PacketReceiveChatMessage
+            Client.SendPacket(new PacketReceiveChatMessage
             {
                 Messages = new List<PacketReceiveChatMessage.NetMessage>
                 {

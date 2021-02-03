@@ -70,7 +70,7 @@ namespace PlayerTrade.Labor
             // Add as active labor offer
             RimLinkComp.Find().ActiveLaborOffers.Add(offer);
 
-            await Client.SendPacket(new PacketConfirmLaborOffer
+            Client.SendPacket(new PacketConfirmLaborOffer
             {
                 For = offer.For,
                 Guid = offer.Guid,

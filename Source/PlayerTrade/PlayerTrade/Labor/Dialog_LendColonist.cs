@@ -86,10 +86,8 @@ namespace PlayerTrade.Labor
 
             if (Widgets.ButtonText(inRect.BottomPartPixels(35f).RightPart(0.25f), "Lend Colonist"))
             {
-                LaborUtil.SendOffer(FormOffer()).ContinueWith((t) =>
-                {
-                    Messages.Message("Sent labor offer to " + Player.Name, MessageTypeDefOf.NeutralEvent, false);
-                });
+                LaborUtil.SendOffer(FormOffer());
+                Messages.Message("Sent labor offer to " + Player.Name, MessageTypeDefOf.NeutralEvent, false);
                 Close();
             }
 

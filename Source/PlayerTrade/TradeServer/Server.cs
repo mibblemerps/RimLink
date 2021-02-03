@@ -49,7 +49,7 @@ namespace TradeServer
                     client.Authenticated += ClientOnAuthenticated;
                     client.Disconnected += (sender, args) => ClientOnDisconnected(this, new Client.ClientEventArgs(client));
                     client.ColonyInfoReceived += ClientOnColonyInfoReceived;
-                    _ = client.Run();
+                    client.Run();
                 }
                 catch (Exception e)
                 {
@@ -88,7 +88,7 @@ namespace TradeServer
             if (client != null && client.State == ClientState.Normal && client.Tcp.Connected)
             {
                 // Client connected - send packet
-                await client.SendPacket(packet);
+                client.SendPacket(packet);
             }
             else
             {
@@ -151,7 +151,7 @@ namespace TradeServer
             {
                 if (client.Player.Guid == e.Client.Player.Guid)
                     continue; // Skip self
-                await e.Client.SendPacket(new PacketColonyInfo
+                e.Client.SendPacket(new PacketColonyInfo
                 {
                     Guid = client.Player.Guid,
                     Player = client.Player
@@ -160,7 +160,7 @@ namespace TradeServer
 
             // Send queued packets
             foreach (Packet packet in QueuedPacketStorage.GetQueuedPackets(e.Client.Player.Guid, true))
-                await e.Client.SendPacket(packet);
+                e.Client.SendPacket(packet);
         }
 
         private void ClientOnDisconnected(object sender, Client.ClientEventArgs e)
@@ -175,7 +175,7 @@ namespace TradeServer
                 if (e.Client.Player == null)
                     continue; // Null player
 
-                _ = client.SendPacket(new PacketPlayerDisconnected
+                client.SendPacket(new PacketPlayerDisconnected
                 {
                     Player = e.Client.Player.Guid,
                     Reason = "Disconnected"
@@ -190,7 +190,7 @@ namespace TradeServer
                 if (client.Player.Guid == e.Client.Player.Guid)
                     continue; // Skip ourselves
 
-                _ = client.SendPacket(new PacketColonyInfo
+                client.SendPacket(new PacketColonyInfo
                 {
                     Guid = e.Client.Player.Guid,
                     Player = e.Client.Player

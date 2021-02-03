@@ -39,7 +39,13 @@ namespace TradeServer
             CommandCaller = new ClientCaller(this);
         }
 
-        public async Task Run()
+        public void Run()
+        {
+            _ = SendPackets();
+            _ = ReceivePackets();
+        }
+
+        public async Task ReceivePackets()
         {
             try
             {
@@ -56,12 +62,20 @@ namespace TradeServer
             }
         }
 
+        public async Task SendPackets()
+        {
+            while (true)
+            {
+                await SendQueuedPackets();
+            }
+        }
+
         public async Task<Resources> GetColonyResourcesAsync()
         {
             _colonyResourcesCompletionSource = new TaskCompletionSource<Resources>();
 
             // Request colony resources
-            await SendPacket(new PacketRequestColonyResources());
+            SendPacket(new PacketRequestColonyResources());
 
             // Await response
             Resources resources = await _colonyResourcesCompletionSource.Task;
@@ -88,7 +102,7 @@ namespace TradeServer
                             foreach (var client in Program.Server.AuthenticatedClients.Where(c => c.Player != null))
                                 players.Add(client.Player);
 
-                            await SendPacket(new PacketConnectResponse
+                            SendPacket(new PacketConnectResponse
                             {
                                 Success = true,
                                 ConnectedPlayers = players,
@@ -145,7 +159,7 @@ namespace TradeServer
                             Resources resources = await tradePartner.GetColonyResourcesAsync();
 
                             // Got partner resources - send to initiating client (this client)
-                            await SendPacket(new PacketColonyResources(tradePartner.Player.Guid, resources));
+                            SendPacket(new PacketColonyResources(tradePartner.Player.Guid, resources));
                             break;
 
                         case Packet.TradeOfferPacketId:
@@ -174,7 +188,7 @@ namespace TradeServer
                             {
                                 // Can't find client who made trade offer - send non-confirmation packet
                                 Log.Warn($"{Player.Name} attempted to accept trade offer that no longer exists.");
-                                await SendPacket(new PacketTradeConfirm
+                                SendPacket(new PacketTradeConfirm
                                 {
                                     Trade = acceptTradePacket.Trade,
                                     Confirm = false
@@ -183,7 +197,7 @@ namespace TradeServer
                             }
 
                             // Send packet acceptance to client who made trade offer
-                            await otherClient.SendPacket(new PacketAcceptTrade
+                            otherClient.SendPacket(new PacketAcceptTrade
                             {
                                 Trade = acceptTradePacket.Trade,
                                 Accept = acceptTradePacket.Accept
@@ -209,7 +223,7 @@ namespace TradeServer
                             Client tradeClient = Program.Server.GetClient(TradeOffers[packetTradeConfirm.Trade]);
 
                             // Forward trade confirm packet
-                            await tradeClient.SendPacket(packetTradeConfirm);
+                            tradeClient.SendPacket(packetTradeConfirm);
 
                             Log.Message(
                                 $"{Player.Name} {(packetTradeConfirm.Confirm ? "confirmed" : "aborted")} trade offer {packetTradeConfirm.Trade} for {tradeClient.Player.Name}.");
@@ -231,7 +245,7 @@ namespace TradeServer
                                 Log.Message($"[Chat] <{Player.Name}> {sendMsgPacket.Message}");
                                 // Send message to all other clients
                                 foreach (Client client in Program.Server.AuthenticatedClients)
-                                    _ = client.SendPacket(new PacketReceiveChatMessage
+                                    client.SendPacket(new PacketReceiveChatMessage
                                     {
                                         Messages = new List<PacketReceiveChatMessage.NetMessage>(new[]
                                         {

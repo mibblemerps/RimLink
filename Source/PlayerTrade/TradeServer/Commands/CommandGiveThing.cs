@@ -94,7 +94,7 @@ namespace TradeServer.Commands
 
             foreach (Client target in targets)
             {
-                await target.SendPacket(packet);
+                target.SendPacket(packet);
                 caller.Output($"Given thing to {target.Player.Name}");
             }
         }

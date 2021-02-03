@@ -43,7 +43,7 @@ namespace TradeServer.Commands
             foreach (Client client in targets)
             {
                 Log.Message($"Requesting bug report from {client.Player.Name} ({client.Player.Guid})...");
-                await client.SendPacket(new PacketRequestBugReport());
+                client.SendPacket(new PacketRequestBugReport());
             }
         }
     }

@@ -77,7 +77,7 @@ namespace TradeServer.Commands
             };
 
             foreach (var client in Program.Server.AuthenticatedClients)
-                _ = client.SendPacket(packet);
+                client.SendPacket(packet);
         }
     }
 }

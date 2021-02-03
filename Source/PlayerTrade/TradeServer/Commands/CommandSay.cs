@@ -32,7 +32,7 @@ namespace TradeServer.Commands
 
             foreach (Client client in Program.Server.AuthenticatedClients)
             {
-                await client.SendPacket(packet);
+                client.SendPacket(packet);
             }
 
             Log.Message("[Chat] Server: " + msg);

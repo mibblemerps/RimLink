@@ -3,22 +3,46 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Sockets;
-using System.Text;
 using System.Threading.Tasks;
 using Ionic.Zlib;
-using Verse;
 
 namespace PlayerTrade.Net
 {
     public class Connection
     {
+        private const int SendQueueMaxSize = 128;
+
         public event EventHandler<PacketReceivedEventArgs> PacketReceived;
         public event EventHandler Disconnected;
 
         public TcpClient Tcp;
         public NetworkStream Stream;
 
-        public async Task SendPacket(Packet packet)
+        private readonly Queue<Packet> _sendQueue = new Queue<Packet>(SendQueueMaxSize);
+        private TaskCompletionSource<bool> _packetQueuedCompletionSource = new TaskCompletionSource<bool>();
+
+        /// <summary>
+        /// Adds a packet to the send queue to be sent shortly.
+        /// </summary>
+        /// <param name="packet">Packet to send</param>
+        public void SendPacket(Packet packet)
+        {
+            if (_sendQueue.Count >= SendQueueMaxSize)
+            {
+                Verse.Log.Error($"Reached max packet send queue size ({SendQueueMaxSize}). Closing connection...");
+                Tcp.Close();
+                return;
+            }
+
+            _sendQueue.Enqueue(packet);
+            _packetQueuedCompletionSource.TrySetResult(true);
+        }
+
+        /// <summary>
+        /// <b>Caution:</b> this is used internally to directly send packets. Please use <see cref="SendPacket"/> instead, as this uses the send queue.
+        /// </summary>
+        /// <param name="packet">Packet to send</param>
+        public async Task SendPacketDirect(Packet packet)
         {
             var pair = Packet.Packets.FirstOrDefault(p => p.Value == packet.GetType());
 
@@ -45,6 +69,25 @@ namespace PlayerTrade.Net
             await Stream.WriteAsync(BitConverter.GetBytes(pair.Key).Concat(BitConverter.GetBytes(buffer.Length)).ToArray(), 0, 8);
             // Send packet content
             await Stream.WriteAsync(buffer, 0, buffer.Length);
+        }
+
+        /// <summary>
+        /// Send off all packets in the send queue sequentially.
+        /// </summary>
+        public async Task SendQueuedPackets()
+        {
+            // Wait for new packets to get queued
+            await _packetQueuedCompletionSource.Task;
+
+            // Send queued packets
+            while (_sendQueue.Count > 0)
+            {
+                Packet packet = _sendQueue.Dequeue();
+                await SendPacketDirect(packet);
+            }
+
+            // Reset completion source so we know when new packets are queued
+            _packetQueuedCompletionSource = new TaskCompletionSource<bool>();
         }
 
         public async Task Disconnect()

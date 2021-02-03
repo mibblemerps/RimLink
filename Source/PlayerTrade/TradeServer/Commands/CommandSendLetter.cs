@@ -29,7 +29,7 @@ namespace TradeServer.Commands
 
             foreach (Client client in CommandUtility.GetClientsFromInput(args[0]))
             {
-                await client.SendPacket(new PacketMail
+                client.SendPacket(new PacketMail
                 {
                     For = client.Player.Guid,
                     From = "Server",

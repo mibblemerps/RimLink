@@ -42,7 +42,7 @@ namespace TradeServer.Commands
             };
             foreach (Client client in Server.AuthenticatedClients)
             {
-                _ = client.SendPacket(packet);
+                client.SendPacket(packet);
             }
 
             caller.Output("Sent announcement");

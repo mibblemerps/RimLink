@@ -43,8 +43,7 @@ namespace PlayerTrade.Net
         private readonly List<AwaitPacketRequest> _awaitingPackets = new List<AwaitPacketRequest>();
 
         private Queue<Packet> _pendingPackets = new Queue<Packet>();
-        private Task _clientTcpTask;
-
+        
         public Client(RimLinkComp rimLinkComp)
         {
             RimLinkComp = rimLinkComp;
@@ -68,7 +67,7 @@ namespace PlayerTrade.Net
             Stream = Tcp.GetStream();
 
             // Send connect request
-            await SendPacket(new PacketConnect
+            SendPacket(new PacketConnect
             {
                 ProtocolVersion = 1,
                 Guid = Guid,
@@ -76,8 +75,8 @@ namespace PlayerTrade.Net
                 Player = Player
             });
 
-            _clientTcpTask = Run();
-            _ = Task.Delay(1000).ContinueWith(t =>
+            Run();
+            _ = Task.Delay(1000).ContinueWith(t => // todo: this is dirty, probably would be fixed with time-based updates
             {
                 Update();
             });
@@ -96,11 +95,20 @@ namespace PlayerTrade.Net
                 throw new Exception("Server refused connection: " + response.FailReason);
             }
 
+            Log.Message("Connected!");
+            Log.Message($"GameSettings: RaidBasePrice={response.Settings.RaidBasePrice} MaxRaidStrength={response.Settings.RaidMaxStrengthPercent} Anticheat={response.Settings.Anticheat}");
+
             GameSettings = response.Settings;
             Connected?.Invoke(this, EventArgs.Empty);
         }
 
-        public async Task Run()
+        public void Run()
+        {
+            _ = SendPackets();
+            _ = ReceivePackets();
+        }
+
+        private async Task ReceivePackets()
         {
             while (Tcp.Connected)
             {
@@ -118,6 +126,14 @@ namespace PlayerTrade.Net
             }
         }
 
+        private async Task SendPackets()
+        {
+            while (Tcp.Connected)
+            {
+                await SendQueuedPackets();
+            }
+        }
+
         public void Update()
         {
             while (_pendingPackets.Count > 0)
@@ -132,7 +148,7 @@ namespace PlayerTrade.Net
             Player = Player.Self(mapIndependent);
             OnlinePlayers[Guid] = Player; // add ourselves to the player list
             if (sendPacket)
-                _ = SendColonyInfo();
+                SendColonyInfo();
         }
 
         public Player GetPlayer(string guid)
@@ -179,14 +195,13 @@ namespace PlayerTrade.Net
             }
         }
 
-        public async Task SendColonyInfo()
+        public void SendColonyInfo()
         {
-            var colonyInfo = new PacketColonyInfo
+            SendPacket(new PacketColonyInfo
             {
                 Guid = RimLinkComp.Find().Guid,
                 Player = Player
-            };
-            await SendPacket(colonyInfo);
+            });
         }
 
         public async void SendTradeOffer(TradeOffer tradeOffer)
@@ -194,14 +209,13 @@ namespace PlayerTrade.Net
             ActiveTradeOffers.Add(tradeOffer);
 
             Log.Message("Sending trade offer...");
-            await SendPacket(PacketTradeOffer.MakePacket(tradeOffer));
-            Log.Message("Trade offer sent");
+            SendPacket(PacketTradeOffer.MakePacket(tradeOffer));
         }
 
         public async Task<PacketColonyResources> GetColonyResources(Player player)
         {
             // Send trade request packet
-            await SendPacket(new PacketInitiateTrade
+            SendPacket(new PacketInitiateTrade
             {
                 Guid = player.Guid
             });
@@ -210,13 +224,13 @@ namespace PlayerTrade.Net
             return (PacketColonyResources) await AwaitPacket(p => p is PacketColonyResources resourcePacket && resourcePacket.Guid == player.Guid);
         }
 
-        public async Task SendColonyResources()
+        public void SendColonyResources()
         {
             try
             {
                 var resources = new Resources();
                 resources.Update(Find.CurrentMap);
-                await SendPacket(new PacketColonyResources(Guid, resources));
+                SendPacket(new PacketColonyResources(Guid, resources));
             }
             catch (Exception e)
             {
@@ -306,7 +320,7 @@ namespace PlayerTrade.Net
                     case Packet.RequestColonyResourcesId:
                         // Send server our current resources
                         Log.Message($"Fulfilling request for colony resources...");
-                        await SendColonyResources();
+                        SendColonyResources();
                         break;
 
                     case Packet.TradeOfferPacketId:
@@ -340,7 +354,7 @@ namespace PlayerTrade.Net
                         {
                             giveItemPacket.GiveItem();
 
-                            await SendPacket(new PacketAcknowledgement
+                            SendPacket(new PacketAcknowledgement
                             {
                                 Guid = giveItemPacket.Reference,
                                 Success = true
@@ -348,7 +362,7 @@ namespace PlayerTrade.Net
                         }
                         catch (Exception giveException)
                         {
-                            await SendPacket(new PacketAcknowledgement
+                            SendPacket(new PacketAcknowledgement
                             {
                                 Guid = giveItemPacket.Reference,
                                 Success = false,
@@ -406,7 +420,7 @@ namespace PlayerTrade.Net
             if (acceptOffer == null)
             {
                 // Offer not found (probably expired) - send rejection
-                await SendPacket(new PacketTradeConfirm
+                SendPacket(new PacketTradeConfirm
                 {
                     Trade = packet.Trade,
                     Confirm = false
@@ -431,7 +445,7 @@ namespace PlayerTrade.Net
             if (packet.Accept) // don't send confirmation/rejection if the other party declined the trade, no point confirming a rejected trade
             {
                 // Send confirmation/rejection
-                await SendPacket(new PacketTradeConfirm
+                SendPacket(new PacketTradeConfirm
                 {
                     Trade = packet.Trade,
                     Confirm = confirm

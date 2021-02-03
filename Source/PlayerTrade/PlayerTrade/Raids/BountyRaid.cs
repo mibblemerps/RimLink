@@ -42,7 +42,7 @@ namespace PlayerTrade.Raids
 
         public async Task<bool> Send(string target)
         {
-            await RimLinkComp.Instance.Client.SendPacket(new PacketTriggerRaid
+            RimLinkComp.Instance.Client.SendPacket(new PacketTriggerRaid
             {
                 For = target,
                 Raid = this

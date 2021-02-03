@@ -82,10 +82,8 @@ namespace PlayerTrade.Mechanoids.Designer
                     Cluster = MechCluster,
                     For = Player.Guid,
                     From = RimLinkComp.Instance.Guid
-                }).ContinueWith(t =>
-                {
-                    Messages.Message($"The mechanoids will deploy a cluster to {Player.Name} according to your specifications.", MessageTypeDefOf.PositiveEvent);
                 });
+                Messages.Message($"The mechanoids will deploy a cluster to {Player.Name} according to your specifications.", MessageTypeDefOf.PositiveEvent);
             }
             if (Widgets.ButtonText(buttonsRect.LeftPart(0.33f), "Cancel"))
             {

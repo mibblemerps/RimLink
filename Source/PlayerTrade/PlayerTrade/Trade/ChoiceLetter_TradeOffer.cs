@@ -52,7 +52,7 @@ namespace PlayerTrade.Trade
 
             Find.WindowStack.Add(new Dialog_TradeIntermission(Offer));
 
-            _ = Offer.Accept();
+            Offer.Accept();
         }
 
         private void Reject()
@@ -60,7 +60,7 @@ namespace PlayerTrade.Trade
             Find.LetterStack.RemoveLetter(this);
             if (Offer.Fresh)
             {
-                _ = Offer.Reject(); // send rejection
+                Offer.Reject(); // send rejection
                 RimLinkComp.Instance.Client.ActiveTradeOffers.Remove(Offer);
             }
         }

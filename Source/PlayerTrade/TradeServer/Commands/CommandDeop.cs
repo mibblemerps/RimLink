@@ -36,7 +36,7 @@ namespace TradeServer.Commands
                 Program.Permissions.SetPermission(client.Player.Guid, ClientPermissions.PermissionLevel.Player);
                 caller.Output($"{client.Player.Name} is no longer an admin.");
 
-                await client.SendPacket(announcePacket);
+                client.SendPacket(announcePacket);
             }
         }
     }

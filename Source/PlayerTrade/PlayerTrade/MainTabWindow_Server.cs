@@ -172,7 +172,7 @@ namespace PlayerTrade
 
             Log.Message($"Send message: {_chatBoxContent}");
 
-            _ = RimLinkComp.Instance.Client.SendPacket(new PacketSendChatMessage
+            RimLinkComp.Instance.Client.SendPacket(new PacketSendChatMessage
             {
                 Message = _chatBoxContent
             });
