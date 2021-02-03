@@ -171,6 +171,16 @@ namespace PlayerTrade
             if (string.IsNullOrWhiteSpace(_chatBoxContent))
                 return; // Empty
 
+            // Check for special client-side commands
+            if (_chatBoxContent.Equals("/log", StringComparison.InvariantCultureIgnoreCase))
+            {
+                // Try to hide log window, if that fails (not open), show log window. (Toggle)
+                if (!Find.WindowStack.TryRemove(typeof(EditWindow_Log), true))
+                    Find.WindowStack.Add(new EditWindow_Log());
+                _chatBoxContent = "";
+                return;
+            }
+
             Log.Message($"Send message: {_chatBoxContent}");
 
             RimLinkComp.Instance.Client.SendPacket(new PacketSendChatMessage

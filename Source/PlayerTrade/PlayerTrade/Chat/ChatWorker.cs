@@ -61,6 +61,12 @@ namespace PlayerTrade.Chat
             UnreadMessages = 0;
         }
 
+        public void Clear()
+        {
+            Messages.Clear();
+            ReadMessages();
+        }
+
         private void SetUnreadCountMainButtonLabel()
         {
             _mainTabDef.label = _unreadMessages == 0 ? "RimLink" : $"RimLink <b>({UnreadMessages})</b>";
