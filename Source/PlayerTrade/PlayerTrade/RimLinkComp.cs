@@ -15,6 +15,8 @@ namespace PlayerTrade
 {
     public class RimLinkComp : GameComponent
     {
+        private const int MaxReconnectTime = 30;
+
         /// <summary>
         /// The last known instance of the RimLink comp. This should never be used for normally accessing RimLink (use <see cref="Find"/> instead).<br />
         /// This is used for the shutdown procedure.
@@ -48,11 +50,12 @@ namespace PlayerTrade
 
         public Client Client;
 
-        public float TimeUntilReconnect => Time.time - _reconnectTime;
+        public float TimeUntilReconnect => Mathf.Max(0, _reconnectIn);
+        public bool Connecting => _connecting;
 
         private bool _connecting;
-        private float _reconnectTime = -1f;
-        private float _currentReconnectTimeIncrement = 2f;
+        private float _reconnectIn = float.NaN;
+        private int _failedAttempts;
 
         public RimLinkComp(Game game)
         {
@@ -87,10 +90,12 @@ namespace PlayerTrade
             try
             {
                 await Client.Connect(PlayerTradeMod.Instance.Settings.ServerIp);
+                // _connecting is set back to false in OnClientConnected
             }
-            finally
+            catch (ConnectionFailedException e)
             {
                 _connecting = false;
+                throw;
             }
         }
 
@@ -123,23 +128,19 @@ namespace PlayerTrade
             }
 
             // Connect
-            try
-            {
-                await Connect();
-            }
-            catch (Exception e)
-            {
-                Log.Error($"Server connection failed", e);
-                var connectionFailedMsgBox = new Dialog_MessageBox(e.Message, title: "Server Connection Failed",
-                    buttonAText: "Quit to Main Menu", buttonAAction: GenScene.GoToMainMenu,
-                    buttonBText: "Close");
-                connectionFailedMsgBox.forcePause = true;
-                Verse.Find.WindowStack.Add(connectionFailedMsgBox);
-            }
+            QueueConnect();
+        }
+
+        public void QueueConnect(float seconds = 0f)
+        {
+            _reconnectIn = seconds;
         }
 
         public void OnClientConnected(object sender, EventArgs args)
         {
+            _connecting = false;
+            _failedAttempts = 0; // reset failed attempts
+
             Log.Message("Connected to server. GUID: " + Guid);
             Messages.Message($"Connected to server", MessageTypeDefOf.NeutralEvent, false);
 
@@ -152,8 +153,52 @@ namespace PlayerTrade
         private void ClientOnDisconnected(object sender, EventArgs e)
         {
             Messages.Message("Disconnected from server", MessageTypeDefOf.NeutralEvent, false);
-            _currentReconnectTimeIncrement = 2f;
-            _reconnectTime = _currentReconnectTimeIncrement;
+            QueueConnect();
+        }
+
+        private void ReconnectUpdate()
+        {
+            if (!float.IsNaN(_reconnectIn) && !_connecting)
+            {
+                _reconnectIn -= Time.deltaTime;
+
+                if (_reconnectIn <= 0f)
+                {
+                    // Reconnect now
+                    _reconnectIn = float.NaN;
+
+                    _ = Connect().ContinueWith(t =>
+                    {
+                        if (t.IsFaulted && t.Exception?.InnerException != null &&
+                            t.Exception.InnerException is ConnectionFailedException connectionException)
+                        {
+                            if (!connectionException.AllowReconnect)
+                            {
+                                // Cannot auto reconnect. Abort reconnecting and show connection failed dialog.
+                                ShowConnectionFailedDialog(connectionException);
+                                _reconnectIn = float.NaN;
+                                return;
+                            }
+                        }
+                        
+                        if (t.IsFaulted)
+                        {
+                            // Queue next attempt. Reconnect time doubles each failed attempt, up to a defined maximum
+                            _reconnectIn = Mathf.Min(Mathf.Pow(2, ++_failedAttempts), MaxReconnectTime);
+                            Log.Message($"Reconnect attempt in {_reconnectIn} seconds ({_failedAttempts} failed attempts)");
+                        }
+                    });
+                }
+            }
+        }
+
+        public void ShowConnectionFailedDialog(ConnectionFailedException exception)
+        {
+            var connectionFailedMsgBox = new Dialog_MessageBox(exception.Message, title: "Server Connection Failed",
+                buttonAText: "Quit to Main Menu", buttonAAction: GenScene.GoToMainMenu,
+                buttonBText: "Close");
+            connectionFailedMsgBox.forcePause = true;
+            Verse.Find.WindowStack.Add(connectionFailedMsgBox);
         }
 
         public override void GameComponentUpdate()
@@ -162,22 +207,7 @@ namespace PlayerTrade
 
             Client?.Update();
 
-            if (_reconnectTime > 0f && Time.time >= _reconnectTime)
-            {
-                // Attempt reconnect
-                Connect().ContinueWith(t =>
-                {
-                    if (t.IsFaulted || !Client.Tcp.Connected)
-                    {
-                        // Double the last retry time increment and try then
-                        _currentReconnectTimeIncrement = Mathf.Min(_currentReconnectTimeIncrement * 2, 30);
-                        _reconnectTime = Time.time + _currentReconnectTimeIncrement;
-                        Log.Message($"Reconnect attempt failed. Next retry in {_currentReconnectTimeIncrement} seconds.");
-                    }
-                });
-
-                _reconnectTime = -1f;
-            }
+            ReconnectUpdate();
         }
 
         public override void GameComponentTick()

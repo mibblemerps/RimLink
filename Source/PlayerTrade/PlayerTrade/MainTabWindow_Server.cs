@@ -70,14 +70,15 @@ namespace PlayerTrade
             Text.Font = GameFont.Small;
 
             Rect reconnectingLabelRect = new Rect(0, mainLabelRect.yMax + 20f, rect.width, 25f);
-            Widgets.Label(reconnectingLabelRect, $"Reconnecting in {Mathf.Max(0f, RimLinkComp.Instance.TimeUntilReconnect)} seconds...");
+            if (RimLinkComp.Instance.Connecting)
+                Widgets.Label(reconnectingLabelRect, $"Reconnecting now...");
+            else
+                Widgets.Label(reconnectingLabelRect, $"Reconnecting in {Mathf.CeilToInt(Mathf.Max(0f, RimLinkComp.Instance.TimeUntilReconnect))} seconds...");
             Text.Anchor = TextAnchor.UpperLeft;
 
             Rect buttonRect = new Rect((rect.width / 2f - 75f), reconnectingLabelRect.yMax + 20f, 150f, 35f);
-            if (Widgets.ButtonText(buttonRect, "Reconnect"))
-            {
-                _ = RimLinkComp.Instance.Connect();
-            }
+            if (!RimLinkComp.Instance.Connecting && Widgets.ButtonText(buttonRect, "Reconnect"))
+                RimLinkComp.Instance.QueueConnect();
 
             GUI.EndGroup();
         }

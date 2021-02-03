@@ -108,6 +108,7 @@
     <Compile Include="Mechanoids\Designer\MechPartConfigQuantity.cs" />
     <Compile Include="Mechanoids\MechanoidWorker.cs" />
     <Compile Include="Mechanoids\PacketMechanoidCluster.cs" />
+    <Compile Include="Net\ConnectionFailedException.cs" />
     <Compile Include="Net\PacketAcknowledgement.cs" />
     <Compile Include="Net\PacketAnnouncement.cs" />
     <Compile Include="Net\PacketBugReport.cs" />

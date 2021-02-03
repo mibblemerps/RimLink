@@ -63,7 +63,15 @@ namespace PlayerTrade.Net
         public async Task Connect(string ip, int port = 35562)
         {
             Tcp = new TcpClient();
-            await Tcp.ConnectAsync(ip, port);
+            try
+            {
+                await Tcp.ConnectAsync(ip, port);
+            }
+            catch (Exception e)
+            {
+                throw new ConnectionFailedException(e.Message, true, e);
+            }
+
             Stream = Tcp.GetStream();
 
             // Send connect request
@@ -86,13 +94,13 @@ namespace PlayerTrade.Net
             if (response == null)
             {
                 Tcp.Close();
-                throw new Exception("No connect response received. Is the server running and reachable?");
+                throw new ConnectionFailedException("No connect response received. Is the server running and reachable?", true);
             }
 
             if (!response.Success)
             {
                 Tcp.Close();
-                throw new Exception("Server refused connection: " + response.FailReason);
+                throw new ConnectionFailedException("Server refused connection: " + response.FailReason, response.AllowReconnect);
             }
 
             Log.Message("Connected!");
