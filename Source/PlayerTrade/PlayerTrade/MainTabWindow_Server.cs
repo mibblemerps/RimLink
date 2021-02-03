@@ -72,7 +72,7 @@ namespace PlayerTrade
             Rect reconnectingLabelRect = new Rect(0, mainLabelRect.yMax + 20f, rect.width, 25f);
             if (RimLinkComp.Instance.Connecting)
                 Widgets.Label(reconnectingLabelRect, $"Reconnecting now...");
-            else
+            else if (!float.IsNaN(RimLinkComp.Instance.TimeUntilReconnect))
                 Widgets.Label(reconnectingLabelRect, $"Reconnecting in {Mathf.CeilToInt(Mathf.Max(0f, RimLinkComp.Instance.TimeUntilReconnect))} seconds...");
             Text.Anchor = TextAnchor.UpperLeft;
 
