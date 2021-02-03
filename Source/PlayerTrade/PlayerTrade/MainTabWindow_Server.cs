@@ -180,6 +180,12 @@ namespace PlayerTrade
                 _chatBoxContent = "";
                 return;
             }
+            if (_chatBoxContent.Equals("/clear", StringComparison.InvariantCultureIgnoreCase))
+            {
+                RimLinkComp.Instance.Client.Chat.Clear();
+                _chatBoxContent = "";
+                return;
+            }
 
             Log.Message($"Send message: {_chatBoxContent}");
 
