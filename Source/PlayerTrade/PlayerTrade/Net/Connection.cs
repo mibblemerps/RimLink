@@ -90,16 +90,9 @@ namespace PlayerTrade.Net
             _packetQueuedCompletionSource = new TaskCompletionSource<bool>();
         }
 
-        public async Task Disconnect()
+        public void Disconnect()
         {
-            try
-            {
-                // Sending 4 0 bytes (0 int32) will trigger a disconnect on the server (packet ID 0)
-                await Stream.WriteAsync(new byte[] {0x00, 0x00, 0x00, 0x00}, 0, 4);
-            } catch (Exception){}
-
             Tcp?.Close();
-            //Disconnected?.Invoke(this, EventArgs.Empty);
         }
 
         public async Task<Packet> ReceivePacket()
@@ -116,6 +109,7 @@ namespace PlayerTrade.Net
 
             if (readByteCount == 0)
             {
+                // 0 bytes read means end of stream.
                 Disconnected?.Invoke(this, EventArgs.Empty);
                 return null;
             }
@@ -123,14 +117,9 @@ namespace PlayerTrade.Net
             int packetId = BitConverter.ToInt32(buffer, 0);
             int packetLength = BitConverter.ToInt32(buffer, 4);
 
-            if (packetId == 0)
-            {
-                // Special disconnect packet ID. Handy because we get zeros when things go wrong so this just triggers a disconnect
-                Tcp.Close();
-                Disconnected?.Invoke(this, EventArgs.Empty);
-                return null;
-            }
-
+            if (!Packet.Packets.ContainsKey(packetId))
+                throw new Exception("Invalid packet ID: " + packetId);
+            
             // Do some sanity checking
             if (packetLength > 3145728) // 3MiB max size
                 throw new Exception("Packet over max size (3MiB) - possible packet overflow");

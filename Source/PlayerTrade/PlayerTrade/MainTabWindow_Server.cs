@@ -186,6 +186,12 @@ namespace PlayerTrade
                 _chatBoxContent = "";
                 return;
             }
+            if (_chatBoxContent.Equals("/tcpclose"))
+            {
+                RimLinkComp.Instance.Client.Tcp.Close();
+                _chatBoxContent = "";
+                return;
+            }
 
             Log.Message($"Send message: {_chatBoxContent}");
 

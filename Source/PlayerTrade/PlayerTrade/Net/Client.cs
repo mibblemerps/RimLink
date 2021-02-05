@@ -130,6 +130,7 @@ namespace PlayerTrade.Net
                 catch (Exception e)
                 {
                     Log.Error($"Error receiving packet ({e.GetType().Name})", e);
+                    Tcp.Close();
                 }
             }
         }

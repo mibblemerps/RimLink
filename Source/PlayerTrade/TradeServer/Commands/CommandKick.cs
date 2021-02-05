@@ -20,7 +20,7 @@ namespace TradeServer.Commands
             
             foreach (Client client in CommandUtility.GetClientsFromInput(args[0]))
             {
-                await client.Disconnect();
+                client.Disconnect();
                 caller.Output("Kicked " + client.Player.Name);
             }
         }

@@ -21,7 +21,7 @@ namespace PlayerTrade.Patches
                 try
                 {
                     if (RimLinkComp.Instance.Client != null)
-                        RimLinkComp.Instance.Client.Disconnect().Wait(700);
+                        RimLinkComp.Instance.Client.Disconnect();
                     RimLinkComp.Instance.Client = null;
                 }
                 catch (Exception e)
