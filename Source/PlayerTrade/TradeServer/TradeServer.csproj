@@ -56,6 +56,7 @@
     <Compile Include="Commands\Command.cs" />
     <Compile Include="Commands\CommandAdminRequiredException.cs" />
     <Compile Include="Commands\CommandAnnouncement.cs" />
+    <Compile Include="Commands\CommandBan.cs" />
     <Compile Include="Commands\CommandBugReport.cs" />
     <Compile Include="Commands\CommandDeop.cs" />
     <Compile Include="Commands\CommandException.cs" />
@@ -67,6 +68,7 @@
     <Compile Include="Commands\CommandSay.cs" />
     <Compile Include="Commands\CommandSendLetter.cs" />
     <Compile Include="Commands\CommandStop.cs" />
+    <Compile Include="Commands\CommandUnban.cs" />
     <Compile Include="Commands\CommandUsageException.cs" />
     <Compile Include="Commands\CommandUtility.cs" />
     <Compile Include="Commands\ServerCaller.cs" />

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Remoting.Messaging;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -113,6 +114,46 @@ namespace TradeServer.Commands
         {
             if (!caller.IsAdmin)
                 throw new CommandAdminRequiredException();
+        }
+
+        public static bool TryParseTimeSpan(string[] args, out TimeSpan timeSpan)
+        {
+            if (args.Length < 2)
+            {
+                // Not enough args
+                timeSpan = TimeSpan.Zero;
+                return false;
+            }
+
+            if (!double.TryParse(args[0], out double num))
+            {
+                // First arg NaN
+                timeSpan = TimeSpan.Zero;
+                return false;
+            }
+            
+            string unit = args[1].ToLower().TrimEnd('s', ' ', '.');
+            switch (unit)
+            {
+                case "second":
+                case "sec":
+                    timeSpan = TimeSpan.FromSeconds(num);
+                    return true;
+                case "minute":
+                case "min":
+                    timeSpan = TimeSpan.FromMinutes(num);
+                    return true;
+                case "hour":
+                case "hr":
+                    timeSpan = TimeSpan.FromHours(num);
+                    return true;
+                case "day":
+                    timeSpan = TimeSpan.FromDays(num);
+                    return true;
+            }
+
+            timeSpan = TimeSpan.Zero;
+            return false;
         }
     }
 }

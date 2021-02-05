@@ -25,6 +25,8 @@ namespace TradeServer
             new CommandGiveThing(),
             new CommandSay(),
             new CommandBugReport(),
+            new CommandBan(),
+            new CommandUnban(),
         };
 
         private static Caller ServerCaller = new ServerCaller();

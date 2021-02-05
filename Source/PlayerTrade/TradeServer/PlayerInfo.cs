@@ -56,7 +56,7 @@ namespace TradeServer
 
         private static string GetPath(string guid)
         {
-            return PlayerInfoDir + Path.DirectorySeparatorChar + guid.SanitizeFileName() + ".json";
+            return PlayerInfoDir + Path.DirectorySeparatorChar + guid.SanitizeFileName().ToLower() + ".json";
         }
     }
 }

@@ -332,7 +332,7 @@ namespace TradeServer
                 if (PlayerInfo.BannedUntil.HasValue && PlayerInfo.BannedUntil.Value < DateTime.MaxValue)
                 {
                     banExpiryMessage = "Your ban will expire in " +
-                                       (DateTime.Now - PlayerInfo.BannedUntil.Value).ToHumanString() + "\n";
+                                       (PlayerInfo.BannedUntil.Value - DateTime.Now).ToHumanString() + "\n";
                 }
 
                 await SendPacketDirect(new PacketConnectResponse
