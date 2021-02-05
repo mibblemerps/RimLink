@@ -130,7 +130,7 @@ namespace PlayerTrade.Net
                 catch (Exception e)
                 {
                     Log.Error($"Error receiving packet ({e.GetType().Name})", e);
-                    Tcp.Close();
+                    Disconnect();
                 }
             }
         }
@@ -383,6 +383,20 @@ namespace PlayerTrade.Net
 
                     case Packet.RequestBugReportPacketId:
                         BugReport.Send("Bug report requested via command.");
+                        break;
+
+                    case Packet.KickPacketId:
+                        PacketKick kickPacket = (PacketKick) e.Packet;
+                        
+                        if (!kickPacket.AllowReconnect) // Disable auto reconnect
+                            RimLinkComp.ReconnectOnNextDisconnect = false;
+
+                        if (kickPacket.Reason != null)
+                        {
+                            // Show reason
+                            Find.WindowStack.Add(new Dialog_MessageBox(kickPacket.Reason, title: "Kicked", buttonAText: "Close"));
+                        }
+                        
                         break;
                 }
             }

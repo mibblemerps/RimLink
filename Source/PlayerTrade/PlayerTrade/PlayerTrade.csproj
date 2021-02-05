@@ -113,6 +113,7 @@
     <Compile Include="Net\PacketAnnouncement.cs" />
     <Compile Include="Net\PacketBugReport.cs" />
     <Compile Include="Net\PacketGiveItem.cs" />
+    <Compile Include="Net\PacketKick.cs" />
     <Compile Include="Net\PacketRequestBugReport.cs" />
     <Compile Include="Patches\Patch_CameraDriver_Update.cs" />
     <Compile Include="Patches\Patch_CompUsable.cs" />

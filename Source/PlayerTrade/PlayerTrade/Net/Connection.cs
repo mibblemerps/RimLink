@@ -93,6 +93,7 @@ namespace PlayerTrade.Net
         public void Disconnect()
         {
             Tcp?.Close();
+            Disconnected?.Invoke(this, EventArgs.Empty);
         }
 
         public async Task<Packet> ReceivePacket()
@@ -110,7 +111,7 @@ namespace PlayerTrade.Net
             if (readByteCount == 0)
             {
                 // 0 bytes read means end of stream.
-                Disconnected?.Invoke(this, EventArgs.Empty);
+                Disconnect();
                 return null;
             }
 
@@ -138,12 +139,10 @@ namespace PlayerTrade.Net
                 catch (Exception) {}
                 if (readByteCount == 0)
                 {
-                    Log.Warn("Unexpected end of stream");
-                    Disconnected?.Invoke(this, EventArgs.Empty);
-                    return null;
+                    throw new Exception("Unexpected end of stream reading packet content.");
                 }
             }
-
+            
             // Instantiate packet
             Packet packet = (Packet) Activator.CreateInstance(Packet.Packets[packetId]);
 
