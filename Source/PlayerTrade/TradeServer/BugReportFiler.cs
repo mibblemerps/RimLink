@@ -17,8 +17,8 @@ namespace TradeServer
         public static void FileReport(Player sender, PacketBugReport report)
         {
             string name = $"BugReport" +
-                          $"-{Sanitize(sender.Guid.Substring(0, Mathf.Min(8, sender.Guid.Length)))}" +
-                          $"-{Sanitize(sender.Name.Substring(0, Mathf.Min(16, sender.Name.Length)))}" +
+                          $"-{sender.Guid.Substring(0, Mathf.Min(8, sender.Guid.Length)).SanitizeFileName()}" +
+                          $"-{sender.Name.Substring(0, Mathf.Min(16, sender.Name.Length)).SanitizeFileName()}" +
                           $"-";
             int i;
             for (i = 0; i < 2500; i++)
@@ -59,11 +59,6 @@ namespace TradeServer
             {
                 Log.Error("Error filing bug report.", e);
             }
-        }
-
-        private static string Sanitize(string str)
-        {
-            return string.Join("_", str.Split(Path.GetInvalidFileNameChars(), StringSplitOptions.RemoveEmptyEntries)).TrimEnd('.');
         }
     }
 }

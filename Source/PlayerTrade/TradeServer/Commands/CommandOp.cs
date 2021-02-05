@@ -27,13 +27,8 @@ namespace TradeServer.Commands
 
             foreach (var client in CommandUtility.GetClientsFromInput(args[0]))
             {
-                if (Program.Permissions.GetPermission(client.Player.Guid) == ClientPermissions.PermissionLevel.Banned)
-                {
-                    caller.Error($"{client.Player.Name} is banned - unban before giving admin!");
-                    continue;
-                }
-
-                Program.Permissions.SetPermission(client.Player.Guid, ClientPermissions.PermissionLevel.Admin);
+                client.PlayerInfo.Permission = PermissionLevel.Admin;
+                client.PlayerInfo.Save();
                 caller.Output($"{client.Player.Name} is now an admin.");
 
                 client.SendPacket(announcePacket);

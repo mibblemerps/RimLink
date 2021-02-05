@@ -20,7 +20,7 @@ namespace TradeServer
         public ClientState State { get; set; } = ClientState.Auth;
 
         public Player Player;
-        //public string Username;
+        public PlayerInfo PlayerInfo;
 
         public Caller CommandCaller;
 
@@ -290,6 +290,56 @@ namespace TradeServer
                 {
                     Success = false,
                     FailReason = "This game is already connected to the server.",
+                    AllowReconnect = false
+                });
+                Tcp.Close();
+                return;
+            }
+
+            // Load player info
+            PlayerInfo = PlayerInfo.Load(Player.Guid, true);
+            PlayerInfo.LastOnline = DateTime.Now;
+            PlayerInfo.Save();
+
+            // Check secret
+            if (PlayerInfo.Secret != null && !PlayerInfo.Secret.Equals(packet.Secret, StringComparison.InvariantCulture))
+            {
+                // Invalid secret
+                Log.Warn($"Player {packet.Player.Name} ({packet.Guid}) attempted to connect with incorrect secret.");
+                await SendPacketDirect(new PacketConnectResponse
+                {
+                    Success = false,
+                    FailReason = "Game secret incorrect. RimLink data may be corrupted.",
+                    AllowReconnect = false
+                });
+                Tcp.Close();
+                return;
+            }
+
+            // Assign secret
+            if (PlayerInfo.Secret == null)
+            {
+                PlayerInfo.Secret = packet.Secret;
+                PlayerInfo.Save();
+            }
+
+            // Check if banned
+            if (PlayerInfo.IsBanned)
+            {
+                // Banned
+                Log.Warn($"Banned player {packet.Player.Name} tried to join.");
+                string banExpiryMessage = "";
+                if (PlayerInfo.BannedUntil.HasValue && PlayerInfo.BannedUntil.Value < DateTime.MaxValue)
+                {
+                    banExpiryMessage = "Your ban will expire in " +
+                                       (DateTime.Now - PlayerInfo.BannedUntil.Value).ToHumanString() + "\n";
+                }
+
+                await SendPacketDirect(new PacketConnectResponse
+                {
+                    Success = false,
+                    FailReason = "Banned from server.\n" + banExpiryMessage +
+                                 (PlayerInfo.BanReason == null ? "" : $"\n{PlayerInfo.BanReason}"),
                     AllowReconnect = false
                 });
                 Tcp.Close();

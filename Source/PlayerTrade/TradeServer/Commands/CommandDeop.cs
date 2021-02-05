@@ -27,13 +27,14 @@ namespace TradeServer.Commands
 
             foreach (var client in CommandUtility.GetClientsFromInput(args[0]))
             {
-                if (Program.Permissions.GetPermission(client.Player.Guid) != ClientPermissions.PermissionLevel.Admin)
+                if (client.PlayerInfo.Permission != PermissionLevel.Admin)
                 {
                     caller.Error($"{client.Player.Name} is not an admin!");
                     continue;
                 }
 
-                Program.Permissions.SetPermission(client.Player.Guid, ClientPermissions.PermissionLevel.Player);
+                client.PlayerInfo.Permission = PermissionLevel.Player;
+                client.PlayerInfo.Save();
                 caller.Output($"{client.Player.Name} is no longer an admin.");
 
                 client.SendPacket(announcePacket);

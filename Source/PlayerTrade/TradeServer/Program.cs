@@ -27,8 +27,6 @@ namespace TradeServer
             new CommandBugReport(),
         };
 
-        public static ClientPermissions Permissions = new ClientPermissions();
-
         private static Caller ServerCaller = new ServerCaller();
         private static Task _serverTask;
 
@@ -41,8 +39,6 @@ namespace TradeServer
             int port = 35562;
             Console.WriteLine("    Port: " + port);
             Console.WriteLine();
-
-            Permissions.Load();
 
             Server = new Server();
             _serverTask = Server.Run(port);
