@@ -16,9 +16,10 @@ namespace PlayerTrade.Labor
     {
         public const float MarketValueVarianceAllowed = 50f;
 
+        /// <summary>Uniquely identifies this labor offer</summary>
         public string Guid;
+        /// <summary>List of colonists being offered to lend.</summary>
         public List<Pawn> Colonists;
-        public int ColonistCount;
         public float Days;
         public int Payment;
         public int Bond;
@@ -87,7 +88,8 @@ namespace PlayerTrade.Labor
             Log.Message($"Fulfilling labor offer {Guid} as sender (removing pawns receiving payment)");
 
             // Remove offered colonists from our map
-            RimLinkComp.Find().PawnsToRemove.AddRange(Colonists);
+            foreach (var colonist in Colonists)
+                colonist.DeSpawn();
 
             if (Payment > 0)
             {
@@ -151,7 +153,7 @@ namespace PlayerTrade.Labor
         /// <summary>
         /// Return colonists.
         /// </summary>
-        public async Task ReturnColonists(List<Pawn> pawns)
+        public void ReturnColonists(List<Pawn> pawns)
         {
             Client client = RimLinkComp.Instance.Client;
 
@@ -211,7 +213,7 @@ namespace PlayerTrade.Labor
             }
 
             // Remove this as an active labor offer.
-            RimLinkComp.Find().ActiveLaborOffers.Remove(this);
+            RimLinkComp.Instance.ActiveLaborOffers.Remove(this);
         }
 
         public void ExposeData()
@@ -222,7 +224,7 @@ namespace PlayerTrade.Labor
             Scribe_Values.Look(ref Days, "days");
             Scribe_Values.Look(ref Payment, "payment");
             Scribe_Values.Look(ref Bond, "bond");
-            Scribe_Collections.Look(ref Colonists, "colonists", LookMode.Reference);
+            Scribe_Collections.Look(ref Colonists, "colonists", LookMode.Deep);
             //Scribe_Collections.Look(ref MarketValues, "market_values");
         }
 

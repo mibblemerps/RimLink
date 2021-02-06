@@ -12,6 +12,7 @@ namespace PlayerTrade.Net
     public partial class NetHuman : IPacketable
     {
         public string[] Name;
+        public string RimLinkGuid;
         public long BiologicalAgeTicks;
         public long ChronologicalAgeTicks;
         public string KindDefName;
@@ -55,6 +56,8 @@ namespace PlayerTrade.Net
 
         public void Write(PacketBuffer buffer)
         {
+            buffer.WriteString(RimLinkGuid);
+
             // Name
             buffer.WriteInt(Name.Length);
             foreach (string name in Name)
@@ -143,6 +146,8 @@ namespace PlayerTrade.Net
 
         public void Read(PacketBuffer buffer)
         {
+            RimLinkGuid = buffer.ReadString();
+
             // Name
             int nameCount = buffer.ReadInt();
             Name = new string[nameCount];

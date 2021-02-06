@@ -33,9 +33,17 @@ namespace PlayerTrade
             if (pawn.Name is NameSingle nameSingle)
                 human.Name = new[] {nameSingle.Name};
             else if (pawn.Name is NameTriple nameTriple)
-                human.Name = new[] {nameTriple.First, nameTriple.Nick, nameTriple.Nick};
+                human.Name = new[] {nameTriple.First, nameTriple.Nick, nameTriple.Last};
             else
                 throw new Exception("Unknown name type! " + pawn.Name.GetType().Name);
+
+            PawnGuidThingComp guidComp = pawn.TryGetComp<PawnGuidThingComp>();
+            if (guidComp == null)
+            {
+                Log.Error("Couldn't find RimLink GUID comp on pawn!");
+                return null;
+            }
+            human.RimLinkGuid = guidComp.Guid;
 
             human.BiologicalAgeTicks = pawn.ageTracker.AgeBiologicalTicks;
             human.ChronologicalAgeTicks = pawn.ageTracker.AgeChronologicalTicks;
@@ -203,19 +211,28 @@ namespace PlayerTrade
             return human;
         }
 
-        public static Pawn ToPawn(this NetHuman human)
+        public static Pawn ToPawn(this NetHuman human, Pawn basePawn = null)
         {
+            Pawn pawn = basePawn;
             PawnKindDef kind = DefDatabase<PawnKindDef>.GetNamed(human.KindDefName);
-            Pawn pawn = (Pawn) ThingMaker.MakeThing(kind.race);
+            if (pawn == null)
+            {
+                // Create new pawn
+                pawn = (Pawn) ThingMaker.MakeThing(kind.race);
+                PawnComponentsUtility.CreateInitialComponents(pawn);
+            }
             pawn.kindDef = kind;
-            pawn.SetFactionDirect(Faction.OfPlayer);
-            PawnComponentsUtility.CreateInitialComponents(pawn);
-            
+
+            pawn.SetFaction(Faction.OfPlayer);
+
             // Set name
             if (human.Name.Length == 1)
                 pawn.Name = new NameSingle(human.Name[0]);
             else
                 pawn.Name = new NameTriple(human.Name[0], human.Name[1], human.Name[2]);
+
+            // Set GUID
+            pawn.TryGetComp<PawnGuidThingComp>().Guid = human.RimLinkGuid;
 
             // Backstory
             if (!BackstoryDatabase.TryGetWithIdentifier(human.Childhood, out pawn.story.childhood))

@@ -36,7 +36,7 @@ namespace PlayerTrade.Labor
             }
 
             var pawns = shuttleComp.Transporter.innerContainer.Where(thing => thing is Pawn).Cast<Pawn>().ToList();
-            _ = offer.ReturnColonists(pawns);
+            offer.ReturnColonists(pawns);
         }
 
         public override void ExposeData()
