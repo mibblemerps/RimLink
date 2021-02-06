@@ -188,7 +188,13 @@ namespace PlayerTrade.Labor
 
             foreach (var colonist in packet.ReturnedColonists)
             {
-                Pawn pawn = colonist.ToPawn();
+                // Find the locally stored original pawn we sent - we use this as the basis for receiving the pawn from the network
+                Pawn originalPawn =
+                    Colonists.FirstOrDefault(p => p.TryGetComp<PawnGuidThingComp>().Guid == colonist.RimLinkGuid);
+                if (originalPawn == null)
+                    Log.Warn($"RimLink pawn GUID not found on returned pawn. The original pawn cannot be found, so the pawn may not be reproduced perfectly.");
+
+                Pawn pawn = colonist.ToPawn(originalPawn);
                 Log.Message($"Returning {pawn.Name.ToStringFull}...");
                 IntVec3 pos = DropCellFinder.TradeDropSpot(Find.CurrentMap);
                 TradeUtility.SpawnDropPod(pos, Find.CurrentMap, pawn);

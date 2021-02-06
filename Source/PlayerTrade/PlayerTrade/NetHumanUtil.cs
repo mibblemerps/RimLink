@@ -214,6 +214,7 @@ namespace PlayerTrade
         public static Pawn ToPawn(this NetHuman human, Pawn basePawn = null)
         {
             Pawn pawn = basePawn;
+            bool usingBasePawn = basePawn != null;
             PawnKindDef kind = DefDatabase<PawnKindDef>.GetNamed(human.KindDefName);
             if (pawn == null)
             {
@@ -250,6 +251,8 @@ namespace PlayerTrade
             pawn.story.hairColor = human.HairColor;
 
             // Traits
+            if (usingBasePawn)
+                pawn.story.traits.allTraits.Clear();
             foreach (NetHuman.NetTrait trait in human.Traits)
                 pawn.story.traits.GainTrait(new Trait(trait.TraitDef, trait.Degree));
 
@@ -282,10 +285,14 @@ namespace PlayerTrade
                 pawn.equipment.AddEquipment((ThingWithComps) netThing.ToThing());
 
             // Inventory
+            if (usingBasePawn)
+                pawn.inventory.innerContainer.ClearAndDestroyContents();
             foreach (NetThing thing in human.Inventory)
                 pawn.inventory.innerContainer.TryAdd(thing.ToThing());
 
             // Hediffs
+            if (usingBasePawn)
+                pawn.health.hediffSet.Clear();
             foreach (NetHediff netHediff in human.Hediffs)
             {
                 HediffDef def = HediffDef.Named(netHediff.HediffDefName);
@@ -383,9 +390,7 @@ namespace PlayerTrade
                 NeedDef def = DefDatabase<NeedDef>.GetNamed(netNeed.NeedDefName);
                 Need need = pawn.needs.TryGetNeed(def);
                 if (need == null)
-                {
                     Log.Warn($"Unable to set need {netNeed.NeedDefName} - need couldn't be found on pawn");
-                }
                 Need_CurLevel.SetValue(need, netNeed.Level);
             }
 
