@@ -98,8 +98,8 @@ namespace PlayerTrade.Labor
         {
             foreach (Pawn pawn in Find.CurrentMap.mapPawns.FreeColonists)
             {
-                if (pawn.royalty.AllTitlesForReading.Count > 0)
-                    continue;
+                // if (pawn.royalty.AllTitlesForReading.Count > 0)
+                //     continue;
                 yield return pawn;
             }
         }

@@ -36,6 +36,16 @@ namespace PlayerTrade.Labor
         /// </summary>
         public Dictionary<Pawn, float> MarketValues = new Dictionary<Pawn, float>();
 
+        /// <summary>
+        /// A list to store any heirs. Tis is saved so the game can maintain a reference to them.
+        /// </summary>
+        public List<Pawn> Heirs = new List<Pawn>();
+
+        /// <summary>
+        /// List of the original colonists sent. This is deep-saved by the sender to keep an original copy of the pawn.
+        /// </summary>
+        public List<Pawn> OriginalColonists = new List<Pawn>();
+
         public int TotalAmountPayable => Payment + Bond;
 
         public string GenerateOfferText()
@@ -91,6 +101,9 @@ namespace PlayerTrade.Labor
             foreach (var colonist in Colonists)
                 colonist.DeSpawn();
 
+            // Remember original colonists
+            OriginalColonists = new List<Pawn>(Colonists);
+
             if (Payment > 0)
             {
                 // Give payment
@@ -111,7 +124,15 @@ namespace PlayerTrade.Labor
 
             // Spawn pawns
             foreach (Pawn pawn in Colonists)
+            {
+                // Spawn pawn
                 TradeUtility.SpawnDropPod(DropCellFinder.TradeDropSpot(map), map, pawn);
+
+                // Store heir
+                Pawn heir = pawn.royalty?.GetHeir(Faction.Empire);
+                if (heir != null)
+                    Heirs.Add(heir);
+            }
 
             if (TotalAmountPayable < 0)
             {
@@ -230,7 +251,9 @@ namespace PlayerTrade.Labor
             Scribe_Values.Look(ref Days, "days");
             Scribe_Values.Look(ref Payment, "payment");
             Scribe_Values.Look(ref Bond, "bond");
-            Scribe_Collections.Look(ref Colonists, "colonists", LookMode.Deep);
+            Scribe_Collections.Look(ref OriginalColonists, "original_colonists", LookMode.Deep);
+            Scribe_Collections.Look(ref Colonists, "colonists", LookMode.Reference);
+            Scribe_Collections.Look(ref Heirs, "heirs", LookMode.Deep);
             //Scribe_Collections.Look(ref MarketValues, "market_values");
         }
 

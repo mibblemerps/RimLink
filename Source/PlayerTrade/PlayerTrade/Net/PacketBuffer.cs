@@ -159,13 +159,51 @@ namespace PlayerTrade.Net
             return new Guid(ReadByteArray());
         }
 
-        public void WritePacketable(IPacketable packetable)
+        public delegate object ReadListItem(PacketBuffer buffer);
+        public List<T> ReadList<T>(ReadListItem readListItem)
         {
+            int count = ReadInt();
+            var list = new List<T>(count);
+            for (int i = 0; i < count; i++)
+            {
+                list.Add((T) readListItem(this));
+            }
+
+            return list;
+        }
+
+        public delegate void WriteListItem<T>(PacketBuffer buffer, T item);
+        public void WriteList<T>(List<T> list, WriteListItem<T> writeListItem)
+        {
+            WriteInt(list.Count);
+            foreach (var item in list)
+            {
+                writeListItem(this, item);
+            }
+        }
+
+        public void WritePacketable(IPacketable packetable, bool allowNull = false)
+        {
+            if (!allowNull && packetable == null)
+                throw new ArgumentException("Packetable cannot be null. (Set allowNull = true to allow nulls)", nameof(packetable));
+
+            if (packetable == null)
+            {
+                WriteBoolean(false);
+                return;
+            }
+
+            if (allowNull)
+                WriteBoolean(true);
+            
             packetable.Write(this);
         }
 
-        public T ReadPacketable<T>() where T : IPacketable
+        public T ReadPacketable<T>(bool allowNull = false) where T : IPacketable
         {
+            if (allowNull && !ReadBoolean())
+                return default;
+
             T obj = Activator.CreateInstance<T>();
             obj.Read(this);
             return obj;

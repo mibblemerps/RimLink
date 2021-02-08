@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using PlayerTrade.Net;
 using RimWorld;
@@ -22,7 +23,7 @@ namespace PlayerTrade
 
         private static FieldInfo Need_CurLevel = typeof(Need).GetField("curLevelInt", BindingFlags.NonPublic | BindingFlags.Instance);
 
-        public static NetHuman ToNetHuman(this Pawn pawn)
+        public static NetHuman ToNetHuman(this Pawn pawn, bool simplified = false)
         {
             if (!pawn.RaceProps.Humanlike)
                 throw new ArgumentException("Attempt to convert non-human to NetHuman", nameof(pawn));
@@ -83,6 +84,9 @@ namespace PlayerTrade
                     Degree = trait.Degree
                 });
             }
+
+            if (simplified)
+                return human; // All we need for simplified
 
             // Equipment
             human.Equipment = new List<NetThing>();
@@ -206,6 +210,51 @@ namespace PlayerTrade
                     NeedDefName = need.def.defName,
                     Level = (float) Need_CurLevel.GetValue(need)
                 });
+            }
+
+            // Royalty
+            if (ModLister.RoyaltyInstalled && pawn.royalty != null)
+            {
+                var royalty = new NetRoyalty();
+                human.Royalty = royalty;
+                royalty.Favor = pawn.royalty.GetFavor(Faction.Empire);
+                Log.Message("Favor: " + human.Royalty.Favor);
+                royalty.PermitPoints = pawn.royalty.GetPermitPoints(Faction.Empire);
+                royalty.LastDecreeTicksAgo = Find.TickManager.TicksGame - pawn.royalty.lastDecreeTicks;
+                royalty.AllowApparelRequirements = pawn.royalty.allowApparelRequirements;
+                royalty.AllowRoomRequirements = pawn.royalty.allowRoomRequirements;
+
+                // Titles
+                foreach (var title in pawn.royalty.AllTitlesForReading)
+                {
+                    royalty.Titles.Add(new NetRoyalty.NetTitle
+                    {
+                        GotTicksAgo = Find.TickManager.TicksGame - title.receivedTick,
+                        RoyalTitleDefName = title.def.defName,
+                        Conceited = title.conceited,
+                        WasInherited = title.wasInherited
+                    });
+                }
+                
+                // Permits
+                foreach (var permit in pawn.royalty.PermitsFromFaction(Faction.Empire))
+                {
+                    royalty.Permits.Add(new NetRoyalty.NetPermit
+                    {
+                        UsedTicksAgo = Find.TickManager.TicksGame - permit.LastUsedTick,
+                        PermitDefName = permit.Permit.defName,
+                        TitleDefName = permit.Title.defName
+                    });
+                }
+
+                // Heir
+                Pawn heir = pawn.royalty.GetHeir(Faction.Empire);
+                if (heir != null)
+                {
+                    // Create a simplified version of the heir. This heir will (hopefully) never been seen or spawned, other than their name in the UI.
+                    royalty.DummyHeir = ToNetHuman(heir);
+                    royalty.DummyHeir.Royalty = null; // Remove any royalty stuffs from heir (to prevent any loops and it's uneccesary data)
+                }
             }
 
             return human;
@@ -392,6 +441,46 @@ namespace PlayerTrade
                 if (need == null)
                     Log.Warn($"Unable to set need {netNeed.NeedDefName} - need couldn't be found on pawn");
                 Need_CurLevel.SetValue(need, netNeed.Level);
+            }
+
+            // Royalty
+            if (ModLister.RoyaltyInstalled && human.Royalty != null)
+            {
+                if (pawn.royalty == null)
+                    pawn.royalty = new Pawn_RoyaltyTracker(pawn);
+
+                // Permit points
+                var permitPointsDict = (Dictionary<Faction, int>) typeof(Pawn_RoyaltyTracker).GetField("permitPoints", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(pawn.royalty);
+                permitPointsDict[Faction.Empire] = human.Royalty.PermitPoints;
+
+                // Add title
+                NetRoyalty.NetTitle netTitle = human.Royalty.Titles.FirstOrDefault();
+                if (netTitle != null)
+                {
+                    pawn.royalty.SetTitle(Faction.Empire, DefDatabase<RoyalTitleDef>.GetNamed(netTitle.RoyalTitleDefName), false, false, false);
+                    var title = pawn.royalty.GetCurrentTitleInFaction(Faction.Empire);
+                    title.conceited = netTitle.Conceited;
+                    title.receivedTick = Find.TickManager.TicksGame - netTitle.GotTicksAgo;
+                    title.wasInherited = netTitle.WasInherited;
+                }
+
+                pawn.royalty.SetFavor_NewTemp(Faction.Empire, human.Royalty.Favor); // (important this happens after adding the title, otherwise it gets cleared)
+                pawn.royalty.lastDecreeTicks = Find.TickManager.TicksGame - human.Royalty.LastDecreeTicksAgo;
+                pawn.royalty.allowRoomRequirements = human.Royalty.AllowRoomRequirements;
+                pawn.royalty.allowApparelRequirements = human.Royalty.AllowApparelRequirements;
+
+                if (!usingBasePawn)
+                    pawn.royalty.SetHeir(human.Royalty.DummyHeir.ToPawn(), Faction.Empire);
+
+                // Add permits
+                foreach (var netPermit in human.Royalty.Permits)
+                {
+                    var permitDef = DefDatabase<RoyalTitlePermitDef>.GetNamed(netPermit.PermitDefName);
+                    pawn.royalty.AddPermit(permitDef, Faction.Empire);
+                    var permit = pawn.royalty.GetPermit(permitDef, Faction.Empire);
+                    typeof(FactionPermit).GetField("lastUsedTick", BindingFlags.NonPublic | BindingFlags.Instance)
+                        .SetValue(permit, Find.TickManager.TicksGame - netPermit.UsedTicksAgo);
+                }
             }
 
             return pawn;

@@ -95,6 +95,7 @@
     <Compile Include="Chat\PacketSendChatMessage.cs" />
     <Compile Include="Dialog_ConnectingToServer.cs" />
     <Compile Include="GameSettings.cs" />
+    <Compile Include="Net\NetRoyalty.cs" />
     <Compile Include="PawnGuidThingComp.cs" />
     <Compile Include="Mail\Dialog_SendLetter.cs" />
     <Compile Include="Mail\MailWorker.cs" />

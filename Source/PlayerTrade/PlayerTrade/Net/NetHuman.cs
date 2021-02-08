@@ -49,6 +49,8 @@ namespace PlayerTrade.Net
 
         public List<NetNeed> Needs;
 
+        public NetRoyalty Royalty;
+
         public NetHuman()
         {
             
@@ -142,6 +144,17 @@ namespace PlayerTrade.Net
             buffer.WriteInt(Needs.Count);
             foreach (NetNeed need in Needs)
                 buffer.WritePacketable(need);
+
+            // Royalty
+            if (Royalty == null)
+            {
+                buffer.WriteBoolean(false);
+            }
+            else
+            {
+                buffer.WriteBoolean(true);
+                buffer.WritePacketable(Royalty);
+            }
         }
 
         public void Read(PacketBuffer buffer)
@@ -237,6 +250,10 @@ namespace PlayerTrade.Net
             Needs = new List<NetNeed>(needsCount);
             for (int i = 0; i < needsCount; i++)
                 Needs.Add(buffer.ReadPacketable<NetNeed>());
+
+            // Royalty
+            if (buffer.ReadBoolean())
+                Royalty = buffer.ReadPacketable<NetRoyalty>();
         }
 
         public class NetSkill : IPacketable
