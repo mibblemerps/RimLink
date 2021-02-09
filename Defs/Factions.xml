@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+
+	<FactionDef ParentName="PlayerFactionBase">
+		<defName>OtherPlayer</defName>
+		<label>player faction</label>
+		<isPlayer>false</isPlayer>
+		<hidden>true</hidden>
+		<description>Colonists from another player faction.</description>
+		<factionIconPath>World/WorldObjects/Expanding/Town</factionIconPath>
+		<colorSpectrum>
+			<li>(0.93, 0.39, 0.32)</li>
+			<li>(0.35, 0.90, 0.57)</li>
+			<li>(0.25, 0.66, 0.94)</li>
+			<li>(0.98, 0.75, 0.37)</li>
+			<li>(0.97, 0.62, 0.52)</li>
+		</colorSpectrum>
+		<startingGoodwill>0</startingGoodwill>
+		<naturalColonyGoodwill>-50~50</naturalColonyGoodwill>
+		<generateNewLeaderFromMapMembersOnly>true</generateNewLeaderFromMapMembersOnly>
+		<leaderTitle>leader</leaderTitle>
+		
+		<!-- Don't start with any -->
+		<canMakeRandomly>false</canMakeRandomly>
+		<mustStartOneEnemy>false</mustStartOneEnemy>
+		<requiredCountAtGameStart>0</requiredCountAtGameStart>
+		<maxCountAtGameStart>0</maxCountAtGameStart>
+		
+		<!-- Pretty much irrelevent stuff to make the game happy -->
+		<factionNameMaker>NamerFactionRefugee</factionNameMaker>
+		<techLevel>Industrial</techLevel>
+		<backstoryFilters>
+			<li>
+			<categories>
+				<li>Offworld</li>
+			</categories>
+		</li>
+		</backstoryFilters>
+		<hairTags>
+			<li>Urban</li>
+		</hairTags>
+		<apparelStuffFilter>
+			<thingDefs>
+				<li>Synthread</li>
+			</thingDefs>
+		</apparelStuffFilter>
+	</FactionDef>
+
+</Defs>

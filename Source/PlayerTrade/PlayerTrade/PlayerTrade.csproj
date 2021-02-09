@@ -119,6 +119,7 @@
     <Compile Include="Net\PacketRequestBugReport.cs" />
     <Compile Include="Patches\Patch_CameraDriver_Update.cs" />
     <Compile Include="Patches\Patch_CompUsable.cs" />
+    <Compile Include="PlayerFactions.cs" />
     <Compile Include="Trade\ChoiceLetter_TradeOffer.cs" />
     <Compile Include="Labor\ChoiceLetter_LaborOffer.cs" />
     <Compile Include="Labor\Dialog_LendColonist.cs" />

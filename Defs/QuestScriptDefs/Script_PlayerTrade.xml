@@ -40,9 +40,6 @@
 								<lookForSafeSpot>True</lookForSafeSpot>
 								<tryLandInShipLandingZone>True</tryLandInShipLandingZone>
 							</li>
-							<li Class="QuestNode_SendShuttleAwayOnCleanup">
-								<shuttle>$shuttle</shuttle>
-							</li>
 							<li Class="QuestNode_Letter">
 								<label>Shuttle Arrived ($from)</label>
 								<text>
@@ -51,17 +48,28 @@
 								<lookTargets>$shuttle</lookTargets>
 							</li>
 							
+							<!-- Pawns -->
 							<li Class="QuestNode_InspectString">
 								<targets>$pawns</targets>
 								<inspectString TKey="InspectStringDepartShuttle">Should depart on shuttle</inspectString>
 							</li>
+							<li Class="QuestNode_ExtraFaction">
+								<faction>$home_faction</faction>
+								<factionType>HomeFaction</factionType>
+								<pawns>$pawns</pawns>
+								<areHelpers>true</areHelpers>
+							</li>
 							
+							<!-- Shuttle leave -->
 							<li Class="QuestNode_ShuttleLeaveDelay">
 								<delayTicks>$($shuttle_leave_ticks - $shuttle_arrival_ticks)</delayTicks>
 								<shuttle>$shuttle</shuttle>
 								<node Class="QuestNode_SendShuttleAway">
 									<shuttle>$shuttle</shuttle>
 								</node>
+							</li>
+							<li Class="QuestNode_SendShuttleAwayOnCleanup">
+								<shuttle>$shuttle</shuttle>
 							</li>
 							
 							<!-- Shuttle sent -->

@@ -167,6 +167,7 @@ namespace PlayerTrade.Labor
             slate.Set("pawn_count", Colonists.Count);
             slate.Set("bond", Bond);
             slate.Set("bond_things", bondThings);
+            slate.Set("home_faction", RimLinkComp.Instance.PlayerFactions[From]);
             Quest quest = QuestGen.Generate(DefDatabase<QuestScriptDef>.GetNamed("PlayerLentColonists"), slate);
             Find.QuestManager.Add(quest);
         }
@@ -254,7 +255,6 @@ namespace PlayerTrade.Labor
             Scribe_Collections.Look(ref OriginalColonists, "original_colonists", LookMode.Deep);
             Scribe_Collections.Look(ref Colonists, "colonists", LookMode.Reference);
             Scribe_Collections.Look(ref Heirs, "heirs", LookMode.Deep);
-            //Scribe_Collections.Look(ref MarketValues, "market_values");
         }
 
         public PacketLaborOffer ToPacket()
@@ -292,6 +292,16 @@ namespace PlayerTrade.Labor
 
             foreach (NetHuman netHuman in packet.Colonists)
                 offer.Colonists.Add(netHuman.ToPawn());
+
+            // Set colonist faction
+            Faction homeFaction = RimLinkComp.Instance.PlayerFactions[offer.From];
+            if (homeFaction == null)
+            {
+                Log.Error("Cannot find player faction");
+            }
+
+            foreach (Pawn colonist in offer.Colonists)
+                colonist.SetFaction(Faction.OfPlayer);
 
             return offer;
         }

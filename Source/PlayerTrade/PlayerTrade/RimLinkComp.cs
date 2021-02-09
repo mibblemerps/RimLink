@@ -44,9 +44,12 @@ namespace PlayerTrade
         public List<LaborOffer> ActiveLaborOffers = new List<LaborOffer>();
 
         /// <summary>
-        /// Pawns that have been sent and should be removed.
+        /// Player factions. GUID -> Faction
         /// </summary>
-        public List<Pawn> PawnsToRemove = new List<Pawn>();
+        public Dictionary<string, Faction> PlayerFactions = new Dictionary<string, Faction>();
+
+        private List<string> _tmpPlayerFactionGuids;
+        private List<Faction> _tmpPlayerFactions;
 
         public Client Client;
 
@@ -90,6 +93,7 @@ namespace PlayerTrade
             Client = new Client(this);
             Client.Connected += OnClientConnected;
             Client.PlayerConnected += OnPlayerConnected;
+            Client.PlayerUpdated += OnPlayerUpdated;
             try
             {
                 await Client.Connect(RimLinkMod.Instance.Settings.ServerIp);
@@ -113,6 +117,8 @@ namespace PlayerTrade
                 RaidsPending = new List<BountyRaid>();
             if (ActiveLaborOffers == null)
                 ActiveLaborOffers = new List<LaborOffer>();
+            if (PlayerFactions == null)
+                PlayerFactions = new Dictionary<string, Faction>();
 
             // Generate a secret if we don't have one (not crytographically great - but it'll do for this)
             if (string.IsNullOrWhiteSpace(Secret))
@@ -245,11 +251,6 @@ namespace PlayerTrade
             }
             foreach (BountyRaid raid in raidsToRemove)
                 RaidsPending.Remove(raid);
-
-            // Remove sent pawns
-            foreach (Pawn pawn in PawnsToRemove)
-                pawn.Destroy(DestroyMode.Vanish);
-            PawnsToRemove.Clear();
         }
 
         private void OnPlayerConnected(object sender, Player e)
@@ -257,6 +258,22 @@ namespace PlayerTrade
             // Remove and re-add player to remembered players list
             RememberedPlayers.RemoveAll(player => player.Guid == e.Guid);
             RememberedPlayers.Add(e);
+
+            if (!PlayerFactions.ContainsKey(e.Guid))
+            {
+                // Add faction
+                Faction playerFaction = FactionGenerator.NewGeneratedFaction(DefDatabase<FactionDef>.GetNamed("OtherPlayer"));
+                PlayerFactions.Add(e.Guid, playerFaction);
+                Verse.Find.FactionManager.Add(playerFaction);
+
+                Log.Message($"Generated faction for player {e.Name} ({e.Guid}).");
+            }
+        }
+
+        private void OnPlayerUpdated(object sender, Client.PlayerUpdateEventArgs e)
+        {
+            // Update player faction name
+            PlayerFactions[e.Player.Guid].Name = e.Player.Name;
         }
 
         public override void ExposeData()
@@ -268,7 +285,7 @@ namespace PlayerTrade
             Scribe_Collections.Look(ref TradeOffersPendingFulfillment, "trade_offers_pending_fulfillment");
             Scribe_Collections.Look(ref RaidsPending, "raids_pending");
             Scribe_Collections.Look(ref ActiveLaborOffers, "active_labor_offers");
-            Scribe_Collections.Look(ref PawnsToRemove, "pawns_to_remove", LookMode.Reference);
+            Scribe_Collections.Look(ref PlayerFactions, "player_factions", LookMode.Value, LookMode.Reference, ref _tmpPlayerFactionGuids, ref _tmpPlayerFactions);
             Scribe_Values.Look(ref Anticheat, "anticheat", false, true);
         }
 
