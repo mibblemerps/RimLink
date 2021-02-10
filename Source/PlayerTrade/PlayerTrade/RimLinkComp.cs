@@ -221,6 +221,9 @@ namespace PlayerTrade
             Client?.Update();
 
             ReconnectUpdate();
+
+            foreach (LaborOffer laborOffer in ActiveLaborOffers)
+                laborOffer.Update();
         }
 
         public override void GameComponentTick()

@@ -59,6 +59,55 @@
 								<pawns>$pawns</pawns>
 								<areHelpers>true</areHelpers>
 							</li>
+							<!-- All lent colonists get on duty thought -->
+							<li Class="QuestNode_AddMemoryThought">
+								<pawns>$pawns</pawns>
+								<def>OnDuty</def>
+							</li>
+							
+							<!-- Duty-of-care failures -->
+							<li Class="QuestNode_Signal">
+								<inSignal>pawns.Destroyed</inSignal>
+								<node Class="QuestNode_Sequence">
+									<nodes>
+										<li Class="QuestNode_Letter">
+											<label>Lent colonist died: {SUBJECT_definite}</label>
+											<text>{SUBJECT_definite}, who you lent from [from], has died.</text>
+										</li>
+										<li Class="PlayerTrade.Labor.QuestNode_NotifyColonistLost">
+											<how>Dead</how>
+										</li>
+									</nodes>
+								</node>
+							</li>
+							<li Class="QuestNode_Signal">
+								<inSignal>pawns.Arrested</inSignal>
+								<node Class="QuestNode_Sequence">
+									<nodes>
+										<li Class="QuestNode_Letter">
+											<label>Lent colonist arrested: {SUBJECT_definite}</label>
+											<text>{SUBJECT_definite}, who you lent from [from], has been arrested.</text>
+										</li>
+										<li Class="PlayerTrade.Labor.QuestNode_NotifyColonistLost">
+											<how>Imprisoned</how>
+										</li>
+									</nodes>
+								</node>
+							</li>
+							<li Class="QuestNode_Signal">
+								<inSignal>pawns.LeftMap</inSignal>
+								<node Class="QuestNode_Sequence">
+									<nodes>
+										<li Class="QuestNode_Letter">
+											<label>Lent colonist arrested: {SUBJECT_definite}</label>
+											<text>{SUBJECT_definite}, who you lent from [from], has been lost.</text>
+										</li>
+										<li Class="PlayerTrade.Labor.QuestNode_NotifyColonistLost">
+											<how>Gone</how>
+										</li>
+									</nodes>
+								</node>
+							</li>
 							
 							<!-- Shuttle leave -->
 							<li Class="QuestNode_ShuttleLeaveDelay">

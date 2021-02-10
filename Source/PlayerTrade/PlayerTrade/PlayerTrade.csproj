@@ -95,6 +95,9 @@
     <Compile Include="Chat\PacketSendChatMessage.cs" />
     <Compile Include="Dialog_ConnectingToServer.cs" />
     <Compile Include="GameSettings.cs" />
+    <Compile Include="Labor\Packets\PacketColonistLost.cs" />
+    <Compile Include="Labor\QuestNode_NotifyColonistLost.cs" />
+    <Compile Include="Labor\QuestPart_NotifyColonistLost.cs" />
     <Compile Include="Net\NetRoyalty.cs" />
     <Compile Include="PawnGuidThingComp.cs" />
     <Compile Include="Mail\Dialog_SendLetter.cs" />

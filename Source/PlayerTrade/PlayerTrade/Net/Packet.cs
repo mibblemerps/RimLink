@@ -40,6 +40,7 @@ namespace PlayerTrade.Net
         public const int BugReportPacketId = 25;
         public const int RequestBugReportPacketId = 26;
         public const int KickPacketId = 27;
+        public const int ColonistLostPacketId = 28;
 
         public static Dictionary<int, Type> Packets = new Dictionary<int, Type>
         {
@@ -69,6 +70,7 @@ namespace PlayerTrade.Net
             {BugReportPacketId, typeof(PacketBugReport)},
             {RequestBugReportPacketId, typeof(PacketRequestBugReport)},
             {KickPacketId, typeof(PacketKick)},
+            {ColonistLostPacketId, typeof(PacketColonistLost)},
         };
 
         public abstract void Write(PacketBuffer buffer);

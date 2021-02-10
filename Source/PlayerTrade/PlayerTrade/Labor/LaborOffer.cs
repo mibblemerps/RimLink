@@ -244,6 +244,37 @@ namespace PlayerTrade.Labor
             RimLinkComp.Instance.ActiveLaborOffers.Remove(this);
         }
 
+        public void Update()
+        {
+            // var toRemove = new List<Pawn>();
+            // foreach (Pawn colonist in Colonists)
+            // {
+            //     if (colonist.Dead || !colonist.IsFreeColonist || !colonist.Spawned)
+            //     {
+            //         var how = PacketColonistLost.LostType.Gone;
+            //         if (colonist.Dead)
+            //             how = PacketColonistLost.LostType.Dead;
+            //         if (colonist.IsPrisoner)
+            //             how = PacketColonistLost.LostType.Imprisoned;
+            //
+            //         Log.Message($"Lost lent colonist {colonist.Name}. Reason: {how}");
+            //
+            //         RimLinkComp.Instance.Client.SendPacket(new PacketColonistLost
+            //         {
+            //             For = From,
+            //             How = PacketColonistLost.LostType.Dead,
+            //             PawnGuid = colonist.TryGetComp<PawnGuidThingComp>().Guid
+            //         });
+            //
+            //         toRemove.Add(colonist);
+            //     }
+            // }
+            //
+            // // Remove dead/gone pawns
+            // foreach (Pawn pawn in toRemove)
+            //     Colonists.Remove(pawn);
+        }
+
         public void ExposeData()
         {
             Scribe_Values.Look(ref Guid, "guid");
