@@ -45,7 +45,7 @@ namespace PlayerTrade
             player.TradeableNow = CommsConsoleUtility.PlayerHasPoweredCommsConsole();
             player.Wealth = Mathf.RoundToInt(TradeUtil.TotalWealth());
             player.Day = Mathf.FloorToInt(Current.Game.tickManager.TicksGame / 60000f);
-            if (!mapIndependent)
+            if (!mapIndependent && Find.CurrentMap != null)
             {
                 player.Weather = Find.CurrentMap.weatherManager.curWeather.defName;
                 player.Temperature = Mathf.RoundToInt(Find.CurrentMap.mapTemperature.OutdoorTemp);

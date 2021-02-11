@@ -16,6 +16,7 @@ namespace PlayerTrade
     public class RimLinkComp : GameComponent
     {
         private const int MaxReconnectTime = 30;
+        public const float UpdateInterval = 2f;
 
         /// <summary>
         /// The last known instance of the RimLink comp. This should never be used for normally accessing RimLink (use <see cref="Find"/> instead).<br />
@@ -59,6 +60,8 @@ namespace PlayerTrade
         public bool ReconnectOnNextDisconnect = true;
         public float TimeUntilReconnect => Mathf.Max(0, _reconnectIn);
         public bool Connecting => _connecting;
+
+        private float _lastUpdateSent = 0f;
 
         private bool _connecting;
         private float _reconnectIn = float.NaN;
@@ -222,19 +225,14 @@ namespace PlayerTrade
 
             ReconnectUpdate();
 
-            foreach (LaborOffer laborOffer in ActiveLaborOffers)
-                laborOffer.Update();
+            // Send update every x seconds
+            if (Time.realtimeSinceStartup - _lastUpdateSent >= UpdateInterval && RimLinkMod.Connected)
+                Client?.MarkDirty(); // marking as dirty causes a new update to be sent
         }
 
         public override void GameComponentTick()
         {
             base.GameComponentTick();
-
-            if (Current.Game.tickManager.TicksGame % 300 == 0 && RimLinkMod.Connected)
-            {
-                // Mark dirty (send update packet)
-                Client?.MarkDirty();
-            }
 
             // Fulfill pending trades
             foreach (TradeOffer offer in TradeOffersPendingFulfillment)
