@@ -22,6 +22,8 @@ namespace PlayerTrade
 
         private Player _self;
 
+        private static ResearchProjectDef MechRelationsResearchDef;
+
         public Dialog_PlayerComms(Pawn negotiator, Player player) : base(RootNodeForPlayer(negotiator, player), true)
         {
             Player = player;
@@ -111,6 +113,8 @@ namespace PlayerTrade
                 resolveTree = true,
                 action = () => { Find.WindowStack.Add(new Dialog_DesignMechCluster(player)); }
             };
+            if (!MechClusterResearchDone())
+                mechClusterOption.Disable("missing research");
             node.options.Add(mechClusterOption);
 
             var tradeOption = new DiaOption("Trade")
@@ -143,6 +147,13 @@ namespace PlayerTrade
             node.options.Add(closeOption);
 
             return node;
+        }
+
+        private static bool MechClusterResearchDone()
+        {
+            if (MechRelationsResearchDef == null)
+                MechRelationsResearchDef = ResearchProjectDef.Named("MechanoidRelations");
+            return MechRelationsResearchDef.IsFinished;
         }
     }
 }
