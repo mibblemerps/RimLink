@@ -469,7 +469,7 @@ namespace PlayerTrade
                 pawn.royalty.allowRoomRequirements = human.Royalty.AllowRoomRequirements;
                 pawn.royalty.allowApparelRequirements = human.Royalty.AllowApparelRequirements;
 
-                if (!usingBasePawn)
+                if (!usingBasePawn && human.Royalty.DummyHeir != null)
                     pawn.royalty.SetHeir(human.Royalty.DummyHeir.ToPawn(), Faction.Empire);
 
                 // Add permits
