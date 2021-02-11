@@ -221,18 +221,6 @@ namespace PlayerTrade.Net
             SendPacket(PacketTradeOffer.MakePacket(tradeOffer));
         }
 
-        public async Task<PacketColonyResources> GetColonyResources(Player player)
-        {
-            // Send trade request packet
-            SendPacket(new PacketInitiateTrade
-            {
-                Guid = player.Guid
-            });
-
-            // Await response
-            return (PacketColonyResources) await AwaitPacket(p => p is PacketColonyResources resourcePacket && resourcePacket.Guid == player.Guid);
-        }
-
         public void SendColonyResources()
         {
             try
@@ -240,6 +228,7 @@ namespace PlayerTrade.Net
                 var resources = new Resources();
                 resources.Update(Find.CurrentMap);
                 SendPacket(new PacketColonyResources(Guid, resources));
+                Log.Message($"Sent resource info ({resources.Things.Count} things, {resources.Pawns.Count} pawns)");
             }
             catch (Exception e)
             {
@@ -264,6 +253,7 @@ namespace PlayerTrade.Net
                 {
                     // Success
                     Packet result = await source.Task;
+                    Log.Message($"Awaited packet received {result.GetType().Name}");
                     _awaitingPackets.Remove(request);
                     return result;
                 }
@@ -276,6 +266,7 @@ namespace PlayerTrade.Net
             {
                 // No timeout
                 Packet result = await source.Task;
+                Log.Message($"Awaited packet received {result.GetType().Name}");
                 _awaitingPackets.Remove(request);
                 return result;
             }

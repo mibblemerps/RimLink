@@ -99,6 +99,7 @@
     <Compile Include="Labor\QuestNode_NotifyColonistLost.cs" />
     <Compile Include="Labor\QuestPart_NotifyColonistLost.cs" />
     <Compile Include="Net\NetRoyalty.cs" />
+    <Compile Include="Patches\Patch_TradeUtility_EverPlayerSellable.cs" />
     <Compile Include="PawnGuidThingComp.cs" />
     <Compile Include="Mail\Dialog_SendLetter.cs" />
     <Compile Include="Mail\MailWorker.cs" />
@@ -180,6 +181,7 @@
     <Compile Include="Raids\BountyRaid.cs" />
     <Compile Include="Resources.cs" />
     <Compile Include="RimLinkComp.cs" />
+    <Compile Include="Trade\StockGenerator_PlayerBuys.cs" />
     <Compile Include="Trade\TradeOffer.cs" />
     <Compile Include="Trade\TradeUtil.cs" />
     <Compile Include="LaunchUtil.cs" />

@@ -10,15 +10,8 @@
 				<thingDef>Silver</thingDef>
 				<countRange>2000~4000</countRange>
 			</li>
-			<li Class="StockGenerator_Category">
-				<categoryDef>Root</categoryDef>
-				<excludedCategories>
-					<li>Unfinished</li>
-				</excludedCategories>
-				<thingDefCountRange>5~10</thingDefCountRange>
-				<totalPriceRange>300~900</totalPriceRange>
-			</li>
 			<li Class="StockGenerator_BuySlaves" />
+			<li Class="PlayerTrade.Trade.StockGenerator_PlayerBuys" />
 		</stockGenerators>
 	</TraderKindDef>
 </Defs>

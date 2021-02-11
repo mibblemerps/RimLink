@@ -30,10 +30,25 @@ namespace PlayerTrade.Trade
         /// <param name="player">Player to trade with</param>
         public static async Task InitiateTrade(Pawn negotiator, Player player)
         {
-            PacketColonyResources packet = await RimLinkComp.Find().Client.GetColonyResources(player);
+            // Send trade request packet
+            RimLinkComp.Instance.Client.SendPacket(new PacketInitiateTrade
+            {
+                Guid = player.Guid
+            });
 
-            var playerTrader = new PlayerTrader(player, packet.Resources);
-            Find.WindowStack.Add(new Dialog_PlayerTrade(negotiator, playerTrader));
+            try
+            {
+                // Await response
+                var packet = (PacketColonyResources) await RimLinkComp.Instance.Client.AwaitPacket(p =>
+                    p is PacketColonyResources resourcePacket && resourcePacket.Guid == player.Guid);
+
+                var playerTrader = new PlayerTrader(player, packet.Resources);
+                Find.WindowStack.Add(new Dialog_PlayerTrade(negotiator, playerTrader));
+            }
+            catch (Exception e)
+            {
+                Log.Error("Error initiating trade", e);
+            }
         }
 
         public static TradeOffer FormTradeOffer()

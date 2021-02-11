@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using PlayerTrade.Net;
+using PlayerTrade.Patches;
 using RimWorld;
 using Verse;
 
@@ -51,8 +52,10 @@ namespace PlayerTrade
         {
             Things.Clear();
 
+            Patch_TradeUtility_EverPlayerSellable.ForceEnable = true;
             foreach (Thing thing in TradeUtility.AllLaunchableThingsForTrade(map))
                 Things.Add(NetThing.FromThing(thing));
+            Patch_TradeUtility_EverPlayerSellable.ForceEnable = false;
 
             foreach (Pawn pawn in TradeUtility.AllSellableColonyPawns(map).Where(p => p.RaceProps.Humanlike))
                 Pawns.Add(pawn.ToNetHuman());

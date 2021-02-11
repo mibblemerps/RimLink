@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using PlayerTrade.Net;
+using PlayerTrade.Patches;
 using RimWorld;
 using Verse;
 
@@ -42,10 +43,17 @@ namespace PlayerTrade.Trade
         // Things that the other player is "willing" to buy
         public IEnumerable<Thing> ColonyThingsWillingToBuy(Pawn playerNegotiator)
         {
+            bool wasOn = Patch_TradeUtility_EverPlayerSellable.ForceEnable;
+            if (!wasOn)
+                Patch_TradeUtility_EverPlayerSellable.ForceEnable = true;
+
             foreach (Thing thing in TradeUtility.AllLaunchableThingsForTrade(playerNegotiator.Map, this))
                 yield return thing;
             foreach (Pawn pawn in TradeUtility.AllSellableColonyPawns(playerNegotiator.Map).Where(p => p.RaceProps.Humanlike))
                 yield return pawn;
+
+            if (!wasOn)
+                Patch_TradeUtility_EverPlayerSellable.ForceEnable = false;
         }
 
         public void GiveSoldThingToTrader(Thing toGive, int countToGive, Pawn playerNegotiator)

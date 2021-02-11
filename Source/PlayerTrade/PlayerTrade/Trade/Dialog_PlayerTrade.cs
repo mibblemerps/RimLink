@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using PlayerTrade.Patches;
 using RimWorld;
 using UnityEngine;
 using Verse;
@@ -37,6 +38,7 @@ namespace PlayerTrade.Trade
 
         public Dialog_PlayerTrade(Pawn playerNegotiator, ITrader trader, bool giftsOnly = false)
         {
+            Patch_TradeUtility_EverPlayerSellable.ForceEnable = true;
             TradeSession.SetupWith(trader, playerNegotiator, giftsOnly);
             forcePause = true;
             absorbInputAroundWindow = true;
@@ -206,13 +208,14 @@ namespace PlayerTrade.Trade
 
         private void CacheTradeables()
         {
-            Log.Message("Caching tradeables...");
+            Patch_TradeUtility_EverPlayerSellable.ForceEnable = true;
             QualityCategory qc;
             cachedTradeables = TradeSession.deal.AllTradeables.Where(tr =>
             {
                 // if (tr.IsCurrency)
                 //     return false;
-                return tr.TraderWillTrade || !TradeSession.trader.TraderKind.hideThingsNotWillingToTrade;
+                //return tr.TraderWillTrade || !TradeSession.trader.TraderKind.hideThingsNotWillingToTrade;
+                return true;
             }).OrderByDescending(tr => !tr.TraderWillTrade ? -1 : 0)
                 .ThenBy(tr => tr, sorter1.Comparer)
                 .ThenBy((tr => tr), sorter2.Comparer)
@@ -220,7 +223,7 @@ namespace PlayerTrade.Trade
                 .ThenBy(tr => tr.ThingDef.label)
                 .ThenBy(tr => tr.AnyThing.TryGetQuality(out qc) ? (int)qc : -1)
                 .ThenBy(tr => tr.AnyThing.HitPoints).ToList();
-
+            Patch_TradeUtility_EverPlayerSellable.ForceEnable = false;
         }
 
         private void CountToTransferChanged() {}
