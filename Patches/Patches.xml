@@ -21,4 +21,30 @@
             </value>
         </match>
     </Operation>
+	
+	<Operation Class="PatchOperationAdd">
+		<xpath>/Defs/ThingDef[defName="DeathAcidifier"]</xpath>
+		<value>
+			<thingSetMakerTags><li>RewardStandardLowFreq</li></thingSetMakerTags>
+			<costList>
+				<Steel>20</Steel>
+				<ComponentIndustrial>4</ComponentIndustrial>
+				<Chemfuel>35</Chemfuel>
+			</costList>
+			<recipeMaker>
+				<workSpeedStat>GeneralLaborSpeed</workSpeedStat>
+				<workSkill>Crafting</workSkill>
+				<effectWorking>Smith</effectWorking>
+				<soundWorking>Recipe_Smith</soundWorking>
+				<recipeUsers>
+					<li>TableMachining</li>
+				</recipeUsers>
+				<skillRequirements>
+					<Crafting>5</Crafting>
+				</skillRequirements>
+				<unfinishedThingDef>UnfinishedHealthItemProsthetic</unfinishedThingDef>
+				<researchPrerequisite>DeathAcidifer</researchPrerequisite>
+			</recipeMaker>
+		</value>
+	</Operation>
 </Patch>

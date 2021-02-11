@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+	<!-- RimLink custom research tab -->
+	<ResearchTabDef>
+		<defName>RimLink</defName>
+		<label>RimLink</label>
+	</ResearchTabDef>
+	
+	<ResearchProjectDef>
+		<defName>DeathAcidifer</defName>
+		<label>death acidifier</label>
+		<tab>RimLink</tab>
+		<description>Produce death acidifiers to prevent other players from killing your colonists for their possessions.</description>
+		<baseCost>1000</baseCost>
+		<techLevel>Industrial</techLevel>
+		<researchViewX>0.00</researchViewX>
+		<researchViewY>0.00</researchViewY>
+		<prerequisites>
+			<li>Machining</li>
+			<li>BiofuelRefining</li>
+		</prerequisites>
+	</ResearchProjectDef>
+	
+	<ResearchProjectDef>
+		<defName>MechanoidRelations</defName>
+		<label>mechanoid relations</label>
+		<tab>RimLink</tab>
+		<description>Study the language of the mechanoids. This could open certain "diplomatic" opportunities.</description>
+		<baseCost>2000</baseCost>
+		<techLevel>Industrial</techLevel>
+		<researchViewX>0.00</researchViewX>
+		<researchViewY>0.70</researchViewY>
+	</ResearchProjectDef>
+	
+</Defs>
