@@ -6,6 +6,8 @@ namespace PlayerTrade
     [Serializable]
     public class GameSettings
     {
+        public string ServerName = "RimLink Server";
+
         /// <summary>
         /// Disables developer mode, enables commitment mode. Permanent to save.
         /// </summary>

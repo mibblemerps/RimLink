@@ -96,6 +96,10 @@ namespace TradeServer
                         case Packet.ConnectId:
                             await HandleConnectPacket((PacketConnect) e.Packet);
                             break;
+
+                        case Packet.PingPacketId:
+                            await HandlePingPacket();
+                            break;
                         default:
                             throw new Exception($"Unknown packet received! ID: {e.Id}");
                     }
@@ -253,7 +257,8 @@ namespace TradeServer
             }
             catch (Exception ex)
             {
-                Log.Error($"Error handling packet from {Player.Name} ({Player.Guid})! Connection terminated.", ex);
+                if (Player != null)
+                    Log.Error($"Error handling packet from {Player.Name} ({Player.Guid})! Connection terminated.", ex);
                 Tcp.Close();
             }
         }
@@ -360,6 +365,21 @@ namespace TradeServer
 
             State = ClientState.Normal;
             Authenticated?.Invoke(this, new ClientEventArgs(this));
+        }
+
+        private async Task HandlePingPacket()
+        {
+            var players = new List<Player>();
+            foreach (Client client in Program.Server.AuthenticatedClients)
+                players.Add(client.Player);
+
+            await SendPacketDirect(new PacketPingResponse
+            {
+                ServerName = Program.Server.ServerSettings.GameSettings.ServerName,
+                ProtocolVersion = RimLinkMod.ProtocolVersion,
+                MaxPlayers = Program.Server.ServerSettings.MaxPlayers,
+                PlayersOnline = players
+            });
         }
 
         public class ClientEventArgs : EventArgs

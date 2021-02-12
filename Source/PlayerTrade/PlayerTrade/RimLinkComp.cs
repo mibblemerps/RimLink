@@ -91,7 +91,7 @@ namespace PlayerTrade
                 return;
             }
 
-            Log.Message("Connecting to: " + RimLinkMod.Instance.Settings.ServerIp);
+            Log.Message("Connecting to: " + RimLinkMod.Instance.Settings.ServerIp + ":" + RimLinkMod.Instance.Settings.ServerPort);
             _connecting = true;
             Client = new Client(this);
             Client.Connected += OnClientConnected;
@@ -99,7 +99,7 @@ namespace PlayerTrade
             Client.PlayerUpdated += OnPlayerUpdated;
             try
             {
-                await Client.Connect(RimLinkMod.Instance.Settings.ServerIp);
+                await Client.Connect(RimLinkMod.Instance.Settings.ServerIp, RimLinkMod.Instance.Settings.ServerPort);
                 // _connecting is set back to false in OnClientConnected
             }
             catch (ConnectionFailedException e)
@@ -109,7 +109,7 @@ namespace PlayerTrade
             }
         }
 
-        public async void Init()
+        public void Init()
         {
             // Initialize lists
             if (RememberedPlayers == null)
@@ -145,6 +145,12 @@ namespace PlayerTrade
 
         public void QueueConnect(float seconds = 0f)
         {
+            if (Client?.Tcp != null && Client.Tcp.Connected)
+            {
+                Log.Warn("Tried to queue connect while we're already connected.");
+                return;
+            }
+
             _reconnectIn = seconds;
         }
 
@@ -227,7 +233,10 @@ namespace PlayerTrade
 
             // Send update every x seconds
             if (Time.realtimeSinceStartup - _lastUpdateSent >= UpdateInterval && RimLinkMod.Connected)
+            {
+                _lastUpdateSent = Time.realtimeSinceStartup;
                 Client?.MarkDirty(); // marking as dirty causes a new update to be sent
+            }
         }
 
         public override void GameComponentTick()

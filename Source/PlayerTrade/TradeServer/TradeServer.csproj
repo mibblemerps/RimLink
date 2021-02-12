@@ -79,6 +79,7 @@
     <Compile Include="QueuedPacketStorage.cs" />
     <Compile Include="Sanitizer.cs" />
     <Compile Include="Server.cs" />
+    <Compile Include="ServerSettings.cs" />
     <Compile Include="TimeFormatter.cs" />
   </ItemGroup>
   <ItemGroup>

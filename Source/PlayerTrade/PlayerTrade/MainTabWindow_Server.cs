@@ -24,10 +24,25 @@ namespace PlayerTrade
         {
             closeOnAccept = false;
 
+            if (!RimLinkMod.Connected)
+                return;
+
             RimLinkComp.Instance.Client.Chat.MessageReceived += (sender, message) =>
             {
                 _chatHistoryScrollPos = new Vector2(0, _lastHeight * 2f);
             };
+        }
+
+        public override void PostOpen()
+        {
+            base.PostOpen();
+
+            if (!RimLinkMod.Connected && string.IsNullOrWhiteSpace(RimLinkMod.Instance.Settings.ServerIp))
+            {
+                // Not connected, offer to connect to server
+                Find.WindowStack.Add(new Dialog_SetServerIp());
+                Close(false);
+            }
         }
 
         public override void DoWindowContents(Rect inRect)
@@ -207,7 +222,7 @@ namespace PlayerTrade
         {
             base.WindowUpdate();
 
-            if (IsOpen) // Causes messages to become "read"
+            if (IsOpen && RimLinkMod.Connected) // Causes messages to become "read"
                 RimLinkComp.Instance.Client.Chat.ReadMessages();
         }
 

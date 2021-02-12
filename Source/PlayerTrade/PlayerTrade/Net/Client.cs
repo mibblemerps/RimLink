@@ -31,6 +31,7 @@ namespace PlayerTrade.Net
         public LaborWorker Labor;
         public ChatWorker Chat;
 
+        public ClientState State = ClientState.Disconnected;
         public Player Player { get; private set; }
         public string Guid => RimLinkComp.Guid; // Unique user ID
 
@@ -84,10 +85,6 @@ namespace PlayerTrade.Net
             });
 
             Run();
-            _ = Task.Delay(1000).ContinueWith(t => // todo: this is dirty, probably would be fixed with time-based updates
-            {
-                Update();
-            });
             
             // Await connection response
             PacketConnectResponse response = (PacketConnectResponse) await AwaitPacket(packet => packet is PacketConnectResponse, 2000);
@@ -105,6 +102,8 @@ namespace PlayerTrade.Net
 
             Log.Message("Connected!");
             Log.Message($"GameSettings: RaidBasePrice={response.Settings.RaidBasePrice} MaxRaidStrength={response.Settings.RaidMaxStrengthPercent} Anticheat={response.Settings.Anticheat}");
+
+            State = ClientState.Active;
 
             GameSettings = response.Settings;
             Connected?.Invoke(this, EventArgs.Empty);
@@ -156,7 +155,7 @@ namespace PlayerTrade.Net
         {
             Player = Player.Self(mapIndependent);
             OnlinePlayers[Guid] = Player; // add ourselves to the player list
-            if (sendPacket)
+            if (sendPacket && State == ClientState.Active)
                 SendColonyInfo();
         }
 
@@ -530,6 +529,12 @@ namespace PlayerTrade.Net
                 OldPlayer = oldPlayer;
                 Player = player;
             }
+        }
+
+        public enum ClientState
+        {
+            Disconnected,
+            Active
         }
     }
 }

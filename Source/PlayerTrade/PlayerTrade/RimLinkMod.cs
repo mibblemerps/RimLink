@@ -14,7 +14,7 @@ namespace PlayerTrade
 {
     public class RimLinkMod : Mod
     {
-        public static readonly int ProtocolVersion = 1;
+        public static readonly int ProtocolVersion = 2;
 
         public static RimLinkMod Instance { get; private set; }
 
@@ -24,6 +24,9 @@ namespace PlayerTrade
         {
             get
             {
+                if (RimLinkComp.Instance.Client == null)
+                    return false;
+
                 try
                 {
                     return RimLinkComp.Instance.Client.Tcp.Connected;
@@ -49,17 +52,17 @@ namespace PlayerTrade
         public override void DoSettingsWindowContents(Rect inRect)
         {
             Listing_Standard listing = new Listing_Standard();
+            inRect.width = Mathf.Min(inRect.width, 300);
+            inRect = inRect.CenteredOnXIn(inRect);
             listing.Begin(inRect);
 
-            Settings.Username = listing.TextEntryLabeled("Username ", Settings.Username);
-
-            listing.Label(""); // Gap
-
-            listing.Label("Trade Server IP");
-            Settings.ServerIp = listing.TextEntry(Settings.ServerIp);
+            if (listing.ButtonText("Set Server IP"))
+                Find.WindowStack.Add(new Dialog_SetServerIp());
 
             listing.CheckboxLabeled("Logging Enabled", ref Settings.LoggingEnabled);
             Log.Enabled = Settings.LoggingEnabled;
+
+            listing.CheckboxLabeled("Enable Main Menu Widget", ref Settings.MainMenuWidgetEnabled);
 
             listing.End();
             base.DoSettingsWindowContents(inRect);
@@ -68,6 +71,13 @@ namespace PlayerTrade
         public override string SettingsCategory()
         {
             return "Player Trade";
+        }
+
+        public static void ShowModSettings()
+        {
+            var dialog = new Dialog_ModSettings();
+            typeof(Dialog_ModSettings).GetField("selMod", BindingFlags.NonPublic | BindingFlags.Instance)?.SetValue(dialog, Instance);
+            Find.WindowStack.Add(dialog);
         }
     }
 }

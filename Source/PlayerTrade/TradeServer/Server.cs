@@ -14,13 +14,12 @@ namespace TradeServer
 {
     public class Server
     {
-        public const string GameSettingsFile = "game-settings.json";
-
-        public static int ProtocolVersion = 1;
+        public const string ServerSettingsFile = "server-settings.json";
 
         public List<Client> AuthenticatedClients = new List<Client>();
 
-        public GameSettings GameSettings;
+        public ServerSettings ServerSettings;
+        public GameSettings GameSettings => ServerSettings.GameSettings;
         public QueuedPacketStorage QueuedPacketStorage = new QueuedPacketStorage();
 
         protected TcpListener Listener;
@@ -107,18 +106,18 @@ namespace TradeServer
         {
             try
             {
-                GameSettings = JsonConvert.DeserializeObject<GameSettings>(File.ReadAllText("game-settings.json"));
+                ServerSettings = JsonConvert.DeserializeObject<ServerSettings>(File.ReadAllText(ServerSettingsFile));
             }
             catch (Exception e)
             {
-                Log.Warn($"Couldn't load game settings ({e.Message}). A new game settings file will be used instead.");
-                GameSettings = new GameSettings();
+                Log.Warn($"Couldn't load server settings ({e.Message}). A new server settings file will be used instead.");
+                ServerSettings = new ServerSettings();
 
                 // Attempt to backup old settings - if they exist
                 try
                 {
-                    if (File.Exists(GameSettingsFile))
-                        File.Copy(GameSettingsFile, GameSettingsFile + ".backup", true);
+                    if (File.Exists(ServerSettingsFile))
+                        File.Copy(ServerSettingsFile, ServerSettingsFile + ".backup", true);
                 }
                 catch (Exception) { /* ignored */ }
             }
@@ -128,14 +127,14 @@ namespace TradeServer
         {
             try
             {
-                File.WriteAllText(GameSettingsFile, JsonConvert.SerializeObject(GameSettings, new JsonSerializerSettings
+                File.WriteAllText(ServerSettingsFile, JsonConvert.SerializeObject(GameSettings, new JsonSerializerSettings
                 {
                     Formatting = Formatting.Indented
                 }));
             }
             catch (Exception e)
             {
-                Log.Error($"Couldn't save game settings!", e);
+                Log.Error($"Couldn't save server settings!", e);
             }
         }
 

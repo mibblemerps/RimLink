@@ -45,6 +45,8 @@ namespace PlayerTrade.Net
         public async Task SendPacketDirect(Packet packet)
         {
             var pair = Packet.Packets.FirstOrDefault(p => p.Value == packet.GetType());
+            if (pair.Value == null)
+                throw new Exception($"Packet {packet.GetType().FullName} isn't registered.");
 
             byte[] buffer;
             using (var stream = new MemoryStream())
