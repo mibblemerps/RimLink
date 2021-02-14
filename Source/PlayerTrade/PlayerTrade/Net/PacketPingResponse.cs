@@ -14,7 +14,7 @@ namespace PlayerTrade.Net
             buffer.WriteInt(ProtocolVersion);
             buffer.WriteString(ServerName);
             buffer.WriteInt(MaxPlayers);
-            buffer.WriteList(PlayersOnline, (b, i) => b.Write(i));
+            buffer.WriteList(PlayersOnline, (b, i) => b.WritePacketable(i));
         }
 
         public override void Read(PacketBuffer buffer)
@@ -22,7 +22,7 @@ namespace PlayerTrade.Net
             ProtocolVersion = buffer.ReadInt();
             ServerName = buffer.ReadString();
             MaxPlayers = buffer.ReadInt();
-            PlayersOnline = buffer.ReadList<Player>(b => b.Read<Player>());
+            PlayersOnline = buffer.ReadList<Player>(b => b.ReadPacketable<Player>());
         }
     }
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
+using UnityEngine;
 
 namespace PlayerTrade.Net
 {
@@ -157,6 +158,23 @@ namespace PlayerTrade.Net
         public Guid ReadGuid()
         {
             return new Guid(ReadByteArray());
+        }
+
+        public void WriteColor(Color color, bool withAlpha = true)
+        {
+            WriteFloat(color.r);
+            WriteFloat(color.g);
+            WriteFloat(color.b);
+            if (withAlpha)
+                WriteFloat(color.a);
+        }
+
+        public Color ReadColor(bool withAlpha = true)
+        {
+            if (withAlpha)
+                return new Color(ReadFloat(), ReadFloat(), ReadFloat(), ReadFloat());
+            else
+                return new Color(ReadFloat(), ReadFloat(), ReadFloat());
         }
 
         public delegate object ReadListItem(PacketBuffer buffer);

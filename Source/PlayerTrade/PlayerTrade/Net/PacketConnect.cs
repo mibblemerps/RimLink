@@ -18,7 +18,7 @@ namespace PlayerTrade.Net
             buffer.WriteInt(ProtocolVersion);
             buffer.WriteString(Guid);
             buffer.WriteString(Secret);
-            buffer.Write(Player);
+            buffer.WritePacketable(Player);
         }
 
         public override void Read(PacketBuffer buffer)
@@ -26,7 +26,7 @@ namespace PlayerTrade.Net
             ProtocolVersion = buffer.ReadInt();
             Guid = buffer.ReadString();
             Secret = buffer.ReadString();
-            Player = buffer.Read<Player>();
+            Player = buffer.ReadPacketable<Player>();
         }
     }
 }

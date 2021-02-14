@@ -38,9 +38,7 @@ namespace PlayerTrade.Net
             buffer.WriteBoolean(Success);
             buffer.WriteString(FailReason, true);
             buffer.WriteBoolean(AllowReconnect);
-            buffer.WriteInt(ConnectedPlayers.Count);
-            foreach (var connectedPlayer in ConnectedPlayers)
-                buffer.Write(connectedPlayer);
+            buffer.WriteList(ConnectedPlayers, (b, i) => b.WritePacketable(i));
 
             if (Settings == null)
             {
@@ -58,10 +56,7 @@ namespace PlayerTrade.Net
             Success = buffer.ReadBoolean();
             FailReason = buffer.ReadString(true);
             AllowReconnect = buffer.ReadBoolean();
-            int playerCount = buffer.ReadInt();
-            ConnectedPlayers = new List<Player>(playerCount);
-            for (int i = 0; i < playerCount; i++)
-                ConnectedPlayers.Add(buffer.Read<Player>());
+            ConnectedPlayers = buffer.ReadList<Player>(b => b.ReadPacketable<Player>());
 
             if (buffer.ReadBoolean())
                 Settings = buffer.Read<GameSettings>();

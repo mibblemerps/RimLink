@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using PlayerTrade.Net;
 using PlayerTrade.Trade;
 using RimWorld;
 using UnityEngine;
@@ -11,7 +12,7 @@ using Verse;
 namespace PlayerTrade
 {
     [Serializable]
-    public class Player : IExposable
+    public class Player : IExposable, IPacketable
     {
         public string Guid;
         public string Name;
@@ -70,6 +71,34 @@ namespace PlayerTrade
             return player;
         }
 
+        public void Write(PacketBuffer buffer)
+        {
+            buffer.WriteString(Guid);
+            buffer.WriteString(Name);
+            buffer.WriteColor(Color.ToColor(), false);
+            buffer.WriteInt(Wealth);
+            buffer.WriteInt(Day);
+            buffer.WriteString(Weather, true);
+            buffer.WriteInt(Temperature);
+            buffer.WriteBoolean(TradeableNow);
+
+            buffer.WriteList(LocalFactions, (b, i) => b.WritePacketable(i));
+        }
+
+        public void Read(PacketBuffer buffer)
+        {
+            Guid = buffer.ReadString();
+            Name = buffer.ReadString();
+            Color = buffer.ReadColor(false).ToFloats();
+            Wealth = buffer.ReadInt();
+            Day = buffer.ReadInt();
+            Weather = buffer.ReadString(true);
+            Temperature = buffer.ReadInt();
+            TradeableNow = buffer.ReadBoolean();
+
+            LocalFactions = buffer.ReadList<Faction>(b => b.ReadPacketable<Faction>());
+        }
+
         public void ExposeData()
         {
             Scribe_Values.Look(ref Guid, "guid");
@@ -81,7 +110,7 @@ namespace PlayerTrade
         }
 
         [Serializable]
-        public class Faction : IExposable
+        public class Faction : IExposable, IPacketable
         {
             public string Name;
             public int Goodwill;
@@ -106,6 +135,26 @@ namespace PlayerTrade
             public FactionDef FindDef()
             {
                 return RimWorld.FactionDef.Named(FactionDef);
+            }
+
+            public void Write(PacketBuffer buffer)
+            {
+                buffer.WriteString(Name);
+                buffer.WriteInt(Goodwill);
+                buffer.WriteString(FactionDef);
+                buffer.WriteFloat(FactionColorR);
+                buffer.WriteFloat(FactionColorG);
+                buffer.WriteFloat(FactionColorB);
+            }
+
+            public void Read(PacketBuffer buffer)
+            {
+                Name = buffer.ReadString();
+                Goodwill = buffer.ReadInt();
+                FactionDef = buffer.ReadString();
+                FactionColorR = buffer.ReadFloat();
+                FactionColorG = buffer.ReadFloat();
+                FactionColorB = buffer.ReadFloat();
             }
 
             public void ExposeData()
