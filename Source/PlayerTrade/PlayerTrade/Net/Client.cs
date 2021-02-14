@@ -467,7 +467,7 @@ namespace PlayerTrade.Net
 
             if (confirm)
             {
-                RimLinkComp.TradeOffersPendingFulfillment.Add(acceptOffer);
+                acceptOffer.Fulfill(false);
             }
             else
             {
@@ -501,7 +501,7 @@ namespace PlayerTrade.Net
 
             if (confirm)
             {
-                RimLinkComp.TradeOffersPendingFulfillment.Add(offer);
+                offer.Fulfill(true);
             }
             else
             {

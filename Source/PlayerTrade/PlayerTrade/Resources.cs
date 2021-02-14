@@ -60,5 +60,20 @@ namespace PlayerTrade
             foreach (Pawn pawn in TradeUtility.AllSellableColonyPawns(map).Where(p => p.RaceProps.Humanlike))
                 Pawns.Add(pawn.ToNetHuman());
         }
+
+        public static Pawn FindSellablePawn(string guid)
+        {
+            foreach (Map map in Find.Maps)
+            {
+                foreach (Pawn pawn in TradeUtility.AllSellableColonyPawns(map))
+                {
+                    PawnGuidThingComp pawnGuidComp = pawn.TryGetComp<PawnGuidThingComp>();
+                    if (pawnGuidComp.Guid == guid)
+                        return pawn;
+                }
+            }
+
+            return null; // Pawn not found
+        }
     }
 }

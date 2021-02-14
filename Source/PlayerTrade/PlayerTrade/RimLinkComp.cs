@@ -40,7 +40,6 @@ namespace PlayerTrade
 
         public List<Player> RememberedPlayers;
 
-        public List<TradeOffer> TradeOffersPendingFulfillment = new List<TradeOffer>();
         public List<BountyRaid> RaidsPending = new List<BountyRaid>();
         public List<LaborOffer> ActiveLaborOffers = new List<LaborOffer>();
 
@@ -114,8 +113,6 @@ namespace PlayerTrade
             // Initialize lists
             if (RememberedPlayers == null)
                 RememberedPlayers = new List<Player>();
-            if (TradeOffersPendingFulfillment == null)
-                TradeOffersPendingFulfillment = new List<TradeOffer>();
             if (RaidsPending == null)
                 RaidsPending = new List<BountyRaid>();
             if (ActiveLaborOffers == null)
@@ -243,11 +240,6 @@ namespace PlayerTrade
         {
             base.GameComponentTick();
 
-            // Fulfill pending trades
-            foreach (TradeOffer offer in TradeOffersPendingFulfillment)
-                offer.Fulfill(offer.IsForUs);
-            TradeOffersPendingFulfillment.Clear();
-
             // Trigger pending raids
             var raidsToRemove = new List<BountyRaid>();
             foreach (BountyRaid raid in RaidsPending)
@@ -292,7 +284,6 @@ namespace PlayerTrade
             Scribe_Values.Look(ref Guid, "guid");
             Scribe_Values.Look(ref Secret, "secret");
             Scribe_Collections.Look(ref RememberedPlayers, "players", LookMode.Deep);
-            Scribe_Collections.Look(ref TradeOffersPendingFulfillment, "trade_offers_pending_fulfillment");
             Scribe_Collections.Look(ref RaidsPending, "raids_pending");
             Scribe_Collections.Look(ref ActiveLaborOffers, "active_labor_offers");
             Scribe_Collections.Look(ref PlayerFactions, "player_factions", LookMode.Value, LookMode.Reference, ref _tmpPlayerFactionGuids, ref _tmpPlayerFactions);

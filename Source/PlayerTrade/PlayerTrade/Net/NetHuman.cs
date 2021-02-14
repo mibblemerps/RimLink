@@ -222,13 +222,13 @@ namespace PlayerTrade.Net
             int priorityCount = buffer.ReadInt();
             WorkPriorities = new Dictionary<string, int>(priorityCount);
             for (int i = 0; i < priorityCount; i++)
-                WorkPriorities.Add(buffer.ReadString(), buffer.ReadInt());
+                WorkPriorities.SetOrAdd(buffer.ReadString(), buffer.ReadInt());
 
             // Records
             int recordCount = buffer.ReadInt();
             Records = new Dictionary<string, float>(recordCount);
             for (int i = 0; i < recordCount; i++)
-                Records.Add(buffer.ReadString(), buffer.ReadFloat());
+                Records.SetOrAdd(buffer.ReadString(), buffer.ReadFloat());
 
             // Inspiration
             InspirationDefName = buffer.ReadString(true);

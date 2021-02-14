@@ -147,16 +147,43 @@ namespace PlayerTrade.Trade
                 int countToTake = asReceiver ? -trade.CountOffered : trade.CountOffered;
                 if (countToTake > 0)
                 {
-                    int taken = 0;
-                    foreach (Thing thing in (asReceiver ? trade.RequestedThings : trade.OfferedThings))
+                    if (trade.IsPawn)
                     {
-                        taken += LaunchUtil.LaunchThing(Find.CurrentMap, thing, Mathf.Min(thing.stackCount, countToTake - taken));
-                        if (taken >= countToTake)
-                            break; // taken enough
-                    }
+                        if (trade.AllThings.FirstOrDefault() is Pawn pawn)
+                        {
+                            // Find original pawn
+                            Pawn originalPawn = Resources.FindSellablePawn(pawn.TryGetComp<PawnGuidThingComp>().Guid);
+                            if (originalPawn != null)
+                            {
+                                // Remove pawn
+                                originalPawn.Destroy();
+                                Log.Message($"{originalPawn.LabelCap} has been sent to fulfill trade.");
+                            }
+                            else
+                            {
+                                Log.Warn("Unable to find original version of pawn!");
+                            }
 
-                    if (taken < countToTake)
-                        Log.Warn($"Unable to find enough things to launch for trade. Player unable to fully fulfill their side of trade. ({taken}/{countToTake} launched)");
+                        }
+                        else
+                        {
+                            Log.Warn("Unable to find enough things to launch for trade. Missing pawn!");
+                        }
+                    }
+                    else
+                    {
+                        int taken = 0;
+                        foreach (Thing thing in (asReceiver ? trade.RequestedThings : trade.OfferedThings))
+                        {
+                            taken += LaunchUtil.LaunchThing(Find.CurrentMap, thing, Mathf.Min(thing.stackCount, countToTake - taken));
+                            if (taken >= countToTake)
+                                break; // taken enough
+                        }
+
+                        if (taken < countToTake)
+                            Log.Warn($"Unable to find enough things to launch for trade. Player unable to fully fulfill their side of trade. ({taken}/{countToTake} launched)");
+
+                    }
                 }
             }
 
