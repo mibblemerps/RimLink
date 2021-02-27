@@ -29,11 +29,11 @@ namespace PlayerTrade.Net
         {
             if (_sendQueue.Count >= SendQueueMaxSize)
             {
-                Verse.Log.Error($"Reached max packet send queue size ({SendQueueMaxSize}). Closing connection...");
+                Log.Error($"Reached max packet send queue size ({SendQueueMaxSize}). Closing connection...");
                 Tcp.Close();
                 return;
             }
-
+            w
             _sendQueue.Enqueue(packet);
             _packetQueuedCompletionSource.TrySetResult(true);
         }
