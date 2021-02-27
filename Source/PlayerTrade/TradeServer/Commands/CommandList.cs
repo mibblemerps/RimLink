@@ -29,7 +29,10 @@ namespace TradeServer.Commands
                     sb.AppendLine($"       Guid: {client.Player.Guid}");
                     sb.AppendLine($"       Day: {client.Player.Day}, Weather: {client.Player.Weather}, Wealth: {client.Player.Wealth}");
                     if (caller.IsAdmin)
+                    {
                         sb.AppendLine($"       IP: {client.Tcp.Client.RemoteEndPoint}");
+                        sb.AppendLine($"       Last Heartbeat {Program.Stopwatch.Elapsed.TotalSeconds - client.LastHeartbeat}s ago");
+                    }
                 }
                 else
                 {

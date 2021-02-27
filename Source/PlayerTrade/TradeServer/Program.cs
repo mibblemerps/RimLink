@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,6 +12,8 @@ namespace TradeServer
     public class Program
     {
         public static Server Server;
+
+        public static Stopwatch Stopwatch = new Stopwatch();
 
         public static List<Command> Commands = new List<Command>
         {
@@ -34,6 +37,8 @@ namespace TradeServer
 
         private static void Main(string[] args)
         {
+            Stopwatch.Start();
+
             Console.ForegroundColor = ConsoleColor.DarkCyan;
             Console.WriteLine("=== RimWorld Trade Server ===\n");
             Console.ResetColor();

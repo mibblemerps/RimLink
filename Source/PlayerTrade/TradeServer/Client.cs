@@ -18,6 +18,7 @@ namespace TradeServer
         public event EventHandler<ClientEventArgs> ColonyInfoReceived;
 
         public ClientState State { get; set; } = ClientState.Auth;
+        public float LastHeartbeat;
 
         public Player Player;
         public PlayerInfo PlayerInfo;
@@ -33,8 +34,10 @@ namespace TradeServer
         {
             Tcp = connection;
             Stream = connection.GetStream();
+            IsConnected = true;
 
             PacketReceived += OnPacketReceived;
+            Authenticated += OnAuthenticated;
 
             CommandCaller = new ClientCaller(this);
         }
@@ -51,8 +54,7 @@ namespace TradeServer
             {
                 while (Tcp.Connected)
                 {
-                    if (await ReceivePacket() == null)
-                        break;
+                    await ReceivePacket();
                 }
             }
             catch (Exception e)
@@ -64,9 +66,25 @@ namespace TradeServer
 
         public async Task SendPackets()
         {
-            while (true)
+            while (Tcp.Connected)
             {
                 await SendQueuedPackets();
+            }
+        }
+
+        public async Task Heartbeat()
+        {
+            while (Tcp.Connected)
+            {
+                if (LastHeartbeat > 0f && Program.Stopwatch.Elapsed.TotalSeconds - LastHeartbeat > PlayerTrade.Net.Client.TimeoutThresholdSeconds)
+                {
+                    // Timed out
+                    Log.Message($"Connection with {this} timed out.");
+                    Disconnect();
+                }
+
+                SendPacket(new PacketHeartbeat());
+                await Task.Delay(2000);
             }
         }
 
@@ -124,6 +142,10 @@ namespace TradeServer
 
                     switch (e.Id)
                     {
+                        case Packet.HeartbeatPacketId:
+                            LastHeartbeat = (float) Program.Stopwatch.Elapsed.TotalSeconds;
+                            break;
+
                         case Packet.ColonyInfoId:
                             PacketColonyInfo colonyInfoPacket = (PacketColonyInfo) e.Packet;
                             Player = colonyInfoPacket.Player;
@@ -224,7 +246,7 @@ namespace TradeServer
                             if (sendMsgPacket.Message.StartsWith("/"))
                             {
                                 // Command
-                                Log.Message($"{Player.Name} executing: " + sendMsgPacket.Message);
+                                Log.Message($"{this} executing: " + sendMsgPacket.Message);
                                 CommandUtility.ExecuteCommand(CommandCaller, sendMsgPacket.Message);
                             }
                             else
@@ -249,7 +271,7 @@ namespace TradeServer
                             break;
                             
                         case Packet.BugReportPacketId:
-                            Log.Message($"Received bug report from {Player.Name} ({Player.Guid})!");
+                            Log.Message($"Received bug report from {this}!");
                             BugReportFiler.FileReport(Player, (PacketBugReport) e.Packet);
                             break;
                     }
@@ -257,10 +279,16 @@ namespace TradeServer
             }
             catch (Exception ex)
             {
-                if (Player != null)
-                    Log.Error($"Error handling packet from {Player.Name} ({Player.Guid})! Connection terminated.", ex);
-                Tcp.Close();
+                Log.Error($"Error handling packet from {this}! Connection terminated.", ex);
+                Disconnect();
             }
+        }
+
+        private void OnAuthenticated(object sender, ClientEventArgs e)
+        {
+            // Start heatbeating
+            LastHeartbeat = (float) Program.Stopwatch.Elapsed.TotalSeconds;
+            _ = Heartbeat();
         }
 
         private async Task HandleConnectPacket(PacketConnect packet)
@@ -281,7 +309,7 @@ namespace TradeServer
                     FailReason = failReason,
                     AllowReconnect = false
                 });
-                Tcp.Close();
+                Disconnect(false);
                 return;
             }
 
@@ -297,7 +325,7 @@ namespace TradeServer
                     FailReason = "This game is already connected to the server.",
                     AllowReconnect = false
                 });
-                Tcp.Close();
+                Disconnect(false);
                 return;
             }
 
@@ -317,7 +345,7 @@ namespace TradeServer
                     FailReason = "Game secret incorrect. RimLink data may be corrupted.",
                     AllowReconnect = false
                 });
-                Tcp.Close();
+                Disconnect(false);
                 return;
             }
 
@@ -347,7 +375,7 @@ namespace TradeServer
                                  (PlayerInfo.BanReason == null ? "" : $"\n{PlayerInfo.BanReason}"),
                     AllowReconnect = false
                 });
-                Tcp.Close();
+                Disconnect(false);
                 return;
             }
 
@@ -380,6 +408,18 @@ namespace TradeServer
                 MaxPlayers = Program.Server.ServerSettings.MaxPlayers,
                 PlayersOnline = players
             });
+        }
+
+        public override string ToString()
+        {
+            if (Player == null)
+            {
+                return Tcp?.Client != null ? $"{Tcp.Client.RemoteEndPoint}" : "Unknown Client " + base.ToString();
+            }
+            else
+            {
+                return $"{Player.Name} ({Player.Guid})";
+            }
         }
 
         public class ClientEventArgs : EventArgs

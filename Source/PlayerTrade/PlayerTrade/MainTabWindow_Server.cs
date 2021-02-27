@@ -24,7 +24,7 @@ namespace PlayerTrade
         {
             closeOnAccept = false;
 
-            if (!RimLinkMod.Connected)
+            if (!RimLinkMod.Active)
                 return;
 
             RimLinkComp.Instance.Client.Chat.MessageReceived += (sender, message) =>
@@ -37,7 +37,7 @@ namespace PlayerTrade
         {
             base.PostOpen();
 
-            if (!RimLinkMod.Connected && string.IsNullOrWhiteSpace(RimLinkMod.Instance.Settings.ServerIp))
+            if (!RimLinkMod.Active && string.IsNullOrWhiteSpace(RimLinkMod.Instance.Settings.ServerIp))
             {
                 // Not connected, offer to connect to server
                 Find.WindowStack.Add(new Dialog_SetServerIp());
@@ -49,7 +49,7 @@ namespace PlayerTrade
         {
             base.DoWindowContents(inRect);
 
-            if (!RimLinkMod.Connected)
+            if (!RimLinkMod.Active)
             {
                 DrawDisconnectedFromServer(inRect);
                 return;
@@ -222,7 +222,7 @@ namespace PlayerTrade
         {
             base.WindowUpdate();
 
-            if (IsOpen && RimLinkMod.Connected) // Causes messages to become "read"
+            if (IsOpen && RimLinkMod.Active) // Causes messages to become "read"
                 RimLinkComp.Instance.Client.Chat.ReadMessages();
         }
 

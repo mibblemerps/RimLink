@@ -15,7 +15,7 @@ namespace PlayerTrade.Patches
     {
         private static void Postfix(ref IEnumerable<ICommunicable> __result)
         {
-            if (!RimLinkMod.Connected)
+            if (!RimLinkMod.Active)
                 return;
 
             var comms = new List<ICommunicable>();

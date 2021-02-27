@@ -43,6 +43,8 @@ namespace PlayerTrade.Net
         public const int ColonistLostPacketId = 28;
         public const int PingPacketId = 29;
         public const int PingResponsePacketId = 30;
+        public const int HeartbeatPacketId = 31;
+        public const int DisconnectPacketId = 32;
 
         public static Dictionary<int, Type> Packets = new Dictionary<int, Type>
         {
@@ -75,6 +77,8 @@ namespace PlayerTrade.Net
             {ColonistLostPacketId, typeof(PacketColonistLost)},
             {PingPacketId, typeof(PacketPing)},
             {PingResponsePacketId, typeof(PacketPingResponse)},
+            {HeartbeatPacketId, typeof(PacketHeartbeat)},
+            {DisconnectPacketId, typeof(PacketDisconnect)},
         };
 
         public abstract void Write(PacketBuffer buffer);

@@ -18,6 +18,8 @@ namespace PlayerTrade.Net
         public TcpClient Tcp;
         public NetworkStream Stream;
 
+        public bool IsConnected { get; protected set; }
+
         private readonly Queue<Packet> _sendQueue = new Queue<Packet>(SendQueueMaxSize);
         private TaskCompletionSource<bool> _packetQueuedCompletionSource = new TaskCompletionSource<bool>();
 
@@ -62,15 +64,30 @@ namespace PlayerTrade.Net
                     catch (Exception e)
                     {
                         Log.Error("Exception writing packet", e);
+                        if (!(packet is PacketDisconnect)) // don't trigger a disconnect if that's what we're already doing
+                            Disconnect();
+                        throw;
                     }
                 }
                 buffer = stream.ToArray();
             }
 
-            // Send packet ID and length
-            await Stream.WriteAsync(BitConverter.GetBytes(pair.Key).Concat(BitConverter.GetBytes(buffer.Length)).ToArray(), 0, 8);
-            // Send packet content
-            await Stream.WriteAsync(buffer, 0, buffer.Length);
+            try
+            {
+                // Send packet ID and length
+                await Stream.WriteAsync(
+                    BitConverter.GetBytes(pair.Key).Concat(BitConverter.GetBytes(buffer.Length)).ToArray(), 0, 8);
+                // Send packet content
+                await Stream.WriteAsync(buffer, 0, buffer.Length);
+            }
+            catch (Exception e)
+            {
+                // Failed to send packet
+                Log.Warn("Failed to send packet. " + e.Message);
+                if (!(packet is PacketDisconnect)) // don't trigger a disconnect if that's what we're already doing
+                    Disconnect();
+                throw;
+            }
         }
 
         /// <summary>
@@ -92,10 +109,23 @@ namespace PlayerTrade.Net
             _packetQueuedCompletionSource = new TaskCompletionSource<bool>();
         }
 
-        public void Disconnect()
+        /// <summary>
+        /// <p>Disconnect from server/client.</p>
+        /// <p>By default this will send a packet to the other party indicating that we're disconnecting, and that they should close the connection.</p>
+        /// <p>This also invokes the Disconnected event, allowing the disconnection to be handled by the rest of the code.</p>
+        /// </summary>
+        /// <param name="sendDisconnectPacket">Should the disconnect packet be sent.</param>
+        public async void Disconnect(bool sendDisconnectPacket = true)
         {
-            Tcp?.Close();
+            if (!IsConnected)
+                return; // Already disconnected
+            IsConnected = false;
+
             Disconnected?.Invoke(this, EventArgs.Empty);
+            if (!Tcp.Connected || !sendDisconnectPacket)
+                return;
+            await SendPacketDirect(new PacketDisconnect());
+            Tcp?.Close();
         }
 
         public async Task<Packet> ReceivePacket()
@@ -121,13 +151,22 @@ namespace PlayerTrade.Net
             int packetLength = BitConverter.ToInt32(buffer, 4);
 
             if (!Packet.Packets.ContainsKey(packetId))
+            {
+                Disconnect();
                 throw new Exception("Invalid packet ID: " + packetId);
-            
+            }
+
             // Do some sanity checking
             if (packetLength > 3145728) // 3MiB max size
+            {
+                Disconnect();
                 throw new Exception("Packet over max size (3MiB) - possible packet overflow");
+            }
             if (!Packet.Packets.ContainsKey(packetId))
+            {
+                Disconnect();
                 throw new Exception($"Packet ID {packetId} doesn't exist");
+            }
 
             // Read packet content
             byte[] packetContentBuffer = new byte[packetLength];
@@ -141,6 +180,7 @@ namespace PlayerTrade.Net
                 catch (Exception) {}
                 if (readByteCount == 0)
                 {
+                    Disconnect();
                     throw new Exception("Unexpected end of stream reading packet content.");
                 }
             }
@@ -159,7 +199,8 @@ namespace PlayerTrade.Net
                     }
                     catch (Exception e)
                     {
-                        Log.Error($"Exception reading packet.", e);
+                        Disconnect();
+                        throw new Exception($"Exception reading packet {packet.GetType().Name} ({e.Message})", e);
                     }
                 }
             }

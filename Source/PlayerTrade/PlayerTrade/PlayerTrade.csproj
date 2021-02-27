@@ -101,6 +101,8 @@
     <Compile Include="Labor\QuestPart_NotifyColonistLost.cs" />
     <Compile Include="MainMenuWidget.cs" />
     <Compile Include="Net\NetRoyalty.cs" />
+    <Compile Include="Net\PacketDisconnect.cs" />
+    <Compile Include="Net\PacketHeartbeat.cs" />
     <Compile Include="Net\PacketPing.cs" />
     <Compile Include="Net\PacketPingResponse.cs" />
     <Compile Include="Net\PingClient.cs" />

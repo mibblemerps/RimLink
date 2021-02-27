@@ -229,7 +229,7 @@ namespace PlayerTrade
             ReconnectUpdate();
 
             // Send update every x seconds
-            if (Time.realtimeSinceStartup - _lastUpdateSent >= UpdateInterval && RimLinkMod.Connected)
+            if (Time.realtimeSinceStartup - _lastUpdateSent >= UpdateInterval && RimLinkMod.Active)
             {
                 _lastUpdateSent = Time.realtimeSinceStartup;
                 Client?.MarkDirty(); // marking as dirty causes a new update to be sent

@@ -12,12 +12,15 @@ using PlayerTrade.Mechanoids;
 using PlayerTrade.Raids;
 using PlayerTrade.Trade;
 using RimWorld;
+using UnityEngine;
 using Verse;
 
 namespace PlayerTrade.Net
 {
     public class Client : Connection
     {
+        public const float TimeoutThresholdSeconds = 6f;
+
         public event EventHandler Connected;
         public event EventHandler<PlayerUpdateEventArgs> PlayerUpdated;
         public event EventHandler<Player> PlayerConnected;
@@ -32,6 +35,8 @@ namespace PlayerTrade.Net
         public ChatWorker Chat;
 
         public ClientState State = ClientState.Disconnected;
+        public float LastHeartbeat;
+
         public Player Player { get; private set; }
         public string Guid => RimLinkComp.Guid; // Unique user ID
 
@@ -50,6 +55,7 @@ namespace PlayerTrade.Net
             RimLinkComp = rimLinkComp;
             MarkDirty(false, true);
 
+            Disconnected += OnDisconnected;
             PacketReceived += OnPacketReceived;
             PlayerUpdated += OnPlayerUpdated;
             PlayerConnected += OnPlayerConnected;
@@ -63,6 +69,8 @@ namespace PlayerTrade.Net
 
         public async Task Connect(string ip, int port = 35562)
         {
+            Tcp?.Close();
+
             Tcp = new TcpClient();
             try
             {
@@ -72,6 +80,8 @@ namespace PlayerTrade.Net
             {
                 throw new ConnectionFailedException(e.Message, true, e);
             }
+            IsConnected = true;
+            State = ClientState.Connected;
 
             Stream = Tcp.GetStream();
 
@@ -85,7 +95,7 @@ namespace PlayerTrade.Net
             });
 
             Run();
-            
+
             // Await connection response
             PacketConnectResponse response = (PacketConnectResponse) await AwaitPacket(packet => packet is PacketConnectResponse, 2000);
             if (response == null)
@@ -103,7 +113,7 @@ namespace PlayerTrade.Net
             Log.Message("Connected!");
             Log.Message($"GameSettings: RaidBasePrice={response.Settings.RaidBasePrice} MaxRaidStrength={response.Settings.RaidMaxStrengthPercent} Anticheat={response.Settings.Anticheat}");
 
-            State = ClientState.Active;
+            State = ClientState.Authenticated;
 
             GameSettings = response.Settings;
             Connected?.Invoke(this, EventArgs.Empty);
@@ -129,7 +139,6 @@ namespace PlayerTrade.Net
                 catch (Exception e)
                 {
                     Log.Error($"Error receiving packet ({e.GetType().Name})", e);
-                    Disconnect();
                 }
             }
         }
@@ -144,10 +153,19 @@ namespace PlayerTrade.Net
 
         public void Update()
         {
+            // Process received packets pending in queue
             while (_pendingPackets.Count > 0)
             {
                 Packet packet = _pendingPackets.Dequeue();
                 PacketReceived?.Invoke(this, new PacketReceivedEventArgs(Packet.Packets.First(p => p.Value == packet.GetType()).Key, packet));
+            }
+
+            // Check if we've timed out
+            if (LastHeartbeat > 0f && Time.realtimeSinceStartup - LastHeartbeat > TimeoutThresholdSeconds)
+            {
+                // Timed out
+                Log.Message("Connection timed out");
+                Disconnect();
             }
         }
 
@@ -155,7 +173,7 @@ namespace PlayerTrade.Net
         {
             Player = Player.Self(mapIndependent);
             OnlinePlayers[Guid] = Player; // add ourselves to the player list
-            if (sendPacket && State == ClientState.Active)
+            if (sendPacket && State == ClientState.Authenticated)
                 SendColonyInfo();
         }
 
@@ -271,6 +289,11 @@ namespace PlayerTrade.Net
             }
         }
 
+        private void OnDisconnected(object sender, EventArgs e)
+        {
+            State = ClientState.Disconnected;
+        }
+
         private async void OnPacketReceived(object sender, PacketReceivedEventArgs e)
         {
             Log.Message($"Packet received #{e.Id} ({e.Packet.GetType().Name})");
@@ -290,6 +313,15 @@ namespace PlayerTrade.Net
             {
                 switch (e.Id)
                 {
+                    case Packet.DisconnectPacketId:
+                        Disconnect(false);
+                        break;
+
+                    case Packet.HeartbeatPacketId:
+                        LastHeartbeat = Time.realtimeSinceStartup;
+                        SendPacket(new PacketHeartbeat());
+                        break;
+
                     case Packet.ColonyInfoId:
                         PacketColonyInfo infoPacket = (PacketColonyInfo) e.Packet;
                         //Log.Message($"Received colony info update for {infoPacket.Player.Name} (tradeable = {infoPacket.Player.TradeableNow})");
@@ -534,7 +566,8 @@ namespace PlayerTrade.Net
         public enum ClientState
         {
             Disconnected,
-            Active
+            Connected,
+            Authenticated
         }
     }
 }

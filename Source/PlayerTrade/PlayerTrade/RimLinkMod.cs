@@ -20,7 +20,7 @@ namespace PlayerTrade
 
         public ModSettings Settings;
 
-        public static bool Connected
+        public static bool Active
         {
             get
             {
@@ -29,7 +29,7 @@ namespace PlayerTrade
 
                 try
                 {
-                    return RimLinkComp.Instance.Client.Tcp.Connected;
+                    return RimLinkComp.Instance.Client.State == Client.ClientState.Authenticated;
                 }
                 catch (Exception)
                 {
