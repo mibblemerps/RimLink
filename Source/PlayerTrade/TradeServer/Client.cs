@@ -138,7 +138,7 @@ namespace TradeServer
                         }
 
                         if (Program.Server.ServerSettings.LogPacketTraffic && !e.Packet.Attribute.HideFromLog)
-                            Log.Message($"[Packet] {e.Id}:{e.Packet.GetType().Name} {this} -> {forPlayer.For}");
+                            Log.Message($"[Packet] {e.Packet.GetType().Name} {this} -> {forPlayer.For}");
 
                         // Forward packet
                         Program.Server.SendPacketToClient(forPlayer.For, e.Packet);
@@ -146,7 +146,7 @@ namespace TradeServer
                     else
                     {
                         if (Program.Server.ServerSettings.LogPacketTraffic && !e.Packet.Attribute.HideFromLog)
-                            Log.Message($"[Packet] {e.Id}:{e.Packet.GetType().Name} {this}");
+                            Log.Message($"[Packet] {e.Packet.GetType().Name} {this}");
                     }
 
                     switch (e.Packet)
