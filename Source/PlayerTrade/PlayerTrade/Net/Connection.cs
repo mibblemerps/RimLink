@@ -33,7 +33,7 @@ namespace PlayerTrade.Net
                 Tcp.Close();
                 return;
             }
-            w
+            
             _sendQueue.Enqueue(packet);
             _packetQueuedCompletionSource.TrySetResult(true);
         }
