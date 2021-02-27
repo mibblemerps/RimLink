@@ -141,7 +141,7 @@ namespace TradeServer
                             Log.Message($"[Packet] {e.Id}:{e.Packet.GetType().Name} {this} -> {forPlayer.For}");
 
                         // Forward packet
-                        await Program.Server.SendPacketToClient(forPlayer.For, e.Packet);
+                        Program.Server.SendPacketToClient(forPlayer.For, e.Packet);
                     }
                     else
                     {

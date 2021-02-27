@@ -69,7 +69,7 @@ namespace TradeServer
             return client.Player.Name;
         }
 
-        public async Task SendPacketToClient(string guid, Packet packet)
+        public void SendPacketToClient(string guid, Packet packet)
         {
             Client client = GetClient(guid);
 
