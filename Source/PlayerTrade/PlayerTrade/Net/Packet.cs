@@ -43,7 +43,7 @@ namespace PlayerTrade.Net
         public static int GetUnusedPacketId(Type type = null)
         {
             // Try to derive packet ID from packet class name, otherwise start auto-assigning from ID 9999
-            int i = (type == null || type.FullName == null) ? 9999 : type.FullName.GenerateStableHashCode(); 
+            int i = (type == null || type.FullName == null) ? 9999 : type.FullName.GenerateStableHashCode(true) + 9999; 
             while (Packets.ContainsKey(i))
                 i++;
             return i;
