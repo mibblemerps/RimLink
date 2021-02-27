@@ -61,7 +61,7 @@ namespace PlayerTrade.Trade
             if (Offer.Fresh)
             {
                 Offer.Reject(); // send rejection
-                RimLinkComp.Instance.Client.ActiveTradeOffers.Remove(Offer);
+                RimLinkComp.Instance.Client.Trade.ActiveTradeOffers.Remove(Offer);
             }
         }
 

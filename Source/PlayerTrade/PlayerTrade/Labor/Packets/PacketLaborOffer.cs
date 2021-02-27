@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
 using PlayerTrade.Net;
+using PlayerTrade.Net.Packets;
 
 namespace PlayerTrade.Labor.Packets
 {
+    [Packet]
     public class PacketLaborOffer : PacketForPlayer
     {
         public string Guid;

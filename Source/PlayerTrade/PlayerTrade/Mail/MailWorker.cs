@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using PlayerTrade.Net;
+﻿using PlayerTrade.Net;
+using PlayerTrade.Net.Packets;
 using PlayerTrade.Patches;
 using Verse;
-using Verse.Sound;
 
 namespace PlayerTrade.Mail
 {
@@ -23,10 +18,10 @@ namespace PlayerTrade.Mail
 
         private void OnPacketReceived(object sender, PacketReceivedEventArgs e)
         {
-            if (e.Id == Packet.MailPacketId)
+            if (e.Packet is PacketMail mailPacket)
             {
                 // Mail packet received
-                PresentMail((PacketMail) e.Packet);
+                PresentMail(mailPacket);
             }
         }
 

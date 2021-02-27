@@ -8,6 +8,8 @@ using System.Threading.Tasks;
 using PlayerTrade;
 using PlayerTrade.Chat;
 using PlayerTrade.Net;
+using PlayerTrade.Net.Packets;
+using PlayerTrade.Trade.Packets;
 using TradeServer.Commands;
 
 namespace TradeServer
@@ -109,17 +111,16 @@ namespace TradeServer
             {
                 if (State == ClientState.Auth)
                 {
-                    switch (e.Id)
+                    switch (e.Packet)
                     {
-                        case Packet.ConnectId:
-                            await HandleConnectPacket((PacketConnect) e.Packet);
+                        case PacketConnect connectPacket:
+                            await HandleConnectPacket(connectPacket);
                             break;
-
-                        case Packet.PingPacketId:
+                        case PacketPing _:
                             await HandlePingPacket();
                             break;
                         default:
-                            throw new Exception($"Unknown packet received! ID: {e.Id}");
+                            throw new Exception($"Cannot handle packet now! {e.Packet.GetType().Name}");
                     }
                 }
                 else
@@ -136,33 +137,36 @@ namespace TradeServer
                             return;
                         }
 
+                        if (Program.Server.ServerSettings.LogPacketTraffic && !e.Packet.Attribute.HideFromLog)
+                            Log.Message($"[Packet] {e.Id}:{e.Packet.GetType().Name} {this} -> {forPlayer.For}");
+
                         // Forward packet
                         await Program.Server.SendPacketToClient(forPlayer.For, e.Packet);
                     }
-
-                    switch (e.Id)
+                    else
                     {
-                        case Packet.HeartbeatPacketId:
-                            LastHeartbeat = (float) Program.Stopwatch.Elapsed.TotalSeconds;
+                        if (Program.Server.ServerSettings.LogPacketTraffic && !e.Packet.Attribute.HideFromLog)
+                            Log.Message($"[Packet] {e.Id}:{e.Packet.GetType().Name} {this}");
+                    }
+
+                    switch (e.Packet)
+                    {
+                        case PacketHeartbeat _:
+                            LastHeartbeat = (float)Program.Stopwatch.Elapsed.TotalSeconds;
                             break;
 
-                        case Packet.ColonyInfoId:
-                            PacketColonyInfo colonyInfoPacket = (PacketColonyInfo) e.Packet;
+                        case PacketColonyInfo colonyInfoPacket:
                             Player = colonyInfoPacket.Player;
                             ColonyInfoReceived?.Invoke(this, new ClientEventArgs(this));
                             break;
 
-                        case Packet.ColonyResourcesId:
-                            PacketColonyResources resourcePacket = (PacketColonyResources) e.Packet;
-                            Log.Message(
-                                $"Received resource info from {Player.Name}. {resourcePacket.Resources.Things.Count} things");
-                            _colonyResourcesCompletionSource?.SetResult(resourcePacket.Resources);
+                        case PacketColonyResources resourcesPacket:
+                            Log.Message($"Received resource info from {Player.Name}. {resourcesPacket.Resources.Things.Count} things");
+                            _colonyResourcesCompletionSource?.SetResult(resourcesPacket.Resources);
                             break;
 
-                        case Packet.InitiateTradeId:
-                            PacketInitiateTrade initiateTradePacket = (PacketInitiateTrade) e.Packet;
-                            Log.Message(
-                                $"{Player.Name} is initiating a trade with {Program.Server.GetName(initiateTradePacket.Guid)}");
+                        case PacketInitiateTrade initiateTradePacket:
+                            Log.Message($"{Player.Name} is initiating a trade with {Program.Server.GetName(initiateTradePacket.Guid)}");
 
                             // Request colony resources from trade partner
                             Client tradePartner = Program.Server.GetClient(initiateTradePacket.Guid);
@@ -172,17 +176,13 @@ namespace TradeServer
                             SendPacket(new PacketColonyResources(tradePartner.Player.Guid, resources));
                             break;
 
-                        case Packet.TradeOfferPacketId:
-                            PacketTradeOffer tradeOfferPacket = (PacketTradeOffer) e.Packet;
+                        case PacketTradeOffer tradeOfferPacket:
                             TradeOffers.Add(tradeOfferPacket.Guid, tradeOfferPacket.For);
-                            Log.Message(
-                                $"Received trade offer from {Player.Name} for {Program.Server.GetName(tradeOfferPacket.For)}");
+                            Log.Message($"Received trade offer from {Player.Name} for {Program.Server.GetName(tradeOfferPacket.For)}");
                             // Packet will already have been forwarded since it's a PacketForPlayer
                             break;
 
-                        case Packet.AcceptTradePacketId:
-                            PacketAcceptTrade acceptTradePacket = (PacketAcceptTrade) e.Packet;
-
+                        case PacketAcceptTrade acceptTradePacket:
                             // Find client who made the trade offer
                             Client otherClient = null;
                             foreach (Client client in Program.Server.AuthenticatedClients)
@@ -219,60 +219,48 @@ namespace TradeServer
                                 $"{Player.Name} {(acceptTradePacket.Accept ? "accepted" : "declined")} trade offer {acceptTradePacket.Trade} from {otherClient.Player.Name}");
                             break;
 
-                        case Packet.ConfirmTradePacketId:
-                            PacketTradeConfirm packetTradeConfirm = (PacketTradeConfirm) e.Packet;
-
-                            if (!TradeOffers.ContainsKey(packetTradeConfirm.Trade))
+                        case PacketTradeConfirm confirmTradePacket:
+                            if (!TradeOffers.ContainsKey(confirmTradePacket.Trade))
                             {
-                                // Trade doesn't exist
                                 Log.Warn($"{Player.Name} attempted to confirm trade that no longer exists.");
                                 return;
                             }
 
-                            // Get other client we're trading with
-                            Client tradeClient = Program.Server.GetClient(TradeOffers[packetTradeConfirm.Trade]);
+                            Client tradeClient = Program.Server.GetClient(TradeOffers[confirmTradePacket.Trade]);
 
                             // Forward trade confirm packet
-                            tradeClient.SendPacket(packetTradeConfirm);
+                            tradeClient.SendPacket(confirmTradePacket);
 
-                            Log.Message(
-                                $"{Player.Name} {(packetTradeConfirm.Confirm ? "confirmed" : "aborted")} trade offer {packetTradeConfirm.Trade} for {tradeClient.Player.Name}.");
-
+                            Log.Message($"{Player.Name} {(confirmTradePacket.Confirm ? "confirmed" : "aborted")} trade offer {confirmTradePacket.Trade} for {tradeClient.Player.Name}.");
+                            break;
+                        
+                        case PacketSendChatMessage sendMsgPacket when sendMsgPacket.Message.StartsWith("/"):
+                            // Command
+                            Log.Message($"{this} executing: " + sendMsgPacket.Message);
+                            CommandUtility.ExecuteCommand(CommandCaller, sendMsgPacket.Message);
                             break;
 
-                        case Packet.SendChatMessagePacketId:
-                            var sendMsgPacket = (PacketSendChatMessage) e.Packet;
-
-                            if (sendMsgPacket.Message.StartsWith("/"))
-                            {
-                                // Command
-                                Log.Message($"{this} executing: " + sendMsgPacket.Message);
-                                CommandUtility.ExecuteCommand(CommandCaller, sendMsgPacket.Message);
-                            }
-                            else
-                            {
-                                // Chat message
-                                Log.Message($"[Chat] <{Player.Name}> {sendMsgPacket.Message}");
-                                // Send message to all other clients
-                                foreach (Client client in Program.Server.AuthenticatedClients)
-                                    client.SendPacket(new PacketReceiveChatMessage
+                        case PacketSendChatMessage sendMsgPacket:
+                            // Chat message
+                            Log.Message($"[Chat] <{Player.Name}> {sendMsgPacket.Message}");
+                            // Send message to all other clients
+                            foreach (Client client in Program.Server.AuthenticatedClients)
+                                client.SendPacket(new PacketReceiveChatMessage
+                                {
+                                    Messages = new List<PacketReceiveChatMessage.NetMessage>(new[]
                                     {
-                                        Messages = new List<PacketReceiveChatMessage.NetMessage>(new[]
+                                        new PacketReceiveChatMessage.NetMessage
                                         {
-                                            new PacketReceiveChatMessage.NetMessage
-                                            {
-                                                From = Player.Guid,
-                                                Message = sendMsgPacket.Message
-                                            }
-                                        })
-                                    });
-                            }
-
+                                            From = Player.Guid,
+                                            Message = sendMsgPacket.Message
+                                        }
+                                    })
+                                });
                             break;
-                            
-                        case Packet.BugReportPacketId:
+                        
+                        case PacketBugReport bugReportPacket:
                             Log.Message($"Received bug report from {this}!");
-                            BugReportFiler.FileReport(Player, (PacketBugReport) e.Packet);
+                            BugReportFiler.FileReport(Player, bugReportPacket);
                             break;
                     }
                 }

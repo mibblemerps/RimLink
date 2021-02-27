@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using PlayerTrade.Raids;
+﻿using PlayerTrade.Raids;
 
-namespace PlayerTrade.Net
+namespace PlayerTrade.Net.Packets
 {
+    [Packet]
     public class PacketTriggerRaid : PacketForPlayer
     {
         public BountyRaid Raid;

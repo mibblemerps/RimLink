@@ -1,7 +1,8 @@
 ﻿using System.Collections.Generic;
 
-namespace PlayerTrade.Net
+namespace PlayerTrade.Net.Packets
 {
+    [Packet]
     public class PacketPingResponse : Packet
     {
         public int ProtocolVersion;

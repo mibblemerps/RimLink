@@ -1,7 +1,9 @@
 ﻿using PlayerTrade.Net;
+using PlayerTrade.Net.Packets;
 
 namespace PlayerTrade.Labor.Packets
 {
+    [Packet]
     public class PacketConfirmLaborOffer : PacketForPlayer
     {
         public string Guid;

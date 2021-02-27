@@ -1,5 +1,6 @@
 ﻿using System;
 using PlayerTrade.Net;
+using PlayerTrade.Net.Packets;
 using UnityEngine;
 using Verse;
 

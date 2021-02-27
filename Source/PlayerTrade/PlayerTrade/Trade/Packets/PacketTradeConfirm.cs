@@ -1,14 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using PlayerTrade.Net;
+using PlayerTrade.Net.Packets;
 
-namespace PlayerTrade.Net
+namespace PlayerTrade.Trade.Packets
 {
     /// <summary>
     /// Sent to confirm an accepted trade. This ensures the other party received and acknowledged the trade acception.
     /// </summary>
+    [Packet]
     public class PacketTradeConfirm : Packet
     {
         public Guid Trade;

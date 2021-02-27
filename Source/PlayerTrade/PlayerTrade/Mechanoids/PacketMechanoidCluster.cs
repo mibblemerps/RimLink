@@ -5,9 +5,11 @@ using System.Text;
 using System.Threading.Tasks;
 using PlayerTrade.Mechanoids.Designer;
 using PlayerTrade.Net;
+using PlayerTrade.Net.Packets;
 
 namespace PlayerTrade.Mechanoids
 {
+    [Packet]
     public class PacketMechanoidCluster : PacketForPlayer
     {
         public string From;

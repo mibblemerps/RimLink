@@ -1,8 +1,9 @@
-﻿namespace PlayerTrade.Net
+﻿namespace PlayerTrade.Net.Packets
 {
     /// <summary>
     /// Packet sent periodically to ensure the connection is still alive.
     /// </summary>
+    [Packet(Id = HeartbeatId, HideFromLog = true)]
     public class PacketHeartbeat : Packet
     {
         public override void Write(PacketBuffer buffer) {}

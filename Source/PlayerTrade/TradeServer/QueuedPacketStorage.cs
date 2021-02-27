@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using PlayerTrade.Net;
+using PlayerTrade.Net.Packets;
 using Verse;
 using Log = PlayerTrade.Log;
 

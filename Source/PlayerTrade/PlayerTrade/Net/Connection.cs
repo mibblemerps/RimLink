@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net.Sockets;
 using System.Threading.Tasks;
 using Ionic.Zlib;
+using PlayerTrade.Net.Packets;
 
 namespace PlayerTrade.Net
 {

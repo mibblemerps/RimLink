@@ -11,5 +11,6 @@ namespace TradeServer
     {
         public GameSettings GameSettings = new GameSettings();
         public int MaxPlayers = 64;
+        public bool LogPacketTraffic = true;
     }
 }

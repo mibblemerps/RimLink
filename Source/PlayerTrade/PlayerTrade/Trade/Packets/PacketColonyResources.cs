@@ -1,16 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using RimWorld;
-using Verse;
+﻿using PlayerTrade.Net;
+using PlayerTrade.Net.Packets;
 
-namespace PlayerTrade.Net
+namespace PlayerTrade.Trade.Packets
 {
     /// <summary>
     /// Packet contains all the resources the colony has available to trade with other players.
     /// </summary>
+    [Packet]
     public class PacketColonyResources : Packet
     {
         public string Guid;

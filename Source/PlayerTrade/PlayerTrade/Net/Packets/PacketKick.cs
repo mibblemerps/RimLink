@@ -1,8 +1,9 @@
-﻿namespace PlayerTrade.Net
+﻿namespace PlayerTrade.Net.Packets
 {
     /// <summary>
     /// Packet sent from Server -> Client indicating it's being kicked. The connection will be closed immediately after.
     /// </summary>
+    [Packet]
     public class PacketKick : Packet
     {
         public string Reason;

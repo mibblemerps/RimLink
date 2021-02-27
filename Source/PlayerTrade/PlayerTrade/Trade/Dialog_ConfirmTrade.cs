@@ -64,7 +64,7 @@ namespace PlayerTrade.Trade
             SoundDefOf.ExecuteTrade.PlayOneShotOnCamera();
 
             // Send trade deal off
-            RimLinkComp.Instance.Client.SendTradeOffer(Offer);
+            RimLinkComp.Instance.Client.Trade.SendOffer(Offer);
 
             Close(false);
             TradeDialog?.Close(false);

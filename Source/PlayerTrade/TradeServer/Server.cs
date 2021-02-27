@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using PlayerTrade;
 using PlayerTrade.Net;
+using PlayerTrade.Net.Packets;
 
 namespace TradeServer
 {

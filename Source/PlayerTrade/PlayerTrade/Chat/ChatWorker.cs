@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using PlayerTrade.Net;
+using PlayerTrade.Net.Packets;
 using RimWorld;
 using Verse;
 
@@ -75,9 +76,8 @@ namespace PlayerTrade.Chat
 
         private void OnPacketReceived(object sender, PacketReceivedEventArgs e)
         {
-            if (e.Id == Packet.ReceiveChatMessagePacketId)
+            if (e.Packet is PacketReceiveChatMessage receivePacket)
             {
-                PacketReceiveChatMessage receivePacket = (PacketReceiveChatMessage) e.Packet;
                 foreach (var msg in receivePacket.Messages)
                 {
                     if (msg.From != null && Client.GetPlayer(msg.From) == null)

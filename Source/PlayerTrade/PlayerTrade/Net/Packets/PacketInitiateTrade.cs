@@ -1,14 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace PlayerTrade.Net
+﻿namespace PlayerTrade.Net.Packets
 {
     /// <summary>
     /// A packet send Client -> Server to initiate a trade with another player. The server responds with a packet containing that colonies resources.
     /// </summary>
+    [Packet]
     public class PacketInitiateTrade : Packet
     {
         public string Guid;

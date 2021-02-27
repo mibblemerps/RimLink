@@ -3,8 +3,9 @@ using RimWorld;
 using UnityEngine;
 using Verse;
 
-namespace PlayerTrade.Net
+namespace PlayerTrade.Net.Packets
 {
+    [Packet]
     public class PacketGiveItem : Packet
     {
         public string Reference;

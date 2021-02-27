@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using PlayerTrade.Net;
+using PlayerTrade.Trade.Packets;
 using RimWorld;
 using UnityEngine;
 using Verse;

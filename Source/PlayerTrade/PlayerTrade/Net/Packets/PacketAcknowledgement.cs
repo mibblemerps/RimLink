@@ -1,5 +1,6 @@
-﻿namespace PlayerTrade.Net
+﻿namespace PlayerTrade.Net.Packets
 {
+    [Packet]
     public class PacketAcknowledgement : Packet
     {
         public string Guid;

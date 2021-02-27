@@ -1,7 +1,9 @@
 ﻿using PlayerTrade.Net;
+using PlayerTrade.Net.Packets;
 
 namespace PlayerTrade.Chat
 {
+    [Packet]
     public class PacketSendChatMessage : Packet
     {
         public string Message;

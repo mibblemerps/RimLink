@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using PlayerTrade;
 using PlayerTrade.Net;
+using PlayerTrade.Net.Packets;
 using UnityEngine;
 
 namespace TradeServer

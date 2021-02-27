@@ -4,9 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using PlayerTrade.Net;
+using PlayerTrade.Net.Packets;
 
 namespace PlayerTrade.Mail
 {
+    [Packet]
     public class PacketMail : PacketForPlayer
     {
         public string From;

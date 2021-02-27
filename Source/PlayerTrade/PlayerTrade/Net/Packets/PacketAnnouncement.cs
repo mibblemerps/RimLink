@@ -1,7 +1,6 @@
-﻿using System;
-
-namespace PlayerTrade.Net
+﻿namespace PlayerTrade.Net.Packets
 {
+    [Packet]
     public class PacketAnnouncement : Packet
     {
         public string Message;

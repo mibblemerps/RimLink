@@ -1,8 +1,9 @@
-﻿namespace PlayerTrade.Net
+﻿namespace PlayerTrade.Net.Packets
 {
     /// <summary>
     /// A player reported bug report.
     /// </summary>
+    [Packet]
     public class PacketBugReport : Packet
     {
         public string Description;

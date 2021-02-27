@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
-namespace PlayerTrade.Net
+namespace PlayerTrade.Net.Packets
 {
+    [Packet(Id = ConnectResponseId)]
     public class PacketConnectResponse : Packet
     {
         /// <summary>

@@ -1,7 +1,9 @@
 ﻿using PlayerTrade.Net;
+using PlayerTrade.Net.Packets;
 
 namespace PlayerTrade.Labor.Packets
 {
+    [Packet]
     public class PacketColonistLost : PacketForPlayer
     {
         public override bool ShouldQueue => true;

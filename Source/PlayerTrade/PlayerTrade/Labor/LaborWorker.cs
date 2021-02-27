@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using PlayerTrade.Labor.Packets;
 using PlayerTrade.Net;
+using PlayerTrade.Net.Packets;
 using RimWorld;
 using Verse;
 
@@ -24,30 +25,28 @@ namespace PlayerTrade.Labor
 
         private void OnPacketReceived(object sender, PacketReceivedEventArgs e)
         {
-            switch (e.Id)
+            if (e.Packet is PacketLaborOffer offerPacket)
             {
-                case Packet.LaborOfferPacketId:
-                    LaborOffer offer = LaborOffer.FromPacket((PacketLaborOffer) e.Packet);
-                    Log.Message($"Received labor offer {offer.Guid} from {Client.GetName(offer.From)}");
-                    LaborUtil.PresentLendColonistOffer(offer);
-                    break;
-
-                case Packet.AcceptLaborOfferPacketId:
-                    HandleAcceptOfferPacket((PacketAcceptLaborOffer) e.Packet);
-                    break;
-
-                case Packet.ConfirmLaborOfferPacketId:
-                    PacketConfirmLaborOffer confirmPacket = (PacketConfirmLaborOffer) e.Packet;
-                    Log.Message("Received labor offer confirmation: " + confirmPacket.Guid);
-                    break;
-
-                case Packet.ReturnLentColonistsPacketId:
-                    HandleReturnLentColonistsPacket((PacketReturnLentColonists) e.Packet);
-                    break;
-
-                case Packet.ColonistLostPacketId:
-                    HandleColonistLostPacket((PacketColonistLost) e.Packet);
-                    break;
+                LaborOffer offer = LaborOffer.FromPacket(offerPacket);
+                Log.Message($"Received labor offer {offer.Guid} from {Client.GetName(offer.From)}");
+                LaborUtil.PresentLendColonistOffer(offer);
+            }
+            else if (e.Packet is PacketAcceptLaborOffer acceptPacket)
+            {
+                HandleAcceptOfferPacket(acceptPacket);
+            }
+            else if (e.Packet is PacketConfirmLaborOffer confirmPacket)
+            {
+                // (this is handled elsewhere via await packet)
+                Log.Message("Received labor offer confirmation: " + confirmPacket.Guid);
+            }
+            else if (e.Packet is PacketReturnLentColonists returnPacket)
+            {
+                HandleReturnLentColonistsPacket(returnPacket);
+            }
+            else if (e.Packet is PacketColonistLost lostPacket)
+            {
+                HandleColonistLostPacket(lostPacket);
             }
         }
 

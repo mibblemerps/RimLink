@@ -1,14 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using PlayerTrade.Net;
+using PlayerTrade.Net.Packets;
 
-namespace PlayerTrade.Net
+namespace PlayerTrade.Trade.Packets
 {
     /// <summary>
     /// Packet sent Client -> Server -> Client to accept a trade.
     /// </summary>
+    [Packet]
     public class PacketAcceptTrade : Packet
     {
         public Guid Trade;

@@ -90,7 +90,6 @@ namespace PlayerTrade
                 return;
             }
 
-            Log.Message("Connecting to: " + RimLinkMod.Instance.Settings.ServerIp + ":" + RimLinkMod.Instance.Settings.ServerPort);
             _connecting = true;
             Client = new Client(this);
             Client.Connected += OnClientConnected;

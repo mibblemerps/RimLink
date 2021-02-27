@@ -4,9 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using PlayerTrade.Net;
+using PlayerTrade.Net.Packets;
 
 namespace PlayerTrade.Chat
 {
+    [Packet]
     public class PacketReceiveChatMessage : Packet
     {
         public List<NetMessage> Messages = new List<NetMessage>();

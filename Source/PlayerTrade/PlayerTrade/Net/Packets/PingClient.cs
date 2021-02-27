@@ -1,8 +1,7 @@
 ﻿using System;
-using System.Net.Sockets;
 using System.Threading.Tasks;
 
-namespace PlayerTrade.Net
+namespace PlayerTrade.Net.Packets
 {
     /// <summary>
     /// A simple client for simply exchanging a ping and ping response with the server.

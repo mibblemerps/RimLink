@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace PlayerTrade.Net
+﻿namespace PlayerTrade.Net.Packets
 {
+    [Packet(HideFromLog = true)]
     public class PacketColonyInfo : Packet
     {
         public string Guid;

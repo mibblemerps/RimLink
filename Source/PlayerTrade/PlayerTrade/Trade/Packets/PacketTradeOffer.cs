@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using PlayerTrade.Trade;
+using PlayerTrade.Net;
+using PlayerTrade.Net.Packets;
 
-namespace PlayerTrade.Net
+namespace PlayerTrade.Trade.Packets
 {
+    [Packet]
     public class PacketTradeOffer : PacketForPlayer
     {
         public Guid Guid;

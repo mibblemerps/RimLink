@@ -5,7 +5,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using UnityEngine;
 
-namespace PlayerTrade.Net
+namespace PlayerTrade.Net.Packets
 {
     /// <summary>
     /// A buffer helper for reading/writing packet data to a byte buffer. These bytes can then be sent over the wire.
