@@ -41,7 +41,7 @@ namespace PlayerTrade.Labor
             RimLinkComp.Instance.Client.SendPacket(new PacketColonistLost
             {
                 For = offer.From,
-                How = PacketColonistLost.LostType.Dead,
+                How = How,
                 PawnGuid = pawn.TryGetComp<PawnGuidThingComp>().Guid
             });
         }
