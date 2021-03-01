@@ -34,7 +34,8 @@ namespace PlayerTrade.Labor
 
             if (offer == null)
             {
-                Log.Error("Cannot find labor offer associated with colonist " + pawn.Name);
+                // Couldn't find labor offer that colonist belongs to.
+                // This means the labor offer is already completed (failed, colonists returned, whatever) so we don't care and just ignore this.
                 return;
             }
 
