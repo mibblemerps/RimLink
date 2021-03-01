@@ -100,9 +100,22 @@ namespace TradeServer
                     string guid = buffer.ReadString();
                     int queuedCount = buffer.ReadInt();
                     var queued = new List<Packet>(queuedCount);
+                    var warnedIds = new List<int>(); // List of missing IDs the user has been warned about. This is used to prevent log spam.
                     for (int j = 0; j < queuedCount; j++)
                     {
-                        Type packetType = Packet.Packets[buffer.ReadInt()];
+                        int id = buffer.ReadInt();
+                        if (!Packet.Packets.ContainsKey(id))
+                        {
+                            if (!warnedIds.Contains(id))
+                            {
+                                Log.Warn($"Queued packet (ID {id}) for {guid} has been lost. This packet ID no longer exists.");
+                                warnedIds.Add(id);
+                            }
+
+                            continue;
+                        }
+
+                        Type packetType = Packet.Packets[id];
                         Packet packet = (Packet) Activator.CreateInstance(packetType);
                         packet.Read(buffer);
                         queued.Add(packet);
