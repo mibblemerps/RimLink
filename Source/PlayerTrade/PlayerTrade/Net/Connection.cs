@@ -125,7 +125,13 @@ namespace PlayerTrade.Net
             Disconnected?.Invoke(this, EventArgs.Empty);
             if (!Tcp.Connected || !sendDisconnectPacket)
                 return;
-            await SendPacketDirect(new PacketDisconnect());
+
+            // Try to send a disconnect packet. This is more a courtesy than anything, it just ensures the connection is immediately and cleanly closed on both ends.
+            try
+            {
+                await SendPacketDirect(new PacketDisconnect());
+            } catch (Exception) {}
+
             Tcp?.Close();
         }
 
