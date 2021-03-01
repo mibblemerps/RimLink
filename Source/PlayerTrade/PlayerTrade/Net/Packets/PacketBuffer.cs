@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
@@ -16,6 +17,8 @@ namespace PlayerTrade.Net.Packets
 
         public Stream Stream;
 
+        public string LastMarker { get; private set; }
+
         /// <summary>
         /// Stream to use for buffer. If null is provided a memory stream is created.
         /// </summary>
@@ -23,6 +26,15 @@ namespace PlayerTrade.Net.Packets
         public PacketBuffer(Stream stream = null)
         {
             Stream = stream ?? new MemoryStream();
+        }
+
+        public void StreamRead(byte[] buffer, int offset, int count)
+        {
+            int bytesRead = Stream.Read(buffer, offset, count);
+            if (bytesRead < count)
+            {
+                throw new Exception("Unexpected end of stream!");
+            }
         }
 
         #region Read/Write Datatypes
@@ -45,7 +57,7 @@ namespace PlayerTrade.Net.Packets
         public int ReadInt()
         {
             byte[] buffer = new byte[4];
-            Stream.Read(buffer, 0, 4);
+            StreamRead(buffer, 0, 4);
             return BitConverter.ToInt32(buffer, 0);
         }
 
@@ -57,7 +69,7 @@ namespace PlayerTrade.Net.Packets
         public long ReadLong()
         {
             byte[] buffer = new byte[8];
-            Stream.Read(buffer, 0, 8);
+            StreamRead(buffer, 0, 8);
             return BitConverter.ToInt64(buffer, 0);
         }
 
@@ -69,7 +81,7 @@ namespace PlayerTrade.Net.Packets
         public double ReadDouble()
         {
             byte[] buffer = new byte[8];
-            Stream.Read(buffer, 0, 8);
+            StreamRead(buffer, 0, 8);
             return BitConverter.ToDouble(buffer, 0);
         }
 
@@ -91,7 +103,7 @@ namespace PlayerTrade.Net.Packets
         public bool ReadBoolean()
         {
             byte[] buffer = new byte[1];
-            Stream.Read(buffer, 0, 1);
+            StreamRead(buffer, 0, 1);
             return buffer[0] == 1;
         }
 
@@ -127,7 +139,7 @@ namespace PlayerTrade.Net.Packets
 
             int length = ReadInt();
             byte[] buffer = new byte[length];
-            Stream.Read(buffer, 0, length);
+            StreamRead(buffer, 0, length);
             return Encoding.UTF32.GetString(buffer);
         }
 
@@ -146,7 +158,7 @@ namespace PlayerTrade.Net.Packets
         {
             int length = ReadInt();
             byte[] buffer = new byte[length];
-            Stream.Read(buffer, 0, buffer.Length);
+            StreamRead(buffer, 0, buffer.Length);
             return buffer;
         }
 
@@ -248,6 +260,18 @@ namespace PlayerTrade.Net.Packets
         public T Read<T>()
         {
             return (T)BinaryFormatter.Deserialize(Stream);
+        }
+
+        public void WriteMarker(string marker)
+        {
+            WriteString(marker);
+        }
+
+        public void ReadMarker(string marker)
+        {
+            if (ReadString() != marker)
+                throw new Exception($"Marker \"{marker}\" lost. Packet corrupt.");
+            LastMarker = marker;
         }
 
         #endregion

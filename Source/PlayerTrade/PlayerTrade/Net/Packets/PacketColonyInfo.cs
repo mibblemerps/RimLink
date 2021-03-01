@@ -9,13 +9,13 @@
         public override void Write(PacketBuffer buffer)
         {
             buffer.WriteString(Guid);
-            buffer.Write(Player);
+            buffer.WritePacketable(Player);
         }
 
         public override void Read(PacketBuffer buffer)
         {
             Guid = buffer.ReadString();
-            Player = buffer.Read<Player>();
+            Player = buffer.ReadPacketable<Player>();
         }
     }
 }

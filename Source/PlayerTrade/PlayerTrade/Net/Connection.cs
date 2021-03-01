@@ -1,11 +1,11 @@
-﻿using System;
+﻿using Ionic.Zlib;
+using PlayerTrade.Net.Packets;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Sockets;
 using System.Threading.Tasks;
-using Ionic.Zlib;
-using PlayerTrade.Net.Packets;
 
 namespace PlayerTrade.Net
 {
@@ -191,18 +191,20 @@ namespace PlayerTrade.Net
 
             if (packetLength > 0)
             {
-                // Parse packet data
-                using (var gzip = new GZipStream(new MemoryStream(packetContentBuffer), CompressionMode.Decompress))
+                var packetBuffer = new PacketBuffer();
+                try
                 {
-                    try
+                    // Parse packet data
+                    using (var gzip = new GZipStream(new MemoryStream(packetContentBuffer), CompressionMode.Decompress))
                     {
-                        packet.Read(new PacketBuffer(gzip));
+                        packetBuffer.Stream = gzip;
+                        packet.Read(packetBuffer);
                     }
-                    catch (Exception e)
-                    {
-                        Disconnect();
-                        throw new Exception($"Exception reading packet {packet.GetType().Name} ({e.Message})", e);
-                    }
+                }
+                catch (Exception e)
+                {
+                    Disconnect();
+                    throw new Exception($"Exception reading packet {packet.GetType().Name} (Last Marker = {packetBuffer.LastMarker})", e);
                 }
             }
 

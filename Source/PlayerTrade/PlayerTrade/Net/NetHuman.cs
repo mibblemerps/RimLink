@@ -59,9 +59,12 @@ namespace PlayerTrade.Net
 
         public void Write(PacketBuffer buffer)
         {
+            buffer.WriteMarker("HumanStart");
+
             buffer.WriteString(RimLinkGuid);
 
             // Name
+            buffer.WriteMarker("Name");
             buffer.WriteInt(Name.Length);
             foreach (string name in Name)
                 buffer.WriteString(name);
@@ -70,41 +73,49 @@ namespace PlayerTrade.Net
             buffer.WriteLong(BiologicalAgeTicks);
             buffer.WriteString(KindDefName);
             buffer.WriteDouble(Melanin);
+            buffer.WriteMarker("SkinColor");
             buffer.Write(SkinColor.ToFloats());
             buffer.WriteString(BodyTypeDefName);
             buffer.WriteByte((byte) CrownType);
+            buffer.WriteMarker("HairColor");
             buffer.Write(HairColor.ToFloats());
             buffer.WriteString(HairDefName);
             buffer.WriteString(Childhood, true);
             buffer.WriteString(Adulthood, true);
             buffer.WriteByte((byte) Gender);
-            
+
             // Skills
+            buffer.WriteMarker("Skills");
             buffer.WriteInt(Skills.Count);
             foreach (NetSkill skill in Skills)
                 buffer.WritePacketable(skill);
 
             // Traits
+            buffer.WriteMarker("Traits");
             buffer.WriteInt(Traits.Count);
             foreach (NetTrait trait in Traits)
                 buffer.WritePacketable(trait);
 
             // Equipment
+            buffer.WriteMarker("Equipment");
             buffer.WriteInt(Equipment.Count);
             foreach (NetThing thing in Equipment)
                 buffer.WritePacketable(thing);
 
             // Apparel
+            buffer.WriteMarker("Apparel");
             buffer.WriteInt(Apparel.Count);
             foreach (NetThing thing in Apparel)
                 buffer.WritePacketable(thing);
 
             // Inventory
+            buffer.WriteMarker("Inventory");
             buffer.WriteInt(Inventory.Count);
             foreach (NetThing thing in Inventory)
                 buffer.WritePacketable(thing);
 
             // Hediffs
+            buffer.WriteMarker("Hediffs");
             buffer.WriteInt(Hediffs.Count);
             foreach (NetHediff hediff in Hediffs)
                 buffer.WritePacketable(hediff);
@@ -112,6 +123,7 @@ namespace PlayerTrade.Net
             buffer.WriteByte((byte) HealthState);
 
             // Work priorities
+            buffer.WriteMarker("WorkPriorities");
             buffer.WriteInt(WorkPriorities.Count);
             foreach (var priority in WorkPriorities)
             {
@@ -120,6 +132,7 @@ namespace PlayerTrade.Net
             }
 
             // Records
+            buffer.WriteMarker("Records");
             buffer.WriteInt(Records.Count);
             foreach (var record in Records)
             {
@@ -128,25 +141,30 @@ namespace PlayerTrade.Net
             }
 
             // Inspiration
+            buffer.WriteMarker("Inspiration");
             buffer.WriteString(InspirationDefName, true);
             buffer.WriteInt(InspirationAge);
             buffer.WriteString(InspirationReason, true);
 
             // Player settings
+            buffer.WriteMarker("PlayerSettings");
             buffer.WriteByte((byte) MedicalCare);
             buffer.WriteByte((byte) HostilityResponseMode);
             buffer.WriteBoolean(SelfTend);
 
             // Schedule
+            buffer.WriteMarker("Schedule");
             for (int i = 0; i < 24; i++)
                 buffer.WriteString(Schedule[i]);
 
             // Needs
+            buffer.WriteMarker("Needs");
             buffer.WriteInt(Needs.Count);
             foreach (NetNeed need in Needs)
                 buffer.WritePacketable(need);
 
             // Royalty
+            buffer.WriteMarker("Royalty");
             if (Royalty == null)
             {
                 buffer.WriteBoolean(false);
@@ -160,9 +178,12 @@ namespace PlayerTrade.Net
 
         public void Read(PacketBuffer buffer)
         {
+            buffer.ReadMarker("HumanStart");
+
             RimLinkGuid = buffer.ReadString();
 
             // Name
+            buffer.ReadMarker("Name");
             int nameCount = buffer.ReadInt();
             Name = new string[nameCount];
             for (int i = 0; i < nameCount; i++)
@@ -172,9 +193,11 @@ namespace PlayerTrade.Net
             BiologicalAgeTicks = buffer.ReadLong();
             KindDefName = buffer.ReadString();
             Melanin = (float) buffer.ReadDouble();
+            buffer.ReadMarker("SkinColor");
             SkinColor = buffer.Read<float[]>().ToColor();
             BodyTypeDefName = buffer.ReadString();
             CrownType = (CrownType) buffer.ReadByte();
+            buffer.ReadMarker("HairColor");
             HairColor = buffer.Read<float[]>().ToColor();
             HairDefName = buffer.ReadString();
             Childhood = buffer.ReadString(true);
@@ -182,36 +205,42 @@ namespace PlayerTrade.Net
             Gender = (Gender) buffer.ReadByte();
 
             // Skills
+            buffer.ReadMarker("Skills");
             int skillCount = buffer.ReadInt();
             Skills = new List<NetSkill>(skillCount);
             for (int i = 0; i < skillCount; i++)
                 Skills.Add(buffer.ReadPacketable<NetSkill>());
 
             // Traits
+            buffer.ReadMarker("Traits");
             int traitsCount = buffer.ReadInt();
             Traits = new List<NetTrait>(traitsCount);
             for (int i = 0; i < traitsCount; i++)
                 Traits.Add(buffer.ReadPacketable<NetTrait>());
 
             // Equipment
+            buffer.ReadMarker("Equipment");
             int equipmentCount = buffer.ReadInt();
             Equipment = new List<NetThing>(equipmentCount);
             for (int i = 0; i < equipmentCount; i++)
                 Equipment.Add(buffer.ReadPacketable<NetThing>());
 
             // Apparel
+            buffer.ReadMarker("Apparel");
             int apparelCount = buffer.ReadInt();
             Apparel = new List<NetThing>(apparelCount);
             for (int i = 0; i < apparelCount; i++)
                 Apparel.Add(buffer.ReadPacketable<NetThing>());
 
             // Inventory
+            buffer.ReadMarker("Inventory");
             int inventoryCount = buffer.ReadInt();
             Inventory = new List<NetThing>(inventoryCount);
             for (int i = 0; i < inventoryCount; i++)
                 Inventory.Add(buffer.ReadPacketable<NetThing>());
 
             // Hediffs
+            buffer.ReadMarker("Hediffs");
             int hediffCount = buffer.ReadInt();
             Hediffs = new List<NetHediff>(hediffCount);
             for (int i = 0; i < hediffCount; i++)
@@ -220,39 +249,46 @@ namespace PlayerTrade.Net
             HealthState = (PawnHealthState) buffer.ReadByte();
 
             // Work priorities
+            buffer.ReadMarker("WorkPriorities");
             int priorityCount = buffer.ReadInt();
             WorkPriorities = new Dictionary<string, int>(priorityCount);
             for (int i = 0; i < priorityCount; i++)
                 WorkPriorities.SetOrAdd(buffer.ReadString(), buffer.ReadInt());
 
             // Records
+            buffer.ReadMarker("Records");
             int recordCount = buffer.ReadInt();
             Records = new Dictionary<string, float>(recordCount);
             for (int i = 0; i < recordCount; i++)
                 Records.SetOrAdd(buffer.ReadString(), buffer.ReadFloat());
 
             // Inspiration
+            buffer.ReadMarker("Inspiration");
             InspirationDefName = buffer.ReadString(true);
             InspirationAge = buffer.ReadInt();
             InspirationReason = buffer.ReadString(true);
 
             // Player settings
+            buffer.ReadMarker("PlayerSettings");
             MedicalCare = (MedicalCareCategory) buffer.ReadByte();
             HostilityResponseMode = (RimWorld.HostilityResponseMode) buffer.ReadByte();
             SelfTend = buffer.ReadBoolean();
 
             // Schedule
+            buffer.ReadMarker("Schedule");
             Schedule = new List<string>(24);
             for (int i = 0; i < 24; i++)
                 Schedule.Add(buffer.ReadString());
 
             // Needs
+            buffer.ReadMarker("Needs");
             int needsCount = buffer.ReadInt();
             Needs = new List<NetNeed>(needsCount);
             for (int i = 0; i < needsCount; i++)
                 Needs.Add(buffer.ReadPacketable<NetNeed>());
 
             // Royalty
+            buffer.ReadMarker("Royalty");
             if (buffer.ReadBoolean())
                 Royalty = buffer.ReadPacketable<NetRoyalty>();
         }

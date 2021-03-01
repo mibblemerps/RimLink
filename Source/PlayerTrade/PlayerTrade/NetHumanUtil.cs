@@ -409,8 +409,11 @@ namespace PlayerTrade
 
             // Records
             var records = (DefMap<RecordDef, float>) Pawn_RecordsTracker_Records.GetValue(pawn.records);
-            foreach (var record in human.Records)
-                records[DefDatabase<RecordDef>.GetNamed(record.Key)] = record.Value;
+            if (human.Records != null)
+            {
+                foreach (var record in human.Records)
+                    records[DefDatabase<RecordDef>.GetNamed(record.Key)] = record.Value;
+            }
 
             // Inspiration
             if (human.InspirationDefName != null)
