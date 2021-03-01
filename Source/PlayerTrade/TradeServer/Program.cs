@@ -30,6 +30,7 @@ namespace TradeServer
             new CommandBugReport(),
             new CommandBan(),
             new CommandUnban(),
+            new CommandPacketIds(),
         };
 
         private static Caller ServerCaller = new ServerCaller();

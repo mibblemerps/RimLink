@@ -65,6 +65,7 @@
     <Compile Include="Commands\CommandKick.cs" />
     <Compile Include="Commands\CommandList.cs" />
     <Compile Include="Commands\CommandOp.cs" />
+    <Compile Include="Commands\CommandPacketIds.cs" />
     <Compile Include="Commands\CommandSay.cs" />
     <Compile Include="Commands\CommandSendLetter.cs" />
     <Compile Include="Commands\CommandStop.cs" />
