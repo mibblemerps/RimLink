@@ -22,7 +22,7 @@ namespace PlayerTrade.Labor
 
             if (escapeDef.damage)
             {
-                EscapeRelatedDamage(pawn, escapeDef.damage_max_parts_to_damage, escapeDef.damage_max_damage_per_part, escapeDef.damage_blunt);
+                EscapeRelatedDamage(pawn, escapeDef.damageMaxPartsToDamage, escapeDef.damageMaxDamagePercentagePerPart, escapeDef.damageBlunt);
             }
 
             if (escapeDef.tired)
@@ -55,7 +55,7 @@ namespace PlayerTrade.Labor
 
             Map map = Find.AnyPlayerHomeMap;
 
-            switch (escapeDef.arrival_method)
+            switch (escapeDef.arrivalMethod)
             {
                 case LentColonistEscapeDef.ArrivalMethod.WalkIn:
                     if (!RCellFinder.TryFindRandomPawnEntryCell(out IntVec3 cell, map, CellFinder.EdgeRoadChance_Friendly, false))
@@ -77,14 +77,14 @@ namespace PlayerTrade.Labor
 
             pawn.jobs?.StopAll();
             
-            if (escapeDef.mental_state != null)
+            if (escapeDef.mentalState != null)
             {
                 // Try to apply mental state - if it fails, try to apply the fallback mental state
-                if (!pawn.mindState.mentalStateHandler.TryStartMentalState(escapeDef.mental_state, forceWake: true, transitionSilently: true) &&
-                    escapeDef.fallback_mental_state != null)
+                if (!pawn.mindState.mentalStateHandler.TryStartMentalState(escapeDef.mentalState, forceWake: true, transitionSilently: true) &&
+                    escapeDef.fallbackMentalState != null)
                 {
                     // Fallback mental state
-                    pawn.mindState.mentalStateHandler.TryStartMentalState(escapeDef.fallback_mental_state,
+                    pawn.mindState.mentalStateHandler.TryStartMentalState(escapeDef.fallbackMentalState,
                         forceWake: true, transitionSilently: true);
                 }
             }

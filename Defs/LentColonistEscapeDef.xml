@@ -3,13 +3,13 @@
 	<PlayerTrade.Labor.LentColonistEscapeDef>
 		<defName>EscapeSafeImperials</defName>
 		<reason>{pawn} managed to flee {from} and safely hitch a ride home with a group of imperials.</reason>
-    <arrival_method>Shuttle</arrival_method>
+    <arrivalMethod>Shuttle</arrivalMethod>
 	</PlayerTrade.Labor.LentColonistEscapeDef>
   
   <PlayerTrade.Labor.LentColonistEscapeDef>
 		<defName>EscapeSafeFriendlies</defName>
 		<reason>{pawn} managed to flee {from} and safely hitch a ride home with a group of sympathetic outlanders.</reason>
-    <arrival_method>DropPod</arrival_method>
+    <arrivalMethod>DropPod</arrivalMethod>
 	</PlayerTrade.Labor.LentColonistEscapeDef>
 
   <PlayerTrade.Labor.LentColonistEscapeDef>
@@ -21,17 +21,17 @@
   <PlayerTrade.Labor.LentColonistEscapeDef>
     <defName>EscapeInjuredImperials</defName>
     <reason>A group of imperials found {pawn} severely injured but didn't have the resources to treat them.\nThey are dropping {pawn} off immediately.</reason>
-    <arrival_method>Shuttle</arrival_method>
+    <arrivalMethod>Shuttle</arrivalMethod>
     <damage>true</damage>
-    <damage_max_damage_per_part>0.8</damage_max_damage_per_part>
+    <damageMaxDamagePercentagePerPart>0.8</damageMaxDamagePercentagePerPart>
   </PlayerTrade.Labor.LentColonistEscapeDef>
 
 	<PlayerTrade.Labor.LentColonistEscapeDef>
 		<defName>EscapeInjuredWildlife</defName>
 		<reason>{pawn} managed to flee {from}, but not without a brief run-in with the wildlife that left {pawn} mildly injured.</reason>
     <damage>true</damage>
-    <damage_max_damage_per_part>0.4</damage_max_damage_per_part>
-    <damage_max_bleed_rate>2</damage_max_bleed_rate>
+    <damageMaxDamagePercentagePerPart>0.4</damageMaxDamagePercentagePerPart>
+    <damageMaxBleedRate>2</damageMaxBleedRate>
 	</PlayerTrade.Labor.LentColonistEscapeDef>
 
 	<PlayerTrade.Labor.LentColonistEscapeDef>
@@ -45,22 +45,22 @@
 		<reason>{pawn} managed to flee {from}, but not without a run-in with a group of pirates. They robbed everything {pawn} had.</reason>
     <mugged>true</mugged>
     <damage>true</damage>
-    <damage_max_parts_to_damage>1</damage_max_parts_to_damage>
-    <damage_max_damage_per_part>0.4</damage_max_damage_per_part>
-    <damage_blunt>true</damage_blunt>
+    <damageMaxPartsToDamage>1</damageMaxPartsToDamage>
+    <damageMaxDamagePercentagePerPart>0.4</damageMaxDamagePercentagePerPart>
+    <damageBlunt>true</damageBlunt>
 	</PlayerTrade.Labor.LentColonistEscapeDef>
 
 	<PlayerTrade.Labor.LentColonistEscapeDef>
 		<defName>EscapeDazed</defName>
 		<reason>{pawn} managed to safely flee {from}, however the ordeal has left them mentally shaken.</reason>
-    <mental_state>Wander_OwnRoom</mental_state>
-    <fallback_mental_state>Wander_Sad</fallback_mental_state>
+    <mentalState>Wander_OwnRoom</mentalState>
+    <fallbackMentalState>Wander_Sad</fallbackMentalState>
 	</PlayerTrade.Labor.LentColonistEscapeDef>
 
   <PlayerTrade.Labor.LentColonistEscapeDef>
     <defName>EscapeStarving</defName>
     <reason>{pawn} managed to safely flee {from}, however the trip home has left them ravenously hungry.</reason>
-    <mental_state>Binging_Food</mental_state>
+    <mentalState>Binging_Food</mentalState>
     <hungry>true</hungry>
   </PlayerTrade.Labor.LentColonistEscapeDef>
 </Defs>
