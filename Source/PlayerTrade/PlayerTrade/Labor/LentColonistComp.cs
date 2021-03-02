@@ -117,6 +117,7 @@ namespace PlayerTrade.Labor
         {
             base.PostExposeData();
             Scribe_References.Look(ref LaborOffer, "labor_offer");
+            Scribe_Values.Look(ref Leaving, "leaving");
             Scribe_Values.Look(ref Arrested, "arrested");
             Scribe_Values.Look(ref TryEscapeHomeTick, "escape_home_tick");
         }
