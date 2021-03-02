@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using PlayerTrade.Labor.Packets;
 using RimWorld;
+using RimWorld.QuestGen;
 using Verse;
 
 namespace PlayerTrade.Labor
@@ -37,6 +38,8 @@ namespace PlayerTrade.Labor
 
             var pawns = shuttleComp.Transporter.innerContainer.Where(thing => thing is Pawn).Cast<Pawn>().ToList();
             offer.ReturnColonists(pawns);
+
+            QuestGen.slate.Set("returned_pawns", pawns);
         }
 
         public override void ExposeData()

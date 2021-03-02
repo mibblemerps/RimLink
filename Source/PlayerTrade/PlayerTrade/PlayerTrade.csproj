@@ -96,10 +96,16 @@
     <Compile Include="Dialog_ConnectingToServer.cs" />
     <Compile Include="Dialog_SetServerIp.cs" />
     <Compile Include="GameSettings.cs" />
-    <Compile Include="Labor\Packets\PacketColonistLost.cs" />
+    <Compile Include="Labor\EscapeUtil.cs" />
+    <Compile Include="Labor\LentColonistEscapeDef.cs" />
+    <Compile Include="Labor\LentColonistComp.cs" />
+    <Compile Include="Labor\Packets\PacketLentColonistUpdate.cs" />
+    <Compile Include="Labor\QuestNode_CleanupRemainingPawns.cs" />
     <Compile Include="Labor\QuestNode_NotifyColonistLost.cs" />
     <Compile Include="Labor\QuestPart_NotifyColonistLost.cs" />
+    <Compile Include="Labor\QuestPart_CleanupRemainingPawns.cs" />
     <Compile Include="MainMenuWidget.cs" />
+    <Compile Include="NameUtil.cs" />
     <Compile Include="Net\NetRoyalty.cs" />
     <Compile Include="Net\PacketAttribute.cs" />
     <Compile Include="Net\Packets\PacketDisconnect.cs" />

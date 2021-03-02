@@ -6,7 +6,7 @@ namespace PlayerTrade.Labor
 {
     public class QuestNode_NotifyColonistLost : QuestNode
     {
-        public SlateRef<PacketColonistLost.LostType> how;
+        public SlateRef<PacketLentColonistUpdate.ColonistEvent> how;
 
         public SlateRef<string> inSignal;
 

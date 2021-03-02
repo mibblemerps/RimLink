@@ -44,9 +44,9 @@ namespace PlayerTrade.Labor
             {
                 HandleReturnLentColonistsPacket(returnPacket);
             }
-            else if (e.Packet is PacketColonistLost lostPacket)
+            else if (e.Packet is PacketLentColonistUpdate updatePacket)
             {
-                HandleColonistLostPacket(lostPacket);
+                HandleColonistUpdatePacket(updatePacket);
             }
         }
 
@@ -101,52 +101,59 @@ namespace PlayerTrade.Labor
                 return;
             }
 
-            Log.Message($"Returning lent colonists from {RimLinkComp.Find().Client.GetName(offer.For)}");
+            Log.Message($"Returning lent colonists from {offer.For.GuidToName()}");
             offer.ReturnedColonistsReceived(packet);
         }
 
-        private void HandleColonistLostPacket(PacketColonistLost packet)
+        private void HandleColonistUpdatePacket(PacketLentColonistUpdate packet)
         {
-            Pawn lostPawn = null;
+            Pawn pawn = null;
             LaborOffer activeOffer = null;
             foreach (LaborOffer offer in Client.RimLinkComp.ActiveLaborOffers)
             {
-                foreach (Pawn pawn in offer.Colonists)
+                foreach (Pawn p in offer.Colonists)
                 {
-                    if (pawn.TryGetComp<PawnGuidThingComp>().Guid == packet.PawnGuid)
+                    if (p.TryGetComp<PawnGuidThingComp>().Guid == packet.PawnGuid)
                     {
-                        lostPawn = pawn;
+                        pawn = p;
                         activeOffer = offer;
                         break;
                     }
                 }
             }
 
-            if (lostPawn == null)
+            if (pawn == null)
             {
                 Log.Warn($"Received lost colonist packet for unknown pawn.");
                 return;
             }
 
-            switch (packet.How)
+            switch (packet.What)
             {
-                case PacketColonistLost.LostType.Dead:
-                    lostPawn.Kill(null);
-                    Find.LetterStack.ReceiveLetter("Killed on duty: " + lostPawn.Name,
-                        $"{lostPawn.NameFullColored}, who you lent to {RimLinkComp.Instance.Client.GetName(activeOffer.From)}, has been died.",
+                case PacketLentColonistUpdate.ColonistEvent.Dead:
+                    pawn.Kill(null);
+                    Find.LetterStack.ReceiveLetter("Killed on duty: " + pawn.Name,
+                        $"{pawn.NameFullColored}, who you lent to {RimLinkComp.Instance.Client.GetName(activeOffer.From)}, has been died.",
                         LetterDefOf.NegativeEvent);
                     break;
 
-                case PacketColonistLost.LostType.Imprisoned:
-                    Find.LetterStack.ReceiveLetter("Imprisoned: " + lostPawn.Name,
-                        $"{lostPawn.NameFullColored}, who you lent to {RimLinkComp.Instance.Client.GetName(activeOffer.From)}, has been imprisoned.",
+                case PacketLentColonistUpdate.ColonistEvent.Imprisoned:
+                    Find.LetterStack.ReceiveLetter("Imprisoned: " + pawn.Name,
+                        $"{pawn.NameFullColored}, who you lent to {RimLinkComp.Instance.Client.GetName(activeOffer.From)}, has been imprisoned.",
                         LetterDefOf.NegativeEvent);
                     break;
 
-                case PacketColonistLost.LostType.Gone:
-                    Find.LetterStack.ReceiveLetter("Missing: " + lostPawn.Name,
-                        $"{RimLinkComp.Instance.Client.GetName(activeOffer.From)} has lost {lostPawn.NameFullColored}.",
+                case PacketLentColonistUpdate.ColonistEvent.Gone:
+                    Find.LetterStack.ReceiveLetter("Missing: " + pawn.Name,
+                        $"{RimLinkComp.Instance.Client.GetName(activeOffer.From)} has lost {pawn.NameFullColored}.",
                         LetterDefOf.NegativeEvent);
+                    break;
+
+                case PacketLentColonistUpdate.ColonistEvent.Escaped:
+                    Find.LetterStack.ReceiveLetter("Escaped: " + pawn.Name,
+                        $"{pawn.NameFullColored}, who you lent to {RimLinkComp.Instance.Client.GetName(activeOffer.From)}, has managed to flee after not being returned.\n\n" +
+                        $"They will try to find their way home.",
+                        LetterDefOf.NeutralEvent);
                     break;
             }
         }

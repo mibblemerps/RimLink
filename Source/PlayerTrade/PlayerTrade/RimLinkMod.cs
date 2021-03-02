@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using HarmonyLib;
+using PlayerTrade.Labor;
 using PlayerTrade.Net;
 using RimWorld;
 using UnityEngine;
@@ -47,6 +48,7 @@ namespace PlayerTrade
             // Initialize harmony
             var harmony = new Harmony("net.mitchfizz05.PlayerTrade");
             harmony.PatchAll(Assembly.GetExecutingAssembly());
+
         }
 
         public override void DoSettingsWindowContents(Rect inRect)

@@ -13,6 +13,7 @@ namespace PlayerTrade.Labor.Packets
     {
         public string Guid;
         public List<NetHuman> ReturnedColonists;
+        public bool Escaped;
 
         public override bool ShouldQueue => true;
 
@@ -23,6 +24,7 @@ namespace PlayerTrade.Labor.Packets
             buffer.WriteInt(ReturnedColonists.Count);
             foreach (var colonist in ReturnedColonists)
                 buffer.WritePacketable(colonist);
+            buffer.WriteBoolean(Escaped);
         }
 
         public override void Read(PacketBuffer buffer)
@@ -33,6 +35,7 @@ namespace PlayerTrade.Labor.Packets
             ReturnedColonists = new List<NetHuman>(returnedColonistCount);
             for (int i = 0; i < returnedColonistCount; i++)
                 ReturnedColonists.Add(buffer.ReadPacketable<NetHuman>());
+            Escaped = buffer.ReadBoolean();
         }
     }
 }

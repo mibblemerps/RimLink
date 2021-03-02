@@ -9,12 +9,18 @@
 			<rulesStrings>
 				<li>questName->Lent Colonists From [from]</li>
 				<li>questName->Hired Labour From [from]</li>
+				<li>questName->Labor From [from]</li>
 				<li>questName(pawn_count==1)->Worker From [from]</li>
 				<li>questName(pawn_count==1)->Lent Colonist From [from]</li>
+				<li>questName(pawn_count==1)->Helper From [from]</li>
+				<li>questName(pawn_count==1)->Laborer From [from]</li>
 				<li>questName(pawn_count>=2)->Workers From [from]</li>
 				<li>questName(pawn_count>=2)->Lent Colonists From [from]</li>
+				<li>questName(pawn_count>=2)->Helpers From [from]</li>
+				<li>questName(pawn_count>=2)->Laborers From [from]</li>
 				
 				<li>questDescription(pawn_count==1)->[from] has lent you a colonist for [days] days.\n\n[bondInfo]</li>
+				<li>questDescription(pawn_count==2)->[from] has lent you [pawn_count] colonists for [days] days.\n\n[bondInfo]</li>
 				<li>bondInfo(bond>=1)->If they are not safely returned, you will not have your bond of [bond] silver returned.</li>
 				<li>bondInfo->No bond has been paid.</li>
 			</rulesStrings>
@@ -65,50 +71,6 @@
 								<def>OnDuty</def>
 							</li>
 							
-							<!-- Duty-of-care failures -->
-							<li Class="QuestNode_Signal">
-								<inSignal>pawns.Destroyed</inSignal>
-								<node Class="QuestNode_Sequence">
-									<nodes>
-										<li Class="QuestNode_Letter">
-											<label>Lent colonist died: {SUBJECT_definite}</label>
-											<text>{SUBJECT_definite}, who you lent from [from], has died.</text>
-										</li>
-										<li Class="PlayerTrade.Labor.QuestNode_NotifyColonistLost">
-											<how>Dead</how>
-										</li>
-									</nodes>
-								</node>
-							</li>
-							<li Class="QuestNode_Signal">
-								<inSignal>pawns.Arrested</inSignal>
-								<node Class="QuestNode_Sequence">
-									<nodes>
-										<li Class="QuestNode_Letter">
-											<label>Lent colonist arrested: {SUBJECT_definite}</label>
-											<text>{SUBJECT_definite}, who you lent from [from], has been arrested.</text>
-										</li>
-										<li Class="PlayerTrade.Labor.QuestNode_NotifyColonistLost">
-											<how>Imprisoned</how>
-										</li>
-									</nodes>
-								</node>
-							</li>
-							<li Class="QuestNode_Signal">
-								<inSignal>pawns.LeftMap</inSignal>
-								<node Class="QuestNode_Sequence">
-									<nodes>
-										<li Class="QuestNode_Letter">
-											<label>Lent colonist arrested: {SUBJECT_definite}</label>
-											<text>{SUBJECT_definite}, who you lent from [from], has been lost.</text>
-										</li>
-										<li Class="PlayerTrade.Labor.QuestNode_NotifyColonistLost">
-											<how>Gone</how>
-										</li>
-									</nodes>
-								</node>
-							</li>
-							
 							<!-- Shuttle leave -->
 							<li Class="QuestNode_ShuttleLeaveDelay">
 								<delayTicks>$($shuttle_leave_ticks - $shuttle_arrival_ticks)</delayTicks>
@@ -122,6 +84,7 @@
 							</li>
 							
 							<!-- Shuttle sent -->
+							<!-- Success -->
 							<li Class="QuestNode_Signal">
 								<inSignal>shuttle.SentSatisfied</inSignal>
 								<node Class="QuestNode_Sequence">
@@ -138,16 +101,30 @@
 												<contents>$bond_things</contents>
 											</elseNode>
 										</li>
-										
+										<li Class="QuestNode_End" />
 									</nodes>
 								</node>
 							</li>
+							<!-- Failure -->
 							<li Class="QuestNode_Signal">
 								<inSignal>shuttle.SentUnsatisfied</inSignal>
-								<node Class="PlayerTrade.Labor.QuestNode_ReturnColonists">
-									<guid>$guid</guid>
-									<shuttle>$shuttle</shuttle>
+								<node Class="QuestNode_Sequence">
+									<nodes>
+										<li Class="PlayerTrade.Labor.QuestNode_ReturnColonists">
+											<guid>$guid</guid>
+											<shuttle>$shuttle</shuttle>
+										</li>
+										<li Class="QuestNode_End">
+											<outcome>Fail</outcome>
+										</li>
+									</nodes>
 								</node>
+							</li>
+							
+							<!-- Cleanup any left behind pawns -->
+							<li Class="PlayerTrade.Labor.QuestNode_CleanupRemainingPawns">
+								<guid>$guid</guid>
+								<pawns>$pawns</pawns>
 							</li>
 						</nodes>
 					</node>

@@ -12,7 +12,7 @@ using Verse;
 
 namespace PlayerTrade.Labor
 {
-    public class LaborOffer : IExposable
+    public class LaborOffer : IExposable, ILoadReferenceable
     {
         public const float MarketValueVarianceAllowed = 50f;
 
@@ -128,6 +128,9 @@ namespace PlayerTrade.Labor
                 // Spawn pawn
                 TradeUtility.SpawnDropPod(DropCellFinder.TradeDropSpot(map), map, pawn);
 
+                // Set labor offer in comp
+                pawn.TryGetComp<LentColonistComp>().LaborOffer = this;
+
                 // Store heir
                 Pawn heir = pawn.royalty?.GetHeir(Faction.Empire);
                 if (heir != null)
@@ -175,7 +178,7 @@ namespace PlayerTrade.Labor
         /// <summary>
         /// Return colonists.
         /// </summary>
-        public void ReturnColonists(List<Pawn> pawns)
+        public void ReturnColonists(List<Pawn> pawns, bool escaped = false)
         {
             Client client = RimLinkComp.Instance.Client;
 
@@ -187,12 +190,11 @@ namespace PlayerTrade.Labor
             {
                 For = From,
                 Guid = Guid,
-                ReturnedColonists = netPawns
+                ReturnedColonists = netPawns,
+                Escaped = escaped
             };
 
             client.SendPacket(packet);
-
-            RimLinkComp.Instance.ActiveLaborOffers.Remove(this);
         }
 
         /// <summary>
@@ -200,7 +202,7 @@ namespace PlayerTrade.Labor
         /// </summary>
         public void ReturnedColonistsReceived(PacketReturnLentColonists packet)
         {
-            Client client = RimLinkComp.Find().Client;
+            Client client = RimLinkComp.Instance.Client;
 
             if (From != client.Guid)
             {
@@ -217,9 +219,28 @@ namespace PlayerTrade.Labor
                     Log.Warn($"RimLink pawn GUID not found on returned pawn. The original pawn cannot be found, so the pawn may not be reproduced perfectly.");
 
                 Pawn pawn = colonist.ToPawn(originalPawn);
-                Log.Message($"Returning {pawn.Name.ToStringFull}...");
-                IntVec3 pos = DropCellFinder.TradeDropSpot(Find.CurrentMap);
-                TradeUtility.SpawnDropPod(pos, Find.CurrentMap, pawn);
+
+                // If they escaped, the escape util will handle returning them in whatever state it decides to, otherwise we just drop them back
+                if (packet.Escaped)
+                {
+                    EscapeUtil.Escaped(pawn);
+                    return;
+                }
+                else
+                {
+                    Log.Message($"Returning {pawn.Name.ToStringFull}...");
+                    if (ModLister.RoyaltyInstalled)
+                    {
+                        // Shuttle them home
+                        EscapeUtil.MakeDropoffShuttle(Find.AnyPlayerHomeMap, pawn);
+                    }
+                    else
+                    {
+                        // Drop pods
+                        IntVec3 pos = DropCellFinder.TradeDropSpot(Find.CurrentMap);
+                        TradeUtility.SpawnDropPod(pos, Find.CurrentMap, pawn);
+                    }
+                }
             }
 
             Log.Message($"{packet.ReturnedColonists.Count}/{Colonists.Count} returned from labor deal.");
@@ -239,9 +260,18 @@ namespace PlayerTrade.Labor
             {
                 Find.LetterStack.ReceiveLetter($"Colonists Returned ({client.GetName(For)})", $"{client.GetName(For).Colorize(ColoredText.FactionColor_Neutral)} returned your colonists.", LetterDefOf.PositiveEvent);
             }
+        }
 
-            // Remove this as an active labor offer.
-            RimLinkComp.Instance.ActiveLaborOffers.Remove(this);
+        public void Notify_LentColonistEvent(Pawn pawn, PacketLentColonistUpdate.ColonistEvent colonistEvent)
+        {
+            Log.Message($"Lent colonist update. Pawn = {pawn.Name} Event = {colonistEvent}");
+
+            RimLinkComp.Instance.Client.SendPacket(new PacketLentColonistUpdate
+            {
+                For = From,
+                What = colonistEvent,
+                PawnGuid = pawn.TryGetComp<PawnGuidThingComp>().Guid
+            });
         }
 
         public void ExposeData()
@@ -304,6 +334,11 @@ namespace PlayerTrade.Labor
                 colonist.SetFaction(Faction.OfPlayer);
 
             return offer;
+        }
+
+        public string GetUniqueLoadID()
+        {
+            return "RimLink_LaborOffer_" + Guid;
         }
     }
 }

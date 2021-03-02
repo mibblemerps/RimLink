@@ -6,7 +6,7 @@ namespace PlayerTrade.Labor
 {
     public class QuestPart_NotifyColonistLost : QuestPart
     {
-        public PacketColonistLost.LostType How;
+        public PacketLentColonistUpdate.ColonistEvent How;
         [NoTranslate]
         public string InSignal;
 
@@ -39,10 +39,10 @@ namespace PlayerTrade.Labor
                 return;
             }
 
-            RimLinkComp.Instance.Client.SendPacket(new PacketColonistLost
+            RimLinkComp.Instance.Client.SendPacket(new PacketLentColonistUpdate
             {
                 For = offer.From,
-                How = How,
+                What = How,
                 PawnGuid = pawn.TryGetComp<PawnGuidThingComp>().Guid
             });
         }

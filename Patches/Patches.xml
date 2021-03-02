@@ -9,6 +9,9 @@
                     <li>
 						<compClass>PlayerTrade.PawnGuidThingComp</compClass>
 					</li>
+					<li>
+						<compClass>PlayerTrade.Labor.LentColonistComp</compClass>
+					</li>
                 </comps>
             </value>
         </nomatch>
@@ -16,8 +19,11 @@
             <xpath>/Defs/ThingDef[defName="Human"]/comps</xpath>
             <value>
                 <li>
-                    <compClass>PlayerTrade.PawnGuidThingComp</compClass>
-                </li>
+					<compClass>PlayerTrade.PawnGuidThingComp</compClass>
+				</li>
+				<li>
+					<compClass>PlayerTrade.Labor.LentColonistComp</compClass>
+				</li>
             </value>
         </match>
     </Operation>
