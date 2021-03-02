@@ -101,8 +101,6 @@
     <Compile Include="Labor\LentColonistComp.cs" />
     <Compile Include="Labor\Packets\PacketLentColonistUpdate.cs" />
     <Compile Include="Labor\QuestNode_CleanupRemainingPawns.cs" />
-    <Compile Include="Labor\QuestNode_NotifyColonistLost.cs" />
-    <Compile Include="Labor\QuestPart_NotifyColonistLost.cs" />
     <Compile Include="Labor\QuestPart_CleanupRemainingPawns.cs" />
     <Compile Include="MainMenuWidget.cs" />
     <Compile Include="NameUtil.cs" />
