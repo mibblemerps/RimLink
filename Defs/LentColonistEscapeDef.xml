@@ -1,61 +1,62 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <Defs>
-	<PlayerTrade.Missions.Escape.LentColonistEscapeDef>
-		<defName>EscapeSafeImperials</defName>
-		<reason>{pawn} managed to flee {from} and safely hitch a ride home with a group of imperials.</reason>
-    <arrivalMethod>Shuttle</arrivalMethod>
-	</PlayerTrade.Missions.Escape.LentColonistEscapeDef>
-  
   <PlayerTrade.Missions.Escape.LentColonistEscapeDef>
-		<defName>EscapeSafeFriendlies</defName>
-		<reason>{pawn} managed to flee {from} and safely hitch a ride home with a group of sympathetic outlanders.</reason>
-    <arrivalMethod>DropPod</arrivalMethod>
-	</PlayerTrade.Missions.Escape.LentColonistEscapeDef>
+    <defName>EscapeSafeImperials</defName>
+    <reason>{pawn} managed to flee {from} and safely hitch a ride home with a group of imperials.</reason>
+    <arrivalMethod>Shuttle</arrivalMethod>
+  </PlayerTrade.Missions.Escape.LentColonistEscapeDef>
 
   <PlayerTrade.Missions.Escape.LentColonistEscapeDef>
-		<defName>EscapeTired</defName>
-		<reason>{pawn} managed to safely flee {from}, however the ordeal has left them exhausted.</reason>
+    <defName>EscapeSafeFriendlies</defName>
+    <reason>{pawn} managed to flee {from} and safely hitch a ride home with a group of sympathetic outlanders.</reason>
+    <arrivalMethod>DropPod</arrivalMethod>
+  </PlayerTrade.Missions.Escape.LentColonistEscapeDef>
+
+  <PlayerTrade.Missions.Escape.LentColonistEscapeDef>
+    <defName>EscapeTired</defName>
+    <reason>{pawn} managed to safely flee {from}, however the ordeal has left them exhausted.</reason>
     <tired>true</tired>
-	</PlayerTrade.Missions.Escape.LentColonistEscapeDef>
+  </PlayerTrade.Missions.Escape.LentColonistEscapeDef>
 
   <PlayerTrade.Missions.Escape.LentColonistEscapeDef>
     <defName>EscapeInjuredImperials</defName>
     <reason>A group of imperials found {pawn} severely injured but didn't have the resources to treat them.\nThey are dropping {pawn} off immediately.</reason>
     <arrivalMethod>Shuttle</arrivalMethod>
     <damage>true</damage>
-    <damageMaxDamagePercentagePerPart>0.8</damageMaxDamagePercentagePerPart>
+    <damageMaxPartsToDamage>6</damageMaxPartsToDamage>
+    <damageMaxDamagePercentagePerPart>0.9</damageMaxDamagePercentagePerPart>
   </PlayerTrade.Missions.Escape.LentColonistEscapeDef>
 
-	<PlayerTrade.Missions.Escape.LentColonistEscapeDef>
-		<defName>EscapeInjuredWildlife</defName>
-		<reason>{pawn} managed to flee {from}, but not without a brief run-in with the wildlife that left {pawn} mildly injured.</reason>
+  <PlayerTrade.Missions.Escape.LentColonistEscapeDef>
+    <defName>EscapeInjuredWildlife</defName>
+    <reason>{pawn} managed to flee {from}, but not without a brief run-in with the wildlife that left {pawn} mildly injured.</reason>
     <damage>true</damage>
     <damageMaxDamagePercentagePerPart>0.4</damageMaxDamagePercentagePerPart>
     <damageMaxBleedRate>2</damageMaxBleedRate>
-	</PlayerTrade.Missions.Escape.LentColonistEscapeDef>
+  </PlayerTrade.Missions.Escape.LentColonistEscapeDef>
 
-	<PlayerTrade.Missions.Escape.LentColonistEscapeDef>
-		<defName>EscapeInjuredPirates</defName>
-		<reason>{pawn} managed to flee {from}, but not without a brief run-in a group of pirates that left {pawn} injured.</reason>
+  <PlayerTrade.Missions.Escape.LentColonistEscapeDef>
+    <defName>EscapeInjuredPirates</defName>
+    <reason>{pawn} managed to flee {from}, but not without a brief run-in a group of pirates that left {pawn} injured.</reason>
     <damage>true</damage>
-	</PlayerTrade.Missions.Escape.LentColonistEscapeDef>
+  </PlayerTrade.Missions.Escape.LentColonistEscapeDef>
 
-	<PlayerTrade.Missions.Escape.LentColonistEscapeDef>
-		<defName>EscapeMugged</defName>
-		<reason>{pawn} managed to flee {from}, but not without a run-in with a group of pirates. They robbed everything {pawn} had.</reason>
+  <PlayerTrade.Missions.Escape.LentColonistEscapeDef>
+    <defName>EscapeMugged</defName>
+    <reason>{pawn} managed to flee {from}, but not without a run-in with a group of pirates. They robbed everything {pawn} had.</reason>
     <mugged>true</mugged>
     <damage>true</damage>
     <damageMaxPartsToDamage>1</damageMaxPartsToDamage>
     <damageMaxDamagePercentagePerPart>0.4</damageMaxDamagePercentagePerPart>
     <damageBlunt>true</damageBlunt>
-	</PlayerTrade.Missions.Escape.LentColonistEscapeDef>
+  </PlayerTrade.Missions.Escape.LentColonistEscapeDef>
 
-	<PlayerTrade.Missions.Escape.LentColonistEscapeDef>
-		<defName>EscapeDazed</defName>
-		<reason>{pawn} managed to safely flee {from}, however the ordeal has left them mentally shaken.</reason>
+  <PlayerTrade.Missions.Escape.LentColonistEscapeDef>
+    <defName>EscapeDazed</defName>
+    <reason>{pawn} managed to safely flee {from}, however the ordeal has left them mentally shaken.</reason>
     <mentalState>Wander_OwnRoom</mentalState>
     <fallbackMentalState>Wander_Sad</fallbackMentalState>
-	</PlayerTrade.Missions.Escape.LentColonistEscapeDef>
+  </PlayerTrade.Missions.Escape.LentColonistEscapeDef>
 
   <PlayerTrade.Missions.Escape.LentColonistEscapeDef>
     <defName>EscapeStarving</defName>
