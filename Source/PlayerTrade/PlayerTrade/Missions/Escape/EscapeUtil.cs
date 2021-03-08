@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using RimWorld;
-using RimWorld.Planet;
 using UnityEngine;
 using Verse;
 
-namespace PlayerTrade.Labor
+namespace PlayerTrade.Missions.Escape
 {
     public static class EscapeUtil
     {
@@ -89,7 +87,7 @@ namespace PlayerTrade.Labor
                 }
             }
 
-            LaborOffer offer = pawn.FindLaborOffer();
+            MissionOffer offer = pawn.FindLaborOffer();
             if (offer == null)
                 Log.Warn("Escaped pawn not associated with a labor offer!");
             string from = offer == null ? "Unknown" : offer.From;

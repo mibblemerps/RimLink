@@ -24,6 +24,16 @@ namespace TradeServer
             if (!Storage.ContainsKey(client))
                 Storage.Add(client, new List<Packet>());
 
+            if (packet is PacketForPlayer forPlayerPacket)
+            {
+                // Try to find duplicate packet to attempt to merge with
+                if (Storage[client].FirstOrDefault(p => p.GetType() == packet.GetType()) is PacketForPlayer sameType)
+                {
+                    if (forPlayerPacket.MergeWithExistingPacket(sameType))
+                        return; // Packets merged
+                }
+            }
+
             if (Storage[client].Count >= MaxPacketsStoredPerPlayer)
             {
                 Log.Warn($"Player ({client}) has exceeded their maximum queuable packets ({MaxPacketsStoredPerPlayer})! Further packets will be thrown out.");

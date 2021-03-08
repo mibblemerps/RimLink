@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using PlayerTrade.Anticheat;
-using PlayerTrade.Labor;
 using PlayerTrade.Mail;
+using PlayerTrade.Missions;
 using PlayerTrade.Net;
 using PlayerTrade.Raids;
 using PlayerTrade.Trade;
@@ -18,10 +18,6 @@ namespace PlayerTrade
         private const int MaxReconnectTime = 30;
         public const float UpdateInterval = 2f;
 
-        /// <summary>
-        /// The last known instance of the RimLink comp. This should never be used for normally accessing RimLink (use <see cref="Find"/> instead).<br />
-        /// This is used for the shutdown procedure.
-        /// </summary>
         public static RimLinkComp Instance;
 
         /// <summary>
@@ -41,13 +37,15 @@ namespace PlayerTrade
         public List<Player> RememberedPlayers;
 
         public List<BountyRaid> RaidsPending = new List<BountyRaid>();
-        public List<LaborOffer> ActiveLaborOffers = new List<LaborOffer>();
+        public List<MissionOffer> Missions = new List<MissionOffer>();
         public List<Pawn> EscapingLentColonists = new List<Pawn>();
 
         /// <summary>
         /// Player factions. GUID -> Faction
         /// </summary>
         public Dictionary<string, Faction> PlayerFactions = new Dictionary<string, Faction>();
+
+        public float QueuedResearch;
 
         private List<string> _tmpPlayerFactionGuids;
         private List<Faction> _tmpPlayerFactions;
@@ -115,8 +113,8 @@ namespace PlayerTrade
                 RememberedPlayers = new List<Player>();
             if (RaidsPending == null)
                 RaidsPending = new List<BountyRaid>();
-            if (ActiveLaborOffers == null)
-                ActiveLaborOffers = new List<LaborOffer>();
+            if (Missions == null)
+                Missions = new List<MissionOffer>();
             if (PlayerFactions == null)
                 PlayerFactions = new Dictionary<string, Faction>();
             if (EscapingLentColonists == null)
@@ -242,6 +240,7 @@ namespace PlayerTrade
                 var comp = escapingLentColonist.TryGetComp<LentColonistComp>();
                 comp.TryEscape();
             }
+
         }
 
         public override void GameComponentTick()
@@ -293,10 +292,11 @@ namespace PlayerTrade
             Scribe_Values.Look(ref Secret, "secret");
             Scribe_Collections.Look(ref RememberedPlayers, "players", LookMode.Deep);
             Scribe_Collections.Look(ref RaidsPending, "raids_pending");
-            Scribe_Collections.Look(ref ActiveLaborOffers, "active_labor_offers", LookMode.Deep);
+            Scribe_Collections.Look(ref Missions, "missions", LookMode.Deep);
             Scribe_Collections.Look(ref EscapingLentColonists, "escaping_lent_colonists", LookMode.Reference);
             Scribe_Collections.Look(ref PlayerFactions, "player_factions", LookMode.Value, LookMode.Reference, ref _tmpPlayerFactionGuids, ref _tmpPlayerFactions);
             Scribe_Values.Look(ref Anticheat, "anticheat", false, true);
+            Scribe_Values.Look(ref QueuedResearch, "queued_research");
         }
 
         /// <summary>
@@ -320,7 +320,7 @@ namespace PlayerTrade
                 if (letter is ChoiceLetter_TradeOffer tradeOfferLetter && tradeOfferLetter.Offer == null)
                     Verse.Find.LetterStack.RemoveLetter(letter);
 
-                if (letter is ChoiceLetter_LaborOffer laborOfferLetter && laborOfferLetter.LaborOffer == null)
+                if (letter is ChoiceLetter_LaborOffer laborOfferLetter && laborOfferLetter.MissionOffer == null)
                     Verse.Find.LetterStack.RemoveLetter(letter);
             }
         }

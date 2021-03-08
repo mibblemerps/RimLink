@@ -1,7 +1,6 @@
-﻿using RimWorld;
-using Verse;
+﻿using Verse;
 
-namespace PlayerTrade.Labor
+namespace PlayerTrade.Missions.Escape
 {
     public class LentColonistEscapeDef : Def
     {

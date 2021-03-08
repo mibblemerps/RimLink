@@ -5,7 +5,6 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using HarmonyLib;
-using PlayerTrade.Labor;
 using PlayerTrade.Net;
 using RimWorld;
 using UnityEngine;
@@ -25,7 +24,7 @@ namespace PlayerTrade
         {
             get
             {
-                if (RimLinkComp.Instance.Client == null)
+                if (RimLinkComp.Instance == null || RimLinkComp.Instance.Client == null)
                     return false;
 
                 try

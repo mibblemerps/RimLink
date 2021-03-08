@@ -2,7 +2,7 @@
 using RimWorld.QuestGen;
 using Verse;
 
-namespace PlayerTrade.Labor
+namespace PlayerTrade.Missions.Quest
 {
     public class QuestNode_CleanupRemainingPawns : QuestNode
     {
@@ -16,7 +16,7 @@ namespace PlayerTrade.Labor
             QuestGen.quest.AddPart(new QuestPart_CleanupRemainingPawns
             {
                 Guid = guid.GetValue(slate),
-                Pawns = pawns.GetValue(slate)
+                Pawns = new List<Pawn>(pawns.GetValue(slate))
             });
         }
 

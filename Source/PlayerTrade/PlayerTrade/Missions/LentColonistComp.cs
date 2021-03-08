@@ -1,35 +1,36 @@
 ﻿using System.Collections.Generic;
-using PlayerTrade.Labor.Packets;
+using PlayerTrade.Missions.Packets;
 using RimWorld;
-using UnityEngine;
 using Verse;
 
-namespace PlayerTrade.Labor
+namespace PlayerTrade.Missions
 {
     public class LentColonistComp : ThingComp
     {
         public Pawn Pawn => (Pawn) parent;
 
-        public Faction HomeFaction => RimLinkComp.Instance.PlayerFactions.ContainsKey(LaborOffer.From)
-            ? RimLinkComp.Instance.PlayerFactions[LaborOffer.From]
+        public Faction HomeFaction => RimLinkComp.Instance.PlayerFactions.ContainsKey(MissionOffer.From)
+            ? RimLinkComp.Instance.PlayerFactions[MissionOffer.From]
             : null;
 
-        public LaborOffer LaborOffer;
+        public MissionOffer MissionOffer;
 
         public bool Leaving;
         public bool Arrested;
         public int TryEscapeHomeTick;
 
+        public bool DoingJointResearch;
+
         public override void PostDestroy(DestroyMode mode, Map previousMap)
         {
             base.PostDestroy(mode, previousMap);
 
-            if (LaborOffer == null)
+            if (MissionOffer == null)
                 return;
 
             if (mode == DestroyMode.KillFinalize)
             {
-                LaborOffer.Notify_LentColonistEvent(Pawn, PacketLentColonistUpdate.ColonistEvent.Dead);
+                MissionOffer.Notify_LentColonistEvent(Pawn, PacketLentColonistUpdate.ColonistEvent.Dead);
             }
         }
 
@@ -37,7 +38,7 @@ namespace PlayerTrade.Labor
         {
             base.CompTick();
 
-            if (LaborOffer == null)
+            if (MissionOffer == null)
                 return;
 
             // Is arrested
@@ -46,7 +47,7 @@ namespace PlayerTrade.Labor
                 if (!Arrested)
                 {
                     // First we're hearing of colonist being arrested
-                    LaborOffer.Notify_LentColonistEvent(Pawn, PacketLentColonistUpdate.ColonistEvent.Imprisoned);
+                    MissionOffer.Notify_LentColonistEvent(Pawn, PacketLentColonistUpdate.ColonistEvent.Imprisoned);
                 }
 
                 Arrested = true;
@@ -73,7 +74,7 @@ namespace PlayerTrade.Labor
             // Set a time the colonist will try to "escape" home
             TryEscapeHomeTick = Find.TickManager.TicksGame + 1800;
             RimLinkComp.Instance.EscapingLentColonists.Add(Pawn);
-            LaborOffer.Notify_LentColonistEvent(Pawn, PacketLentColonistUpdate.ColonistEvent.Escaped);
+            MissionOffer.Notify_LentColonistEvent(Pawn, PacketLentColonistUpdate.ColonistEvent.Escaped);
         }
 
         public void TryEscape()
@@ -83,11 +84,11 @@ namespace PlayerTrade.Labor
                 TryEscapeHomeTick = 0;
 
                 if (!Pawn.IsPrisoner && !Pawn.Spawned &&
-                    RimLinkComp.Instance.PlayerFactions.ContainsKey(LaborOffer.From) && Pawn.Faction == RimLinkComp.Instance.PlayerFactions[LaborOffer.From])
+                    RimLinkComp.Instance.PlayerFactions.ContainsKey(MissionOffer.From) && Pawn.Faction == RimLinkComp.Instance.PlayerFactions[MissionOffer.From])
                 {
                     // Colonist meets condition to "escape home"
                     Log.Message($"{Pawn} escaped home.");
-                    LaborOffer.ReturnColonists(new List<Pawn> { Pawn }, true);
+                    MissionOffer.ReturnColonists(new List<Pawn> { Pawn }, false, true);
                 }
                 else
                 {
@@ -97,7 +98,7 @@ namespace PlayerTrade.Labor
             }
         }
 
-        public void Notify_FailedToBeReturned(Quest quest)
+        public void Notify_FailedToBeReturned(RimWorld.Quest quest)
         {
             Leaving = true;
 
@@ -116,10 +117,11 @@ namespace PlayerTrade.Labor
         public override void PostExposeData()
         {
             base.PostExposeData();
-            Scribe_References.Look(ref LaborOffer, "labor_offer");
+            Scribe_References.Look(ref MissionOffer, "labor_offer");
             Scribe_Values.Look(ref Leaving, "leaving");
             Scribe_Values.Look(ref Arrested, "arrested");
             Scribe_Values.Look(ref TryEscapeHomeTick, "escape_home_tick");
+            Scribe_Values.Look(ref DoingJointResearch, "doing_joint_research");
         }
     }
 }

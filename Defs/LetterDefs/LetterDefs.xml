@@ -8,9 +8,9 @@
 	</LetterDef>
 	
 	<LetterDef ParentName="CustomChoiceLetterBase">
-		<defName>LaborOffer</defName>
+		<defName>MissionOffer</defName>
 		<color>(60, 140, 82)</color>
-		<letterClass>PlayerTrade.Labor.ChoiceLetter_LaborOffer</letterClass>
+		<letterClass>PlayerTrade.Missions.ChoiceLetter_MissionOffer</letterClass>
 	</LetterDef>
 	
 	<LetterDef>

@@ -1,18 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using PlayerTrade.Net;
 using PlayerTrade.Net.Packets;
 
-namespace PlayerTrade.Labor.Packets
+namespace PlayerTrade.Missions.Packets
 {
     [Packet]
     public class PacketReturnLentColonists : PacketForPlayer
     {
         public string Guid;
         public List<NetHuman> ReturnedColonists;
+        public bool MainGroup;
         public bool Escaped;
 
         public override bool ShouldQueue => true;
@@ -24,6 +21,7 @@ namespace PlayerTrade.Labor.Packets
             buffer.WriteInt(ReturnedColonists.Count);
             foreach (var colonist in ReturnedColonists)
                 buffer.WritePacketable(colonist);
+            buffer.WriteBoolean(MainGroup);
             buffer.WriteBoolean(Escaped);
         }
 
@@ -35,6 +33,7 @@ namespace PlayerTrade.Labor.Packets
             ReturnedColonists = new List<NetHuman>(returnedColonistCount);
             for (int i = 0; i < returnedColonistCount; i++)
                 ReturnedColonists.Add(buffer.ReadPacketable<NetHuman>());
+            MainGroup = buffer.ReadBoolean();
             Escaped = buffer.ReadBoolean();
         }
     }

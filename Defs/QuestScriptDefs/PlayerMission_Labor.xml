@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+
+	<QuestScriptDef>
+		<defName>PlayerMission_Labor</defName>
+		<isRootSpecial>true</isRootSpecial>
+		<autoAccept>true</autoAccept>
+		<questDescriptionAndNameRules>
+			<rulesStrings>
+				<li>questName->Lent Colonists From [from]</li>
+				<li>questName->Hired Labor From [from]</li>
+				<li>questName->Labor From [from]</li>
+				<li>questName(pawn_count==1)->Worker From [from]</li>
+				<li>questName(pawn_count==1)->Lent Colonist From [from]</li>
+				<li>questName(pawn_count==1)->Helper From [from]</li>
+				<li>questName(pawn_count==1)->Laborer From [from]</li>
+				<li>questName(pawn_count>=2)->Workers From [from]</li>
+				<li>questName(pawn_count>=2)->Lent Colonists From [from]</li>
+				<li>questName(pawn_count>=2)->Helpers From [from]</li>
+				<li>questName(pawn_count>=2)->Laborers From [from]</li>
+				
+				<li>questDescription(pawn_count==1)->[from] has lent you a colonist for [days] days.\n\n[bondInfo]</li>
+				<li>questDescription(pawn_count==2)->[from] has lent you [pawn_count] colonists for [days] days.\n\n[bondInfo]</li>
+				<li>bondInfo(bond>=1)->If they are not safely returned, you will not have your bond of [bond] silver returned.</li>
+				<li>bondInfo->No bond has been paid.</li>
+			</rulesStrings>
+		</questDescriptionAndNameRules>
+		
+		<root Class="QuestNode_Sequence">
+			<nodes>
+				<li Class="QuestNode_SubScript">
+					<def>PlayerMission_Base</def>
+				</li>
+        <li Class="QuestNode_AddMemoryThought">
+          <pawns>$pawns</pawns>
+          <def>OnDuty</def>
+        </li>
+			</nodes>
+		</root>
+	</QuestScriptDef>
+	
+</Defs>

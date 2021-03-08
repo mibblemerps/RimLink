@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+
+  <!-- The basic lend colonist mission -->
+  <PlayerTrade.Missions.PlayerMissionDef>
+    <defName>Labor</defName>
+    <label>Paid Labor</label>
+    <workerClass>PlayerTrade.Missions.MissionWorkers.LaborMissionWorker</workerClass>
+    <questScriptDefName>PlayerMission_Labor</questScriptDefName>
+    <configDialogClass>PlayerTrade.Missions.ConfigDialogs.LaborConfigDialog</configDialogClass>
+    <colonists>1~9999</colonists>
+  </PlayerTrade.Missions.PlayerMissionDef>
+
+  <PlayerTrade.Missions.PlayerMissionDef>
+    <defName>WorkExperience</defName>
+    <label>Work Experience</label>
+    <days>2~7</days>
+    <colonists>1~9999</colonists>
+  </PlayerTrade.Missions.PlayerMissionDef>
+
+  <PlayerTrade.Missions.PlayerMissionDef>
+    <defName>Research</defName>
+    <label>Research Program</label>
+    <workerClass>PlayerTrade.Missions.MissionWorkers.ResearchMissionWorker</workerClass>
+    <questScriptDefName>PlayerMission_Research</questScriptDefName>
+    <days>4~4</days>
+  </PlayerTrade.Missions.PlayerMissionDef>
+
+  <PlayerTrade.Missions.PlayerMissionDef>
+    <defName>DiplomaticMission</defName>
+    <label>Diplomatic Mission</label>
+    <days>2~7</days>
+    <colonists>1~1</colonists>
+  </PlayerTrade.Missions.PlayerMissionDef>
+
+  <PlayerTrade.Missions.PlayerMissionDef>
+    <defName>Holiday</defName>
+    <label>Cultural Holiday</label>
+    <days>1~14</days>
+    <colonists>1~9999</colonists>
+  </PlayerTrade.Missions.PlayerMissionDef>
+
+</Defs>

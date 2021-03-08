@@ -2,29 +2,7 @@
 <Defs>
 
 	<QuestScriptDef>
-		<defName>PlayerLentColonists</defName>
-		<isRootSpecial>true</isRootSpecial>
-		<autoAccept>true</autoAccept>
-		<questDescriptionAndNameRules>
-			<rulesStrings>
-				<li>questName->Lent Colonists From [from]</li>
-				<li>questName->Hired Labour From [from]</li>
-				<li>questName->Labor From [from]</li>
-				<li>questName(pawn_count==1)->Worker From [from]</li>
-				<li>questName(pawn_count==1)->Lent Colonist From [from]</li>
-				<li>questName(pawn_count==1)->Helper From [from]</li>
-				<li>questName(pawn_count==1)->Laborer From [from]</li>
-				<li>questName(pawn_count>=2)->Workers From [from]</li>
-				<li>questName(pawn_count>=2)->Lent Colonists From [from]</li>
-				<li>questName(pawn_count>=2)->Helpers From [from]</li>
-				<li>questName(pawn_count>=2)->Laborers From [from]</li>
-				
-				<li>questDescription(pawn_count==1)->[from] has lent you a colonist for [days] days.\n\n[bondInfo]</li>
-				<li>questDescription(pawn_count==2)->[from] has lent you [pawn_count] colonists for [days] days.\n\n[bondInfo]</li>
-				<li>bondInfo(bond>=1)->If they are not safely returned, you will not have your bond of [bond] silver returned.</li>
-				<li>bondInfo->No bond has been paid.</li>
-			</rulesStrings>
-		</questDescriptionAndNameRules>
+		<defName>PlayerMission_Base</defName>
 		
 		<root Class="QuestNode_Sequence">
 			<nodes>
@@ -65,11 +43,6 @@
 								<pawns>$pawns</pawns>
 								<areHelpers>true</areHelpers>
 							</li>
-							<!-- All lent colonists get on duty thought -->
-							<li Class="QuestNode_AddMemoryThought">
-								<pawns>$pawns</pawns>
-								<def>OnDuty</def>
-							</li>
 							
 							<!-- Shuttle leave -->
 							<li Class="QuestNode_ShuttleLeaveDelay">
@@ -89,7 +62,7 @@
 								<inSignal>shuttle.SentSatisfied</inSignal>
 								<node Class="QuestNode_Sequence">
 									<nodes>
-										<li Class="PlayerTrade.Labor.QuestNode_ReturnColonists">
+										<li Class="PlayerTrade.Missions.Quest.QuestNode_ReturnColonists">
 											<guid>$guid</guid>
 											<shuttle>$shuttle</shuttle>
 										</li>
@@ -110,7 +83,7 @@
 								<inSignal>shuttle.SentUnsatisfied</inSignal>
 								<node Class="QuestNode_Sequence">
 									<nodes>
-										<li Class="PlayerTrade.Labor.QuestNode_ReturnColonists">
+										<li Class="PlayerTrade.Missions.Quest.QuestNode_ReturnColonists">
 											<guid>$guid</guid>
 											<shuttle>$shuttle</shuttle>
 										</li>
@@ -122,7 +95,7 @@
 							</li>
 							
 							<!-- Cleanup any left behind pawns -->
-							<li Class="PlayerTrade.Labor.QuestNode_CleanupRemainingPawns">
+							<li Class="PlayerTrade.Missions.Quest.QuestNode_CleanupRemainingPawns">
 								<guid>$guid</guid>
 								<pawns>$pawns</pawns>
 							</li>

@@ -1,44 +1,69 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using PlayerTrade.Labor.Packets;
+using PlayerTrade.Missions.MissionWorkers;
+using PlayerTrade.Missions.Packets;
 using PlayerTrade.Net;
 using PlayerTrade.Net.Packets;
+using PlayerTrade.Util;
 using RimWorld;
+using UnityEngine;
 using Verse;
 
-namespace PlayerTrade.Labor
+namespace PlayerTrade.Missions
 {
-    public class LaborWorker
+    public class MissionWorker
     {
         public Client Client;
-        public List<LaborOffer> Offers = new List<LaborOffer>();
+        public List<MissionOffer> Offers => RimLinkComp.Instance.Missions;
 
-        public LaborWorker(Client client)
+        private float _lastResearchUpdate;
+
+        public MissionWorker(Client client)
         {
             Client = client;
 
             Client.PacketReceived += OnPacketReceived;
         }
 
+        public void Update()
+        {
+            foreach (MissionOffer offer in Offers)
+            {
+                if (offer.Active)
+                    offer.Update();
+            }
+
+            if (Time.realtimeSinceStartup > _lastResearchUpdate + ResearchMissionWorker.ResearchUpdateInterval)
+            {
+                _lastResearchUpdate = Time.realtimeSinceStartup;
+
+                ResearchManager research = Find.ResearchManager;
+                if (RimLinkComp.Instance.QueuedResearch > 0f && research.currentProj != null)
+                {
+                    // Do research
+                    RimLinkComp.Instance.QueuedResearch -= ResearchUtil.AddResearchPoints(RimLinkComp.Instance.QueuedResearch);
+                }
+            }
+        }
+
         private void OnPacketReceived(object sender, PacketReceivedEventArgs e)
         {
-            if (e.Packet is PacketLaborOffer offerPacket)
+            if (e.Packet is PacketMissionOffer offerPacket)
             {
-                LaborOffer offer = LaborOffer.FromPacket(offerPacket);
-                Log.Message($"Received labor offer {offer.Guid} from {Client.GetName(offer.From)}");
-                LaborUtil.PresentLendColonistOffer(offer);
+                MissionOffer offer = MissionOffer.FromPacket(offerPacket);
+                Offers.Add(offer);
+                Log.Message($"Received mission offer {offer.Guid} from {Client.GetName(offer.From)}");
+                offer.MissionWorker.OfferReceived();
             }
-            else if (e.Packet is PacketAcceptLaborOffer acceptPacket)
+            else if (e.Packet is PacketAcceptMissionOffer acceptPacket)
             {
                 HandleAcceptOfferPacket(acceptPacket);
             }
-            else if (e.Packet is PacketConfirmLaborOffer confirmPacket)
+            else if (e.Packet is PacketConfirmMissionOffer confirmPacket)
             {
                 // (this is handled elsewhere via await packet)
-                Log.Message("Received labor offer confirmation: " + confirmPacket.Guid);
+                Log.Message("Received mission offer confirmation: " + confirmPacket.Guid);
             }
             else if (e.Packet is PacketReturnLentColonists returnPacket)
             {
@@ -48,11 +73,16 @@ namespace PlayerTrade.Labor
             {
                 HandleColonistUpdatePacket(updatePacket);
             }
+            else if (e.Packet is PacketResearch researchPacket)
+            {
+                // Queue research work
+                RimLinkComp.Instance.QueuedResearch += researchPacket.Research;
+            }
         }
 
-        private void HandleAcceptOfferPacket(PacketAcceptLaborOffer packet)
+        private void HandleAcceptOfferPacket(PacketAcceptMissionOffer packet)
         {
-            LaborOffer offer = Offers.FirstOrDefault(o => o.Guid == packet.Guid);
+            MissionOffer offer = Offers.FirstOrDefault(o => o.Guid == packet.Guid);
             if (offer == null)
             {
                 Log.Warn($"Player accepted to accept a non-existent offer ({packet.Guid}).");
@@ -62,18 +92,18 @@ namespace PlayerTrade.Labor
             if (!packet.Accept)
             {
                 // Other player rejected
-                Find.LetterStack.ReceiveLetter($"Labor Offer Rejected ({RimLinkComp.Find().Client.GetName(offer.For)})", "Your offer to lend colonists has been rejected.", LetterDefOf.NegativeEvent);
+                Find.LetterStack.ReceiveLetter($"{offer.MissionDef.LabelCap} Rejected ({RimLinkComp.Find().Client.GetName(offer.For)})", "Your offer has been rejected.", LetterDefOf.NegativeEvent);
                 return;
             }
 
-            bool fulfill = offer.LenderCanStillFulfill();
+            bool fulfill = offer.CanFulfillAsSender;
 
-            Log.Message($"Received acceptance of labor offer {offer.Guid}. Fulfill = {fulfill}");
+            Log.Message($"Received acceptance of mission offer {offer.Guid}. Fulfill = {fulfill}");
 
             // Add as active labor offer
-            RimLinkComp.Find().ActiveLaborOffers.Add(offer);
+            RimLinkComp.Instance.Missions.Add(offer);
 
-            Client.SendPacket(new PacketConfirmLaborOffer
+            Client.SendPacket(new PacketConfirmMissionOffer
             {
                 For = offer.For,
                 Guid = offer.Guid,
@@ -83,18 +113,18 @@ namespace PlayerTrade.Labor
             if (fulfill)
             {
                 offer.FulfillAsSender(Find.CurrentMap);
-                Find.LetterStack.ReceiveLetter($"Labor Offer Accepted ({RimLinkComp.Find().Client.GetName(offer.For)})", $"Your offer to lend colonists has been accepted.\n\n" +
-                    $"Your {(offer.Colonists.Count == 1 ? "colonist" : "colonists")} should (hopefully) be returned in {(offer.Days).ToString().Colorize(ColoredText.DateTimeColor)} days (other colonies time).", LetterDefOf.PositiveEvent);
+                Find.LetterStack.ReceiveLetter($"{offer.MissionDef.LabelCap} Offer Accepted ({offer.For.GuidToName()})", $"Your offer to lend colonists has been accepted.\n\n" +
+                    $"Your {(offer.Colonists.Count == 1 ? "colonist" : "colonists")} should be returned in {offer.Days.ToString().Colorize(ColoredText.DateTimeColor)} day{offer.Days.MaybeS()}.", LetterDefOf.PositiveEvent);
             }
             else
             {
-                Find.LetterStack.ReceiveLetter($"Labor Offer Failed ({RimLinkComp.Find().Client.GetName(offer.For)})", "The pawns offered are not in the same condition as when they were initially offered.", LetterDefOf.NegativeEvent);
+                Find.LetterStack.ReceiveLetter($"{offer.MissionDef.LabelCap} Offer Aborted ({RimLinkComp.Find().Client.GetName(offer.For)})", "The colonists offered are not in the same condition as when they were initially offered.", LetterDefOf.NegativeEvent);
             }
         }
 
         private void HandleReturnLentColonistsPacket(PacketReturnLentColonists packet)
         {
-            LaborOffer offer = RimLinkComp.Find().ActiveLaborOffers.FirstOrDefault(o => o.Guid == packet.Guid);
+            MissionOffer offer = RimLinkComp.Find().Missions.FirstOrDefault(o => o.Guid == packet.Guid);
             if (offer == null)
             {
                 Log.Warn("Attempt to return colonists for an unknown labor offer! " + packet.Guid);
@@ -108,8 +138,8 @@ namespace PlayerTrade.Labor
         private void HandleColonistUpdatePacket(PacketLentColonistUpdate packet)
         {
             Pawn pawn = null;
-            LaborOffer activeOffer = null;
-            foreach (LaborOffer offer in Client.RimLinkComp.ActiveLaborOffers)
+            MissionOffer activeOffer = null;
+            foreach (MissionOffer offer in Client.RimLinkComp.Missions)
             {
                 foreach (Pawn p in offer.Colonists)
                 {
@@ -156,6 +186,11 @@ namespace PlayerTrade.Labor
                         LetterDefOf.NeutralEvent);
                     break;
             }
+        }
+
+        public void ExposeData()
+        {
+
         }
     }
 }

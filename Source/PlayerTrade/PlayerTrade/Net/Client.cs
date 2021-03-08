@@ -6,9 +6,9 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 using PlayerTrade.Chat;
-using PlayerTrade.Labor;
 using PlayerTrade.Mail;
 using PlayerTrade.Mechanoids;
+using PlayerTrade.Missions;
 using PlayerTrade.Net.Packets;
 using PlayerTrade.Raids;
 using PlayerTrade.Trade;
@@ -34,7 +34,7 @@ namespace PlayerTrade.Net
 
         public RimLinkComp RimLinkComp;
         public TradeWorker Trade;
-        public LaborWorker Labor;
+        public MissionWorker Mission;
         public ChatWorker Chat;
 
         public ClientState State = ClientState.Disconnected;
@@ -65,7 +65,7 @@ namespace PlayerTrade.Net
             // Workers
             Trade = new TradeWorker(this);
             new RaidWorker(this);
-            Labor = new LaborWorker(this);
+            Mission = new MissionWorker(this);
             new MailWorker(this);
             Chat = new ChatWorker(this);
             new MechanoidWorker(this);
@@ -173,6 +173,8 @@ namespace PlayerTrade.Net
                 Log.Message("Connection timed out");
                 Disconnect();
             }
+
+            Mission.Update();
         }
 
         public void MarkDirty(bool sendPacket = true, bool mapIndependent = false)
@@ -285,10 +287,19 @@ namespace PlayerTrade.Net
             while (_awaitingPackets.Count > 0)
             {
                 var awaiting = _awaitingPackets.First();
-                if (awaiting.Predicate(e.Packet))
+                try
                 {
-                    awaiting.CompletionSource?.TrySetResult(e.Packet);
+                    if (awaiting.Predicate(e.Packet))
+                    {
+                        awaiting.CompletionSource?.TrySetResult(e.Packet);
+                        _awaitingPackets.Remove(awaiting);
+                    }
+                }
+                catch (Exception awaitException)
+                {
+                    Log.Error("Exception processing awaited packet!", awaitException);
                     _awaitingPackets.Remove(awaiting);
+                    Disconnect();
                 }
             }
 

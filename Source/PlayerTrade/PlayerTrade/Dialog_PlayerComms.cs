@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using PlayerTrade.Labor;
 using PlayerTrade.Mail;
 using PlayerTrade.Mechanoids.Designer;
+using PlayerTrade.Missions;
 using PlayerTrade.Net;
 using PlayerTrade.Raids;
 using PlayerTrade.Trade;
@@ -23,6 +23,7 @@ namespace PlayerTrade
         private Player _self;
 
         private static ResearchProjectDef MechRelationsResearchDef;
+        private static PlayerMissionDef LaborMissionDef;
 
         public Dialog_PlayerComms(Pawn negotiator, Player player) : base(RootNodeForPlayer(negotiator, player), true)
         {
@@ -32,6 +33,8 @@ namespace PlayerTrade
             // Mark dirty so we can have up-to-date info about ourselves in the comms window
             RimLinkComp.Instance.Client.MarkDirty();
             _self = RimLinkComp.Instance.Client.Player;
+
+            LaborMissionDef = DefDatabase<PlayerMissionDef>.GetNamed("Labor");
 
             forcePause = true;
         }
@@ -80,9 +83,6 @@ namespace PlayerTrade
                 sb.Append("Offline".Colorize(Color.gray));
             }
 
-            if (Prefs.DevMode)
-                sb.Append("\nGuid: " + player.Guid);
-
             return sb.ToString();
         }
 
@@ -91,6 +91,24 @@ namespace PlayerTrade
             bool canDoSocial = !negotiator.skills.GetSkill(SkillDefOf.Social).TotallyDisabled;
 
             var node = new DiaNode($"{negotiator.NameShortColored} greets {player.Name.Colorize(ColoredText.FactionColor_Neutral)} over the comms console.");
+
+            var missionOption = new DiaOption("Do Mission")
+            {
+                resolveTree = true,
+                action = () => { Find.WindowStack.Add(new Dialog_MissionSelect(player)); }
+            };
+            node.options.Add(missionOption);
+
+            var lendColonist = new DiaOption("Lend Colonist")
+            {
+                resolveTree = true,
+                action = () => { Find.WindowStack.Add(new Dialog_AddPawnsToMission(LaborMissionDef, player)); }
+            };
+            if (!MissionUtil.GetPawnsAvailableForMissions(LaborMissionDef).Any())
+                lendColonist.Disable("no lendable colonists");
+            if (!player.IsOnline)
+                lendColonist.Disable("offline");
+            node.options.Add(lendColonist);
 
             var letterOption = new DiaOption("Send Letter")
             {
@@ -129,19 +147,6 @@ namespace PlayerTrade
             if (!player.IsOnline)
                 tradeOption.Disable("offline");
             node.options.Add(tradeOption);
-
-            var lendColonist = new DiaOption("Lend Colonist")
-            {
-                resolveTree = true,
-                action = () => { Find.WindowStack.Add(new Dialog_LendColonist(player)); }
-            };
-            if (!Dialog_LendColonist.HasLendableColonist)
-                lendColonist.Disable("no lendable colonists");
-            if (!canDoSocial)
-                lendColonist.Disable("WorkTypeDisablesOption".Translate(SkillDefOf.Social.label));
-            if (!player.IsOnline)
-                lendColonist.Disable("offline");
-            node.options.Add(lendColonist);
 
             var closeOption = new DiaOption($"({"Disconnect".Translate()})") {resolveTree = true};
             node.options.Add(closeOption);

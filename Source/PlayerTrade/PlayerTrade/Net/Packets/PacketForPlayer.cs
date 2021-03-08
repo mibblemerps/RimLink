@@ -1,5 +1,6 @@
 ﻿namespace PlayerTrade.Net.Packets
 {
+    [Packet]
     public abstract class PacketForPlayer : Packet
     {
         public string For;
@@ -17,6 +18,17 @@
         public override void Read(PacketBuffer buffer)
         {
             For = buffer.ReadString();
+        }
+
+        /// <summary>
+        /// This is called on a new incoming packet if there is already a packet of this type queued for the same target player.<br />
+        /// This gives the chance for the new incoming packet to "merge" itself with the previous packet.
+        /// </summary>
+        /// <param name="packet">Existing packet</param>
+        /// <returns>Was merged in previous packet?</returns>
+        public virtual bool MergeWithExistingPacket(PacketForPlayer packet)
+        {
+            return false;
         }
     }
 }

@@ -34,6 +34,7 @@ namespace PlayerTrade.Net
             {
                 Log.Error($"Reached max packet send queue size ({SendQueueMaxSize}). Closing connection...");
                 Tcp.Close();
+                _sendQueue.Clear();
                 return;
             }
             
@@ -103,7 +104,15 @@ namespace PlayerTrade.Net
             while (_sendQueue.Count > 0)
             {
                 Packet packet = _sendQueue.Dequeue();
-                await SendPacketDirect(packet);
+                try
+                {
+                    await SendPacketDirect(packet);
+                }
+                catch (Exception e)
+                {
+                    Log.Error("Exception trying to send packet from send queue", e);
+                    Disconnect(false);
+                }
             }
 
             // Reset completion source so we know when new packets are queued
@@ -129,9 +138,8 @@ namespace PlayerTrade.Net
             // Try to send a disconnect packet. This is more a courtesy than anything, it just ensures the connection is immediately and cleanly closed on both ends.
             try
             {
-                await SendPacketDirect(new PacketDisconnect());
+                SendPacketDirect(new PacketDisconnect()).Wait();
             } catch (Exception) {}
-
             Tcp?.Close();
         }
 

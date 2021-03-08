@@ -1,13 +1,13 @@
 ﻿using PlayerTrade.Net;
 using PlayerTrade.Net.Packets;
 
-namespace PlayerTrade.Labor.Packets
+namespace PlayerTrade.Missions.Packets
 {
     [Packet]
-    public class PacketConfirmLaborOffer : PacketForPlayer
+    public class PacketAcceptMissionOffer : PacketForPlayer
     {
         public string Guid;
-        public bool Confirm;
+        public bool Accept;
 
         public override bool ShouldQueue => false;
 
@@ -15,14 +15,14 @@ namespace PlayerTrade.Labor.Packets
         {
             base.Write(buffer);
             buffer.WriteString(Guid);
-            buffer.WriteBoolean(Confirm);
+            buffer.WriteBoolean(Accept);
         }
 
         public override void Read(PacketBuffer buffer)
         {
             base.Read(buffer);
             Guid = buffer.ReadString();
-            Confirm = buffer.ReadBoolean();
+            Accept = buffer.ReadBoolean();
         }
     }
 }

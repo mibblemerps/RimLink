@@ -10,7 +10,7 @@
 						<compClass>PlayerTrade.PawnGuidThingComp</compClass>
 					</li>
 					<li>
-						<compClass>PlayerTrade.Labor.LentColonistComp</compClass>
+						<compClass>PlayerTrade.Missions.LentColonistComp</compClass>
 					</li>
                 </comps>
             </value>
@@ -22,7 +22,7 @@
 					<compClass>PlayerTrade.PawnGuidThingComp</compClass>
 				</li>
 				<li>
-					<compClass>PlayerTrade.Labor.LentColonistComp</compClass>
+					<compClass>PlayerTrade.Missions.LentColonistComp</compClass>
 				</li>
             </value>
         </match>

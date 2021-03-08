@@ -1,11 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using PlayerTrade.Missions.MissionWorkers;
 using PlayerTrade.Net;
 using PlayerTrade.Net.Packets;
 
-namespace PlayerTrade.Labor.Packets
+namespace PlayerTrade.Missions.Packets
 {
     [Packet]
-    public class PacketLaborOffer : PacketForPlayer
+    public class PacketMissionOffer : PacketForPlayer
     {
         public string Guid;
         public string From;
@@ -13,6 +15,10 @@ namespace PlayerTrade.Labor.Packets
         public int Bond;
         public float Days;
         public List<NetHuman> Colonists;
+        public string MissionDefName;
+
+        public string WorkerClassName;
+        public MissionWorkers.MissionWorker Worker;
 
         public override bool ShouldQueue => false;
 
@@ -28,6 +34,12 @@ namespace PlayerTrade.Labor.Packets
             buffer.WriteInt(Colonists.Count);
             foreach (var colonist in Colonists)
                 buffer.WritePacketable(colonist);
+
+            buffer.WriteString(MissionDefName);
+
+            buffer.WriteMarker("MissionWorker");
+            buffer.WriteString(WorkerClassName);
+            Worker.Write(buffer);
         }
 
         public override void Read(PacketBuffer buffer)
@@ -43,6 +55,14 @@ namespace PlayerTrade.Labor.Packets
             Colonists = new List<NetHuman>(colonistCount);
             for (int i = 0; i < colonistCount; i++)
                 Colonists.Add(buffer.ReadPacketable<NetHuman>());
+
+            MissionDefName = buffer.ReadString();
+
+            // We read worker very "manually" because it can be multiple types
+            buffer.ReadMarker("MissionWorker");
+            WorkerClassName = buffer.ReadString();
+            Worker = (MissionWorkers.MissionWorker) Activator.CreateInstance(Type.GetType(WorkerClassName));
+            Worker.Read(buffer);
         }
     }
 }

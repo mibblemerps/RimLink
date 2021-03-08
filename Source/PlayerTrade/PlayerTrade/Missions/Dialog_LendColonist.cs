@@ -1,13 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using PlayerTrade.Missions.MissionWorkers;
 using RimWorld;
 using UnityEngine;
 using Verse;
 
-namespace PlayerTrade.Labor
+namespace PlayerTrade.Missions
 {
     public class Dialog_LendColonist : Window
     {
@@ -86,7 +84,13 @@ namespace PlayerTrade.Labor
 
             if (Widgets.ButtonText(inRect.BottomPartPixels(35f).RightPart(0.25f), "Lend Colonist"))
             {
-                LaborUtil.SendOffer(FormOffer());
+                var worker = new LaborMissionWorker
+                {
+                    Bond = _bondAmount,
+                    Payment = _silverAmount
+                };
+                MissionUtil.SendMission(Player, DefDatabase<PlayerMissionDef>.GetNamed("Labor"), new List<Pawn>{ _selectedColonist }, worker, _daysToLend);
+
                 Messages.Message("Sent labor offer to " + Player.Name, MessageTypeDefOf.NeutralEvent, false);
                 Close();
             }
@@ -102,23 +106,6 @@ namespace PlayerTrade.Labor
                 //     continue;
                 yield return pawn;
             }
-        }
-
-        private LaborOffer FormOffer()
-        {
-            var offer = new LaborOffer
-            {
-                Guid = Guid.NewGuid().ToString(),
-                From = Player.Self().Guid,
-                For = Player.Guid,
-                Payment = _silverAmount,
-                Bond = _bondAmount,
-                Colonists = new List<Pawn>{_selectedColonist},
-                Days = _daysToLend,
-                Fresh = true,
-            };
-            offer.GenerateMarketValues();
-            return offer;
         }
     }
 }

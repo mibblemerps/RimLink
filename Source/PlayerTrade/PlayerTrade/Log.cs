@@ -11,9 +11,29 @@ namespace PlayerTrade
         public const int InnerExceptionNestLimit = 8;
 
         public static bool Enabled = true;
+        public static bool VerboseEnabled = true;
+
         public static bool RunningInRimWorld => RimLinkMod.Instance != null;
 
         private static int _innerExceptionCounter;
+
+        public static void Verbose(string message, bool ignoreLimit = false)
+        {
+            if (!Enabled || !VerboseEnabled) return;
+
+            if (RunningInRimWorld)
+            {
+                Verse.Log.Message("[RimLink] [Verbose] " + message, ignoreLimit);
+            }
+            else
+            {
+                Console.ForegroundColor = ConsoleColor.Gray;
+                Console.Write($"[{DateTime.Now}] [INFO] ");
+                Console.ForegroundColor = ConsoleColor.White;
+                Console.WriteLine(message);
+                Console.ResetColor();
+            }
+        }
 
         public static void Message(string message, bool ignoreLimit = false)
         {
@@ -21,7 +41,7 @@ namespace PlayerTrade
 
             if (RunningInRimWorld)
             {
-                Verse.Log.Message(message, ignoreLimit);
+                Verse.Log.Message("[RimLink] [Info] " + message, ignoreLimit);
             }
             else
             {
@@ -39,7 +59,7 @@ namespace PlayerTrade
 
             if (RunningInRimWorld)
             {
-                Verse.Log.Warning(message, ignoreLimit);
+                Verse.Log.Warning("[RimLink] [Warn] " + message, ignoreLimit);
             }
             else
             {
@@ -67,7 +87,7 @@ namespace PlayerTrade
 
             if (RunningInRimWorld)
             {
-                Verse.Log.Error(message, ignoreLimit);
+                Verse.Log.Error("[RimLink] [Error] " + message, ignoreLimit);
             }
             else
             {

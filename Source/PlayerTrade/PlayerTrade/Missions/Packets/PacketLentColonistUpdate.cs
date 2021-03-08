@@ -1,7 +1,7 @@
 ﻿using PlayerTrade.Net;
 using PlayerTrade.Net.Packets;
 
-namespace PlayerTrade.Labor.Packets
+namespace PlayerTrade.Missions.Packets
 {
     [Packet]
     public class PacketLentColonistUpdate : PacketForPlayer

@@ -136,6 +136,12 @@ namespace TradeServer
                             Log.Warn("Attempt to route packet to same client it was sent from. This isn't permitted.");
                             return;
                         }
+                        if (forPlayer.For == null)
+                        {
+                            Log.Error($"PacketForPlayer has no target player set. (for == null)");
+                            Disconnect();
+                            return;
+                        }
 
                         if (Program.Server.ServerSettings.LogPacketTraffic && !e.Packet.Attribute.HideFromLog)
                             Log.Message($"[Packet] {e.Packet.GetType().Name} {this} -> {forPlayer.For}");

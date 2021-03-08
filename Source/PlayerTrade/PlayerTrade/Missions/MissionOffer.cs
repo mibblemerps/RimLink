@@ -1,18 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using PlayerTrade.Labor.Packets;
+using PlayerTrade.Missions.Escape;
+using PlayerTrade.Missions.MissionWorkers;
+using PlayerTrade.Missions.Packets;
 using PlayerTrade.Net;
 using RimWorld;
-using RimWorld.QuestGen;
 using UnityEngine;
 using Verse;
+using Exception = System.Exception;
 
-namespace PlayerTrade.Labor
+namespace PlayerTrade.Missions
 {
-    public class LaborOffer : IExposable, ILoadReferenceable
+    public class MissionOffer : IExposable, ILoadReferenceable
     {
         public const float MarketValueVarianceAllowed = 50f;
 
@@ -21,20 +21,23 @@ namespace PlayerTrade.Labor
         /// <summary>List of colonists being offered to lend.</summary>
         public List<Pawn> Colonists;
         public float Days;
-        public int Payment;
-        public int Bond;
         public string From;
         public string For;
+
+        public int FinishTick;
+
+        public PlayerMissionDef MissionDef = DefDatabase<PlayerMissionDef>.GetNamed("Labor");
+
+        public MissionWorkers.MissionWorker MissionWorker
+        {
+            get => _missionWorker ?? (_missionWorker = MissionDef?.CreateWorker(this));
+            set => _missionWorker = value;
+        }
 
         /// <summary>
         /// Is a fresh labor offer? This will lose it's value when saved/loaded from disk, allowing labor offers to be invalidated when that happens.
         /// </summary>
         public bool Fresh;
-
-        /// <summary>
-        /// Used by the sender to store the market values of the pawnns at the time the offer was made.
-        /// </summary>
-        public Dictionary<Pawn, float> MarketValues = new Dictionary<Pawn, float>();
 
         /// <summary>
         /// A list to store any heirs. Tis is saved so the game can maintain a reference to them.
@@ -46,51 +49,87 @@ namespace PlayerTrade.Labor
         /// </summary>
         public List<Pawn> OriginalColonists = new List<Pawn>();
 
-        public int TotalAmountPayable => Payment + Bond;
+        /// <summary>
+        /// List of pawns that have been returned.
+        /// </summary>
+        public List<Pawn> ReturnedColonists = new List<Pawn>();
 
-        public string GenerateOfferText()
+        public bool Active => FinishTick > 0 && Find.TickManager.TicksGame < FinishTick;
+
+        public bool CanFulfillAsSender => MissionWorker.CanFulfillAsSender();
+        public bool CanFulfillAsReceiver => MissionWorker.CanFulfillAsReceiver();
+
+        private MissionWorkers.MissionWorker _missionWorker;
+
+        public void OfferSend()
         {
-            Client client = RimLinkComp.Find().Client;
-
-            var sb = new StringBuilder();
-
-            sb.AppendLine($"{client.GetName(From).Colorize(ColoredText.FactionColor_Neutral)} has made an offer to lend you {(Colonists.Count == 1 ? "a colonist" : $"{Colonists.Count} colonists")} for {Days} days.\n");
-            sb.AppendLine($"They are requesting {Payment} silver as payment.");
-            if (Bond > 0)
-                sb.AppendLine($"\nThey are requiring a bond of {Bond} silver. This will be paid and then returned to you if you return the colonists safely.");
-
-            sb.AppendLine();
-            foreach (Pawn pawn in Colonists)
-                sb.AppendLine($"    {pawn.NameFullColored}, {pawn.story.TitleCap}");
-
-            sb.AppendLine($"\nAmount payable now: {("$" + TotalAmountPayable).Colorize(ColoredText.CurrencyColor)}");
-
-            return sb.ToString();
+            MissionWorker.OfferSend();
         }
 
-        public bool CanFulfill()
+        public async void Accept()
         {
-            return TradeUtility.ColonyHasEnoughSilver(Find.CurrentMap, TotalAmountPayable);
-        }
+            if (!Fresh)
+                return;
+            Fresh = false;
+            RemoveOfferLetter();
 
-        public bool LenderCanStillFulfill()
-        {
-            foreach (Pawn pawn in Colonists)
+            Client client = RimLinkComp.Instance.Client;
+
+            // Send acceptance
+            client.SendPacket(new PacketAcceptMissionOffer
             {
-                float intendedMarketValue = MarketValues[pawn];
-                if (Mathf.Abs(pawn.MarketValue - intendedMarketValue) > MarketValueVarianceAllowed)
+                For = From,
+                Accept = true,
+                Guid = Guid
+            });
+
+            // Await confirmation of deal
+            Log.Message($"Awaiting confirmation of labor offer {Guid}...");
+            PacketConfirmMissionOffer packetConfirm = null; // todo: evaluate the actual need of this try/catch, added just incase for testing this annoying bug
+            try
+            {
+                packetConfirm = (PacketConfirmMissionOffer) await client.AwaitPacket(p =>
+                {
+                    if (p is PacketConfirmMissionOffer pc)
+                        return pc.Guid == Guid;
                     return false;
+                }, 3000);
+            }
+            catch (Exception e)
+            {
+                Log.Error("Exception awaiting offer confirm packet", e);
+                return;
             }
 
-            return true;
+            Log.Message($"Labor offer {Guid} confirmed");
+
+            if (packetConfirm.Confirm)
+            {
+                FulfillAsReceiver(Find.AnyPlayerHomeMap);
+            }
+            else
+            {
+                Find.LetterStack.ReceiveLetter($"Mission Offer Aborted ({From.GuidToName()})",
+                    "The offer was aborted.\n" +
+                    "The other parties pawns were not in the same condition they were when the offer was put forward.",
+                    LetterDefOf.NeutralEvent);
+            }
         }
 
-        public void GenerateMarketValues()
+        public void Reject()
         {
-            foreach (Pawn pawn in Colonists)
+            if (!Fresh)
+                return;
+            Fresh = false;
+            RemoveOfferLetter();
+
+            // Send rejection
+            RimLinkComp.Instance.Client.SendPacket(new PacketAcceptMissionOffer
             {
-                MarketValues.Add(pawn, pawn.MarketValue);
-            }
+                For = From,
+                Accept = false, // reject
+                Guid = Guid
+            });
         }
 
         public void FulfillAsSender(Map map)
@@ -102,34 +141,22 @@ namespace PlayerTrade.Labor
                 colonist.DeSpawn();
 
             // Remember original colonists
-            OriginalColonists = new List<Pawn>(Colonists);
+            OriginalColonists.Clear();
+            OriginalColonists.AddRange(Colonists);
 
-            if (Payment > 0)
-            {
-                // Give payment
-                Thing paymentThing = ThingMaker.MakeThing(ThingDefOf.Silver);
-                paymentThing.stackCount = Payment;
-                TradeUtility.SpawnDropPod(DropCellFinder.TradeDropSpot(map), map, paymentThing);
-            }
-            else if (Payment < 0)
-            {
-                // Take payment
-                TradeUtility.LaunchSilver(map, -Payment);
-            }
+            // Worker handles any payments or whatever
+            MissionWorker.FulfillAsSender(map);
         }
 
         public void FulfillAsReceiver(Map map)
         {
             Log.Message($"Fulfilling labor offer {Guid} as receiver (giving pawns making payment)");
 
-            // Spawn pawns
+            // Setup pawns
             foreach (Pawn pawn in Colonists)
             {
-                // Spawn pawn
-                TradeUtility.SpawnDropPod(DropCellFinder.TradeDropSpot(map), map, pawn);
-
                 // Set labor offer in comp
-                pawn.TryGetComp<LentColonistComp>().LaborOffer = this;
+                pawn.TryGetComp<LentColonistComp>().MissionOffer = this;
 
                 // Store heir
                 Pawn heir = pawn.royalty?.GetHeir(Faction.Empire);
@@ -137,48 +164,25 @@ namespace PlayerTrade.Labor
                     Heirs.Add(heir);
             }
 
-            if (TotalAmountPayable < 0)
-            {
-                // Give payment
-                Thing paymentThing = ThingMaker.MakeThing(ThingDefOf.Silver);
-                paymentThing.stackCount = Payment;
-                TradeUtility.SpawnDropPod(DropCellFinder.TradeDropSpot(map), map, paymentThing);
-            }
-            else if (TotalAmountPayable > 0)
-            {
-                // Take payment
-                TradeUtility.LaunchSilver(map, TotalAmountPayable);
-            }
+            // Set finish tick. This also marks the offer as "active"
+            FinishTick = Mathf.RoundToInt(Find.TickManager.TicksGame + Days * 60000);
 
-            List<Thing> bondThings = null;
-            if (Bond > 0)
+            // Worker handles mission specific stuff, and the spawning in of the pawns
+            Log.Verbose($"Passing off to mission worker to fulfill as receiver. {MissionWorker.GetType().Name}");
+            try
             {
-                bondThings = new List<Thing>();
-                var bondThing = ThingMaker.MakeThing(ThingDefOf.Silver);
-                bondThing.stackCount = Bond;
-                bondThings.Add(bondThing);
+                MissionWorker.FulfillAsReceiver(map);
             }
-
-            // Create quest
-            var slate = new Slate();
-            slate.Set("guid", Guid);
-            slate.Set("from", RimLinkComp.Find().Client.GetName(From));
-            slate.Set("days", Days);
-            slate.Set("shuttle_arrival_ticks", Mathf.RoundToInt(Mathf.Max(0, (Days - 0.5f) * 60000f))); // shuttle arrives 12 hours early
-            slate.Set("shuttle_leave_ticks", Mathf.RoundToInt(Days * 60000f));
-            slate.Set("pawns", Colonists);
-            slate.Set("pawn_count", Colonists.Count);
-            slate.Set("bond", Bond);
-            slate.Set("bond_things", bondThings);
-            slate.Set("home_faction", RimLinkComp.Instance.PlayerFactions[From]);
-            Quest quest = QuestGen.Generate(DefDatabase<QuestScriptDef>.GetNamed("PlayerLentColonists"), slate);
-            Find.QuestManager.Add(quest);
+            catch (Exception e)
+            {
+                Log.Error("Exception fulfilling mission as receiver.", e);
+            }
         }
 
         /// <summary>
         /// Return colonists.
         /// </summary>
-        public void ReturnColonists(List<Pawn> pawns, bool escaped = false)
+        public void ReturnColonists(List<Pawn> pawns, bool mainGroup, bool escaped = false)
         {
             Client client = RimLinkComp.Instance.Client;
 
@@ -191,6 +195,7 @@ namespace PlayerTrade.Labor
                 For = From,
                 Guid = Guid,
                 ReturnedColonists = netPawns,
+                MainGroup = mainGroup,
                 Escaped = escaped
             };
 
@@ -204,12 +209,15 @@ namespace PlayerTrade.Labor
         {
             Client client = RimLinkComp.Instance.Client;
 
+            Log.Message($"{packet.ReturnedColonists.Count} returned from labor deal.");
+
             if (From != client.Guid)
             {
                 Log.Error($"Attempt to return colonists for a labor offer we didn't send!");
                 return;
             }
 
+            var pawns = new List<Pawn>();
             foreach (var colonist in packet.ReturnedColonists)
             {
                 // Find the locally stored original pawn we sent - we use this as the basis for receiving the pawn from the network
@@ -219,12 +227,13 @@ namespace PlayerTrade.Labor
                     Log.Warn($"RimLink pawn GUID not found on returned pawn. The original pawn cannot be found, so the pawn may not be reproduced perfectly.");
 
                 Pawn pawn = colonist.ToPawn(originalPawn);
+                pawns.Add(pawn);
+                ReturnedColonists.Add(pawn);
 
                 // If they escaped, the escape util will handle returning them in whatever state it decides to, otherwise we just drop them back
                 if (packet.Escaped)
                 {
                     EscapeUtil.Escaped(pawn);
-                    return;
                 }
                 else
                 {
@@ -243,23 +252,14 @@ namespace PlayerTrade.Labor
                 }
             }
 
-            Log.Message($"{packet.ReturnedColonists.Count}/{Colonists.Count} returned from labor deal.");
-            if (packet.ReturnedColonists.Count < Colonists.Count)
-            {
-                if (Bond > 0)
-                {
-                    // Pay bond
-                    var bondThing = ThingMaker.MakeThing(ThingDefOf.Silver);
-                    bondThing.stackCount = Bond;
-                    TradeUtility.SpawnDropPod(DropCellFinder.TradeDropSpot(Find.CurrentMap), Find.CurrentMap, bondThing);
-                }
+            bool moreLeft = Colonists.Any(pawn => !ReturnedColonists.Contains(pawn));
+            MissionWorker.ReturnedColonistsReceived(pawns, moreLeft, packet.MainGroup, packet.Escaped);
+        }
 
-                Find.LetterStack.ReceiveLetter($"Colonists Lost ({client.GetName(For)})", $"{client.GetName(For).Colorize(ColoredText.FactionColor_Neutral)} didn't return all your colonists.", LetterDefOf.NegativeEvent);
-            }
-            else
-            {
-                Find.LetterStack.ReceiveLetter($"Colonists Returned ({client.GetName(For)})", $"{client.GetName(For).Colorize(ColoredText.FactionColor_Neutral)} returned your colonists.", LetterDefOf.PositiveEvent);
-            }
+        public void Update()
+        {
+            Log.Verbose("Test 0");
+            MissionWorker.Update();
         }
 
         public void Notify_LentColonistEvent(Pawn pawn, PacketLentColonistUpdate.ColonistEvent colonistEvent)
@@ -274,30 +274,53 @@ namespace PlayerTrade.Labor
             });
         }
 
+        /// <summary>
+        /// Find any mission offer letters and remove them.
+        /// </summary>
+        public void RemoveOfferLetter()
+        {
+            var toRemove = new List<Letter>();
+            foreach (Letter letter in Find.LetterStack.LettersListForReading)
+            {
+                if (letter is ChoiceLetter_MissionOffer missionOffer && missionOffer.MissionOffer == this)
+                    toRemove.Add(letter);
+            }
+
+            foreach (Letter letter in toRemove)
+                Find.LetterStack.RemoveLetter(letter);
+        }
+
         public void ExposeData()
         {
             Scribe_Values.Look(ref Guid, "guid");
+            Scribe_Values.Look(ref FinishTick, "finish_tick");
             Scribe_Values.Look(ref From, "from");
             Scribe_Values.Look(ref For, "for");
             Scribe_Values.Look(ref Days, "days");
-            Scribe_Values.Look(ref Payment, "payment");
-            Scribe_Values.Look(ref Bond, "bond");
-            Scribe_Collections.Look(ref OriginalColonists, "original_colonists", LookMode.Deep);
-            Scribe_Collections.Look(ref Colonists, "colonists", LookMode.Reference);
-            Scribe_Collections.Look(ref Heirs, "heirs", LookMode.Deep);
+            Scribe_Collections.Look(ref OriginalColonists, "original_colonists", LookMode.Deep, Array.Empty<object>());
+            Scribe_Collections.Look(ref ReturnedColonists, "returned_colonists", LookMode.Reference, Array.Empty<object>());
+            Scribe_Collections.Look(ref Colonists, "colonists", LookMode.Reference, Array.Empty<object>());
+            Scribe_Collections.Look(ref Heirs, "heirs", LookMode.Deep, Array.Empty<object>());
+            
+            Scribe_Defs.Look(ref MissionDef, "mission_def");
+            Scribe.EnterNode("mission_worker");
+            MissionWorker.ExposeData();
+            Scribe.ExitNode();
         }
 
-        public PacketLaborOffer ToPacket()
+        public PacketMissionOffer ToPacket()
         {
-            var packet = new PacketLaborOffer
+            var packet = new PacketMissionOffer
             {
                 Guid = Guid,
                 For = For,
                 From = From,
-                Payment = Payment,
-                Bond = Bond,
                 Days = Days,
-                Colonists = new List<NetHuman>()
+                Colonists = new List<NetHuman>(),
+                MissionDefName = MissionDef.defName,
+
+                WorkerClassName = MissionWorker.GetType().FullName,
+                Worker = MissionWorker,
             };
 
             foreach (Pawn pawn in Colonists)
@@ -306,19 +329,21 @@ namespace PlayerTrade.Labor
             return packet;
         }
 
-        public static LaborOffer FromPacket(PacketLaborOffer packet)
+        public static MissionOffer FromPacket(PacketMissionOffer packet)
         {
-            var offer = new LaborOffer
+            var offer = new MissionOffer
             {
                 Guid = packet.Guid,
                 For = packet.For,
                 From = packet.From,
-                Bond = packet.Bond,
-                Payment = packet.Payment,
                 Days = packet.Days,
                 Fresh = true,
-                Colonists = new List<Pawn>()
+                Colonists = new List<Pawn>(),
+                MissionDef = DefDatabase<PlayerMissionDef>.GetNamed(packet.MissionDefName)
             };
+
+            offer.MissionWorker = packet.Worker;
+            offer.MissionWorker.Offer = offer;
 
             foreach (NetHuman netHuman in packet.Colonists)
                 offer.Colonists.Add(netHuman.ToPawn());
@@ -338,7 +363,7 @@ namespace PlayerTrade.Labor
 
         public string GetUniqueLoadID()
         {
-            return "RimLink_LaborOffer_" + Guid;
+            return "RimLink_Mission_" + Guid;
         }
     }
 }

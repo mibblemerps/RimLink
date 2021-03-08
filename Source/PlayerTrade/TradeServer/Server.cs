@@ -93,12 +93,14 @@ namespace TradeServer
                 // Client not connected
                 if (shouldQueue)
                 {
-                    Log.Message($"Attempt to send packet to player ({guid}) that isn't connected! Packet will be queued for next time they connect.");
+                    if (!packet.Attribute.HideFromLog)
+                        Log.Message($"Attempt to send packet to player ({guid}) that isn't connected! Packet will be queued for next time they connect.");
                     QueuedPacketStorage.StorePacket(guid, packet);
                 }
                 else
                 {
-                    Log.Message($"Attempt to send packet to player ({guid}) that isn't connected! Packet isn't queuable so it will be thrown out.");
+                    if (!packet.Attribute.HideFromLog)
+                        Log.Message($"Attempt to send packet to player ({guid}) that isn't connected! Packet isn't queuable so it will be thrown out.");
                 }
             }
         }

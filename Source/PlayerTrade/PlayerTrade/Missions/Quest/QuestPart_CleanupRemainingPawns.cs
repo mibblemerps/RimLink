@@ -4,13 +4,13 @@ using RimWorld;
 using RimWorld.QuestGen;
 using Verse;
 
-namespace PlayerTrade.Labor
+namespace PlayerTrade.Missions.Quest
 {
     public class QuestPart_CleanupRemainingPawns : QuestPart
     {
         [NoTranslate]
         public string Guid;
-        public IEnumerable<Pawn> Pawns;
+        public List<Pawn> Pawns;
 
         public override void Cleanup()
         {
@@ -18,7 +18,7 @@ namespace PlayerTrade.Labor
 
             List<Pawn> returned = QuestGen.slate.Get("returned_pawns", new List<Pawn>());
 
-            LaborOffer offer = RimLinkComp.Instance.ActiveLaborOffers.FirstOrDefault(o => o.Guid == Guid);
+            MissionOffer offer = RimLinkComp.Instance.Missions.FirstOrDefault(o => o.Guid == Guid);
             if (offer == null)
             {
                 Log.Error("Labor offer not found!");
@@ -35,6 +35,13 @@ namespace PlayerTrade.Labor
 
                 pawn.TryGetComp<LentColonistComp>().Notify_FailedToBeReturned(quest);
             }
+        }
+
+        public override void ExposeData()
+        {
+            base.ExposeData();
+            Scribe_Values.Look(ref Guid, "guid");
+            Scribe_Collections.Look(ref Pawns, "pawns", LookMode.Reference);
         }
     }
 }
