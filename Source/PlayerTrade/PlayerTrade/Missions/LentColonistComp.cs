@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using PlayerTrade.Missions.Packets;
 using RimWorld;
+using UnityEngine;
 using Verse;
 
 namespace PlayerTrade.Missions
@@ -72,7 +73,7 @@ namespace PlayerTrade.Missions
                 return; // Already escaping
 
             // Set a time the colonist will try to "escape" home
-            TryEscapeHomeTick = Find.TickManager.TicksGame + 1800;
+            TryEscapeHomeTick = Find.TickManager.TicksGame + Mathf.RoundToInt(Rand.Range(1f, 3f) * 60000);
             RimLinkComp.Instance.EscapingLentColonists.Add(Pawn);
             MissionOffer.Notify_LentColonistEvent(Pawn, PacketLentColonistUpdate.ColonistEvent.Escaped);
         }
