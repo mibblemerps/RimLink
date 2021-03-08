@@ -125,8 +125,10 @@ namespace PlayerTrade.Net
         /// <p>This also invokes the Disconnected event, allowing the disconnection to be handled by the rest of the code.</p>
         /// </summary>
         /// <param name="sendDisconnectPacket">Should the disconnect packet be sent.</param>
-        public async void Disconnect(bool sendDisconnectPacket = true)
+        public virtual void Disconnect(bool sendDisconnectPacket = true)
         {
+            _sendQueue?.Clear();
+
             if (!IsConnected)
                 return; // Already disconnected
             IsConnected = false;

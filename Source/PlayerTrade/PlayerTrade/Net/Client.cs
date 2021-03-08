@@ -157,6 +157,12 @@ namespace PlayerTrade.Net
             }
         }
 
+        public override void Disconnect(bool sendDisconnectPacket = true)
+        {
+            _awaitingPackets.Clear();
+            base.Disconnect(sendDisconnectPacket);
+        }
+
         public void Update()
         {
             // Process received packets pending in queue
@@ -298,7 +304,7 @@ namespace PlayerTrade.Net
                 catch (Exception awaitException)
                 {
                     Log.Error("Exception processing awaited packet!", awaitException);
-                    _awaitingPackets.Remove(awaiting);
+                    _awaitingPackets.Clear();
                     Disconnect();
                 }
             }
