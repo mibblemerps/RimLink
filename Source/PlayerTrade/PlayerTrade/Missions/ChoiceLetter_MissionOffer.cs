@@ -55,9 +55,8 @@ namespace PlayerTrade.Missions
                 {
                     foreach (Pawn pawn in MissionOffer.Colonists)
                     {
-                        var inspect = new DiaOption(new Dialog_InfoCard.Hyperlink(pawn));
-                        //var inspect = new DiaOption("View: " + pawn.NameFullColored);
-                        //inspect.action = () => { Find.WindowStack.Add(new Dialog_InfoCard(pawn)); };
+                        var inspect = new DiaOption("View: " + pawn.NameFullColored);
+                        inspect.action = () => { Find.WindowStack.Add(new Dialog_InfoCard(pawn)); };
                         yield return inspect;
                     }
                 }
