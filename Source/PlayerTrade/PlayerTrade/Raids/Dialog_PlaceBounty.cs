@@ -89,7 +89,7 @@ namespace PlayerTrade.Raids
             Rect rect2 = new Rect(0, rect1.yMax + 20f, Text.CalcSize(label2).x, Text.CalcSize(label2).y);
             Widgets.Label(rect2, label2);
 
-            if (Widgets.ButtonText(new Rect(rect2.xMax + 10f, rect2.yMin, 220, 35), _selectedFaction.Name))
+            if (Widgets.ButtonText(new Rect(rect2.xMax + 10f, rect2.yMin, 220, 35), _selectedFaction == null ? "Select Faction" : _selectedFaction.Name))
             {
                 var options = new List<FloatMenuOption>();
                 foreach (Player.Faction faction in Player.LocalFactions)

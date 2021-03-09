@@ -83,7 +83,7 @@ namespace PlayerTrade
             buffer.WriteInt(Temperature);
             buffer.WriteBoolean(TradeableNow);
 
-            //buffer.WriteList(LocalFactions, (b, i) => b.WritePacketable(i));
+            buffer.WriteList(LocalFactions, (b, i) => b.WritePacketable(i));
         }
 
         public void Read(PacketBuffer buffer)
@@ -98,7 +98,7 @@ namespace PlayerTrade
             TradeableNow = buffer.ReadBoolean();
 
             LocalFactions = new List<Faction>();
-            //LocalFactions = buffer.ReadList<Faction>(b => b.ReadPacketable<Faction>());
+            LocalFactions = buffer.ReadList<Faction>(b => b.ReadPacketable<Faction>());
         }
 
         public void ExposeData()
