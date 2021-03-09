@@ -217,6 +217,7 @@
     <Compile Include="LaunchUtil.cs" />
     <Compile Include="Trade\TradeOfferUI.cs" />
     <Compile Include="Trade\TradeWorker.cs" />
+    <Compile Include="Util\ListUtil.cs" />
     <Compile Include="Util\ResearchUtil.cs" />
     <Compile Include="Util\StringUtil.cs" />
   </ItemGroup>

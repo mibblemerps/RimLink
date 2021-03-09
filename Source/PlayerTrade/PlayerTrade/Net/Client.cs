@@ -13,6 +13,7 @@ using PlayerTrade.Net.Packets;
 using PlayerTrade.Raids;
 using PlayerTrade.Trade;
 using PlayerTrade.Trade.Packets;
+using PlayerTrade.Util;
 using RimWorld;
 using UnityEngine;
 using Verse;
@@ -252,7 +253,11 @@ namespace PlayerTrade.Net
                 Predicate = predicate,
                 CompletionSource = source
             };
-            _awaitingPackets.Add(request);
+
+            lock (_awaitingPackets)
+            {
+                _awaitingPackets.Add(request);
+            }
 
             if (timeout > 0)
             {
@@ -261,7 +266,6 @@ namespace PlayerTrade.Net
                     // Success
                     Packet result = await source.Task;
                     Log.Message($"Awaited packet received {result.GetType().Name}");
-                    _awaitingPackets.Remove(request);
                     return result;
                 }
 
@@ -274,7 +278,6 @@ namespace PlayerTrade.Net
                 // No timeout
                 Packet result = await source.Task;
                 Log.Message($"Awaited packet received {result.GetType().Name}");
-                _awaitingPackets.Remove(request);
                 return result;
             }
         }
@@ -290,23 +293,29 @@ namespace PlayerTrade.Net
                 Log.Message($"Packet received #{e.Id} ({e.Packet.GetType().Name})");
 
             // Check awaiting packets
-            while (_awaitingPackets.Count > 0)
+            lock (_awaitingPackets)
             {
-                var awaiting = _awaitingPackets.First();
-                try
+                var toRemove = new List<AwaitPacketRequest>();
+
+                foreach (var awaiting in _awaitingPackets)
                 {
-                    if (awaiting.Predicate(e.Packet))
+                    try
                     {
-                        awaiting.CompletionSource?.TrySetResult(e.Packet);
-                        _awaitingPackets.Remove(awaiting);
+                        if (awaiting.Predicate(e.Packet))
+                        {
+                            toRemove.Add(awaiting);
+                            awaiting.CompletionSource?.TrySetResult(e.Packet);
+                        }
+                    }
+                    catch (Exception awaitException)
+                    {
+                        Log.Error("Exception processing awaited packet!", awaitException);
+                        _awaitingPackets.Clear();
+                        Disconnect();
                     }
                 }
-                catch (Exception awaitException)
-                {
-                    Log.Error("Exception processing awaited packet!", awaitException);
-                    _awaitingPackets.Clear();
-                    Disconnect();
-                }
+
+                _awaitingPackets.RemoveAll(toRemove);
             }
 
             try
@@ -343,7 +352,7 @@ namespace PlayerTrade.Net
 
                     case PacketColonyInfo infoPacket:
                     {
-                        //Log.Message($"Received colony info update for {infoPacket.Player.Name} (tradeable = {infoPacket.Player.TradeableNow})");
+                        //Log.Message($"Received colony info update for {infoPacket.Player.Name} (0tradeable = {infoPacket.Player.TradeableNow})");
                         Player oldPlayer = OnlinePlayers.ContainsKey(infoPacket.Guid) ? OnlinePlayers[infoPacket.Guid] : null;
                         if (oldPlayer == null)
                         {

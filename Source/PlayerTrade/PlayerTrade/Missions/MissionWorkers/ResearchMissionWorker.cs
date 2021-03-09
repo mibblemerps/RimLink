@@ -53,19 +53,15 @@ namespace PlayerTrade.Missions.MissionWorkers
         {
             base.Update();
 
-            Log.Verbose("Test 1");
-
             if (Time.realtimeSinceStartup > _lastResearchUpdate + ResearchUpdateInterval && QueuedResearchToSend > 0f)
             {
                 _lastResearchUpdate = Time.realtimeSinceStartup;
 
-                Log.Verbose("Test 2: " + QueuedResearchToSend);
                 RimLinkComp.Instance.Client.SendPacket(new PacketResearch
                 {
                     For = Offer.From,
                     Research = QueuedResearchToSend
                 });
-                Log.Verbose("Test 3");
 
                 QueuedResearchToSend = 0f;
             }

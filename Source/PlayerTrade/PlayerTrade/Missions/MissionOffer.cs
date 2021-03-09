@@ -85,25 +85,17 @@ namespace PlayerTrade.Missions
 
             // Await confirmation of deal
             Log.Message($"Awaiting confirmation of labor offer {Guid}...");
-            PacketConfirmMissionOffer packetConfirm = null; // todo: evaluate the actual need of this try/catch, added just incase for testing this annoying bug
-            try
-            {
-                packetConfirm = (PacketConfirmMissionOffer) await client.AwaitPacket(p =>
+
+            PacketConfirmMissionOffer packetConfirm = (PacketConfirmMissionOffer) await client.AwaitPacket(p =>
                 {
                     if (p is PacketConfirmMissionOffer pc)
                         return pc.Guid == Guid;
                     return false;
                 }, 3000);
-            }
-            catch (Exception e)
-            {
-                Log.Error("Exception awaiting offer confirm packet", e);
-                return;
-            }
 
             Log.Message($"Labor offer {Guid} confirmed");
 
-            if (packetConfirm.Confirm)
+            if (/*packetConfirm.Confirm*/ true)
             {
                 FulfillAsReceiver(Find.AnyPlayerHomeMap);
             }
@@ -258,7 +250,6 @@ namespace PlayerTrade.Missions
 
         public void Update()
         {
-            Log.Verbose("Test 0");
             MissionWorker.Update();
         }
 

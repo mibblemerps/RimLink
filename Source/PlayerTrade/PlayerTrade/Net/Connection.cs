@@ -134,14 +134,21 @@ namespace PlayerTrade.Net
             IsConnected = false;
 
             Disconnected?.Invoke(this, EventArgs.Empty);
-            if (!Tcp.Connected || !sendDisconnectPacket)
+            if (!Tcp.Connected)
                 return;
 
-            // Try to send a disconnect packet. This is more a courtesy than anything, it just ensures the connection is immediately and cleanly closed on both ends.
-            try
+            if (sendDisconnectPacket)
             {
-                SendPacketDirect(new PacketDisconnect()).Wait();
-            } catch (Exception) {}
+                // Try to send a disconnect packet. This is more a courtesy than anything, it just ensures the connection is immediately and cleanly closed on both ends.
+                try
+                {
+                    SendPacketDirect(new PacketDisconnect()).Wait();
+                }
+                catch (Exception)
+                {
+                }
+            }
+
             Tcp?.Close();
         }
 
