@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using PlayerTrade.Net;
 using PlayerTrade.Net.Packets;
 using RimWorld;
@@ -11,7 +8,7 @@ using Verse;
 
 namespace PlayerTrade.Chat
 {
-    public class ChatWorker
+    public class ChatSystem
     {
         public static int ChatMessageLimit = 200;
 
@@ -37,7 +34,7 @@ namespace PlayerTrade.Chat
         private int _unreadMessages = 0;
         private MainButtonDef _mainTabDef;
 
-        public ChatWorker(Client client)
+        public ChatSystem(Client client)
         {
             Client = client;
 

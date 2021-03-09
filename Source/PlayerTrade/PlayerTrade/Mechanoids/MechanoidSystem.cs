@@ -8,11 +8,11 @@ using PlayerTrade.Net.Packets;
 
 namespace PlayerTrade.Mechanoids
 {
-    public class MechanoidWorker
+    public class MechanoidSystem
     {
         public Client Client;
 
-        public MechanoidWorker(Client client)
+        public MechanoidSystem(Client client)
         {
             Client = client;
 

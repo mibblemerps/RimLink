@@ -9,13 +9,13 @@ using Verse;
 
 namespace PlayerTrade.Trade
 {
-    public class TradeWorker
+    public class TradeSystem
     {
         public Client Client;
 
         public List<TradeOffer> ActiveTradeOffers = new List<TradeOffer>();
 
-        public TradeWorker(Client client)
+        public TradeSystem(Client client)
         {
             Client = client;
 

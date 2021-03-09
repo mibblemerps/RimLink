@@ -12,14 +12,14 @@ using Verse;
 
 namespace PlayerTrade.Missions
 {
-    public class MissionWorker
+    public class MissionSystem
     {
         public Client Client;
         public List<MissionOffer> Offers => RimLinkComp.Instance.Missions;
 
         private float _lastResearchUpdate;
 
-        public MissionWorker(Client client)
+        public MissionSystem(Client client)
         {
             Client = client;
 

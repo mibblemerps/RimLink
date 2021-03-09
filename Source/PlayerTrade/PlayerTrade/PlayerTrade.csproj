@@ -85,12 +85,12 @@
   <ItemGroup>
     <Compile Include="AnnouncementUtility.cs" />
     <Compile Include="Anticheat\AnticheatUtil.cs" />
-    <Compile Include="Artifacts\ArtifactsWorker.cs" />
+    <Compile Include="Artifacts\ArtifactsSystem.cs" />
     <Compile Include="Artifacts\ArtifactType.cs" />
     <Compile Include="Artifacts\PacketArtifact.cs" />
     <Compile Include="BugReport.cs" />
     <Compile Include="Chat\ChatMessage.cs" />
-    <Compile Include="Chat\ChatWorker.cs" />
+    <Compile Include="Chat\ChatSystem.cs" />
     <Compile Include="Chat\PacketReceiveChatMessage.cs" />
     <Compile Include="Chat\PacketSendChatMessage.cs" />
     <Compile Include="Dialog_ConnectingToServer.cs" />
@@ -131,7 +131,7 @@
     <Compile Include="Patches\Patch_TradeUtility_EverPlayerSellable.cs" />
     <Compile Include="PawnGuidThingComp.cs" />
     <Compile Include="Mail\Dialog_SendLetter.cs" />
-    <Compile Include="Mail\MailWorker.cs" />
+    <Compile Include="Mail\MailSystem.cs" />
     <Compile Include="Mail\PacketMail.cs" />
     <Compile Include="MainTabWindow_Server.cs" />
     <Compile Include="Mechanoids\Designer\Dialog_DesignMechCluster.cs" />
@@ -141,7 +141,7 @@
     <Compile Include="Mechanoids\Designer\MechPartConfigCountdownActivator.cs" />
     <Compile Include="Mechanoids\Designer\MechPartConfigProximityActivator.cs" />
     <Compile Include="Mechanoids\Designer\MechPartConfigQuantity.cs" />
-    <Compile Include="Mechanoids\MechanoidWorker.cs" />
+    <Compile Include="Mechanoids\MechanoidSystem.cs" />
     <Compile Include="Mechanoids\PacketMechanoidCluster.cs" />
     <Compile Include="Net\ConnectionFailedException.cs" />
     <Compile Include="Net\Packets\PacketAcknowledgement.cs" />
@@ -153,13 +153,13 @@
     <Compile Include="Patches\Patch_CameraDriver_Update.cs" />
     <Compile Include="Patches\Patch_CompUsable.cs" />
     <Compile Include="PlayerFactions.cs" />
-    <Compile Include="Raids\RaidWorker.cs" />
+    <Compile Include="Raids\RaidSystem.cs" />
     <Compile Include="Trade\ChoiceLetter_TradeOffer.cs" />
     <Compile Include="Missions\ChoiceLetter_LaborOffer.cs" />
     <Compile Include="Missions\Dialog_LendColonist.cs" />
     <Compile Include="Missions\MissionOffer.cs" />
     <Compile Include="Missions\MissionUtil.cs" />
-    <Compile Include="Missions\MissionWorker.cs" />
+    <Compile Include="Missions\MissionSystem.cs" />
     <Compile Include="Missions\Packets\PacketReturnLentColonists.cs" />
     <Compile Include="Missions\Quest\QuestNode_ReturnColonists.cs" />
     <Compile Include="Missions\Quest\QuestPart_ReturnColonists.cs" />
@@ -216,7 +216,7 @@
     <Compile Include="Trade\TradeUtil.cs" />
     <Compile Include="LaunchUtil.cs" />
     <Compile Include="Trade\TradeOfferUI.cs" />
-    <Compile Include="Trade\TradeWorker.cs" />
+    <Compile Include="Trade\TradeSystem.cs" />
     <Compile Include="Util\ListUtil.cs" />
     <Compile Include="Util\ResearchUtil.cs" />
     <Compile Include="Util\StringUtil.cs" />

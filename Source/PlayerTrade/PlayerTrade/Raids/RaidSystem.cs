@@ -3,11 +3,11 @@ using PlayerTrade.Net.Packets;
 
 namespace PlayerTrade.Raids
 {
-    public class RaidWorker
+    public class RaidSystem
     {
         public Client Client;
 
-        public RaidWorker(Client client)
+        public RaidSystem(Client client)
         {
             Client = client;
             Client.PacketReceived += OnPacketReceived;

@@ -34,9 +34,9 @@ namespace PlayerTrade.Net
         public delegate bool PacketPredicate(Packet packet);
 
         public RimLinkComp RimLinkComp;
-        public TradeWorker Trade;
-        public MissionWorker Mission;
-        public ChatWorker Chat;
+        public TradeSystem Trade;
+        public MissionSystem Mission;
+        public ChatSystem Chat;
 
         public ClientState State = ClientState.Disconnected;
         public float LastHeartbeat;
@@ -64,12 +64,12 @@ namespace PlayerTrade.Net
             PlayerDisconnected += OnPlayerDisconnected;
 
             // Workers
-            Trade = new TradeWorker(this);
-            new RaidWorker(this);
-            Mission = new MissionWorker(this);
-            new MailWorker(this);
-            Chat = new ChatWorker(this);
-            new MechanoidWorker(this);
+            Trade = new TradeSystem(this);
+            new RaidSystem(this);
+            Mission = new MissionSystem(this);
+            new MailSystem(this);
+            Chat = new ChatSystem(this);
+            new MechanoidSystem(this);
         }
 
         public async Task Connect(string ip, int port = 35562)

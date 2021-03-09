@@ -5,11 +5,11 @@ using Verse;
 
 namespace PlayerTrade.Mail
 {
-    public class MailWorker
+    public class MailSystem
     {
         public Client Client;
 
-        public MailWorker(Client client)
+        public MailSystem(Client client)
         {
             Client = client;
 
