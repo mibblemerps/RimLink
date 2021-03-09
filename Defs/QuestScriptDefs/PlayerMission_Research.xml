@@ -12,10 +12,8 @@
         <li>questName->Research Program From [from]</li>
         <li>questName->Joint Research From [from]</li>
         
-        <li>questDescription(pawn_count==1)->[from] has sent you a researcher for [days] days.\n\n[bondInfo]</li>
-        <li>questDescription(pawn_count>=2)->[from] has lent you [pawn_count] colonists for [days] days.\n\n[bondInfo]</li>
-        <li>bondInfo(bond>=1)->If they are not safely returned, you will not have your bond of [bond] silver returned.</li>
-        <li>bondInfo->No bond has been paid.</li>
+        <li>questDescription(pawn_count==1)->[from] has sent you a researcher for [days] days.\n\nThey will research 25% faster and share their research with their home faction.</li>
+        <li>questDescription(pawn_count>=2)->[from] has sent you [pawn_count] researchers for [days] days.\n\nThey will research 25% faster and share their research with their home faction.</li>
       </rulesStrings>
     </questDescriptionAndNameRules>
 
