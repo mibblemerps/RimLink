@@ -1,109 +1,120 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <Defs>
 
-	<QuestScriptDef>
-		<defName>PlayerMission_Base</defName>
-		
-		<root Class="QuestNode_Sequence">
-			<nodes>
-				<li Class="QuestNode_GetMap" />
-				
-				<li Class="QuestNode_Delay">
-					<delayTicks>$shuttle_arrival_ticks</delayTicks>
-					<node Class="QuestNode_Sequence">
-						<nodes>
-							<!-- Generate shuttle -->
-							<li Class="QuestNode_GenerateShuttle">
-								<storeAs>shuttle</storeAs>
-								<requiredPawns>$pawns</requiredPawns>
-								<hideControls>false</hideControls>
-							</li>
-							<li Class="QuestNode_SpawnSkyfaller">
-								<skyfallerDef>ShuttleIncoming</skyfallerDef>
-								<innerThings>$shuttle</innerThings>
-								<lookForSafeSpot>True</lookForSafeSpot>
-								<tryLandInShipLandingZone>True</tryLandInShipLandingZone>
-							</li>
-							<li Class="QuestNode_Letter">
-								<label>Shuttle Arrived ($from)</label>
-								<text>
-									The shuttle is here to return lent colonists back to $from.
-								</text>
-								<lookTargets>$shuttle</lookTargets>
-							</li>
-							
-							<!-- Pawns -->
-							<li Class="QuestNode_InspectString">
-								<targets>$pawns</targets>
-								<inspectString TKey="InspectStringDepartShuttle">Should depart on shuttle</inspectString>
-							</li>
-							<li Class="QuestNode_ExtraFaction">
-								<faction>$home_faction</faction>
-								<factionType>HomeFaction</factionType>
-								<pawns>$pawns</pawns>
-								<areHelpers>true</areHelpers>
-							</li>
-							
-							<!-- Shuttle leave -->
-							<li Class="QuestNode_ShuttleLeaveDelay">
-								<delayTicks>$($shuttle_leave_ticks - $shuttle_arrival_ticks)</delayTicks>
-								<shuttle>$shuttle</shuttle>
-								<node Class="QuestNode_SendShuttleAway">
-									<shuttle>$shuttle</shuttle>
-								</node>
-							</li>
-							<li Class="QuestNode_SendShuttleAwayOnCleanup">
-								<shuttle>$shuttle</shuttle>
-							</li>
-							
-							<!-- Shuttle sent -->
-							<!-- Success -->
-							<li Class="QuestNode_Signal">
-								<inSignal>shuttle.SentSatisfied</inSignal>
-								<node Class="QuestNode_Sequence">
-									<nodes>
-										<li Class="PlayerTrade.Missions.Quest.QuestNode_ReturnColonists">
-											<guid>$guid</guid>
-											<shuttle>$shuttle</shuttle>
-										</li>
-										<li Class="QuestNode_IsNull">
-											<value>$bond_things</value>
-											<elseNode Class="QuestNode_DropPods">
-												<useTradeDropSpot>true</useTradeDropSpot>
-												<sendStandardLetter>false</sendStandardLetter>
-												<contents>$bond_things</contents>
-											</elseNode>
-										</li>
-										<li Class="QuestNode_End" />
-									</nodes>
-								</node>
-							</li>
-							<!-- Failure -->
-							<li Class="QuestNode_Signal">
-								<inSignal>shuttle.SentUnsatisfied</inSignal>
-								<node Class="QuestNode_Sequence">
-									<nodes>
-										<li Class="PlayerTrade.Missions.Quest.QuestNode_ReturnColonists">
-											<guid>$guid</guid>
-											<shuttle>$shuttle</shuttle>
-										</li>
-										<li Class="QuestNode_End">
-											<outcome>Fail</outcome>
-										</li>
-									</nodes>
-								</node>
-							</li>
-							
-							<!-- Cleanup any left behind pawns -->
-							<li Class="PlayerTrade.Missions.Quest.QuestNode_CleanupRemainingPawns">
-								<guid>$guid</guid>
-								<pawns>$pawns</pawns>
-							</li>
-						</nodes>
-					</node>
-				</li>
-			</nodes>
-		</root>
-	</QuestScriptDef>
-	
+  <QuestScriptDef>
+    <defName>PlayerMission_Base</defName>
+
+    <root Class="QuestNode_Sequence">
+      <nodes>
+        <li Class="QuestNode_GetMap" />
+
+        <!-- Pawns -->
+        <li Class="QuestNode_ExtraFaction">
+          <faction>$home_faction</faction>
+          <factionType>HomeFaction</factionType>
+          <pawns>$pawns</pawns>
+          <areHelpers>true</areHelpers>
+        </li>
+
+        <!-- Shuttle arrival delay -->
+        <li Class="QuestNode_Delay">
+          <delayTicks>$shuttle_arrival_ticks</delayTicks>
+          <node Class="QuestNode_Sequence">
+            <nodes>
+              <!-- Generate shuttle -->
+              <li Class="QuestNode_GenerateShuttle">
+                <storeAs>shuttle</storeAs>
+                <requiredPawns>$pawns</requiredPawns>
+                <hideControls>false</hideControls>
+              </li>
+              <li Class="QuestNode_SpawnSkyfaller">
+                <skyfallerDef>ShuttleIncoming</skyfallerDef>
+                <innerThings>$shuttle</innerThings>
+                <lookForSafeSpot>True</lookForSafeSpot>
+                <tryLandInShipLandingZone>True</tryLandInShipLandingZone>
+              </li>
+              <li Class="QuestNode_Letter">
+                <label>Shuttle Arrived ($from)</label>
+                <text>
+                  The shuttle is here to return lent colonists back to $from.
+                </text>
+                <lookTargets>$shuttle</lookTargets>
+              </li>
+
+              <!-- Pawns -->
+              <li Class="QuestNode_InspectString">
+                <targets>$pawns</targets>
+                <inspectString TKey="InspectStringDepartShuttle">Should depart on shuttle</inspectString>
+              </li>
+
+              <!-- Shuttle leave -->
+              <li Class="QuestNode_ShuttleLeaveDelay">
+                <delayTicks>$($shuttle_leave_ticks - $shuttle_arrival_ticks)</delayTicks>
+                <shuttle>$shuttle</shuttle>
+                <node Class="QuestNode_SendShuttleAway">
+                  <shuttle>$shuttle</shuttle>
+                </node>
+              </li>
+              <li Class="QuestNode_SendShuttleAwayOnCleanup">
+                <shuttle>$shuttle</shuttle>
+              </li>
+
+              <!-- Shuttle sent -->
+              <!-- Success -->
+              <li Class="QuestNode_Signal">
+                <inSignal>shuttle.SentSatisfied</inSignal>
+                <node Class="QuestNode_Sequence">
+                  <nodes>
+                    <li Class="PlayerTrade.Missions.Quest.QuestNode_ReturnColonists">
+                      <guid>$guid</guid>
+                      <shuttle>$shuttle</shuttle>
+                    </li>
+                    <li Class="QuestNode_IsNull">
+                      <value>$bond_things</value>
+                      <elseNode Class="QuestNode_DropPods">
+                        <useTradeDropSpot>true</useTradeDropSpot>
+                        <sendStandardLetter>false</sendStandardLetter>
+                        <contents>$bond_things</contents>
+                      </elseNode>
+                    </li>
+                    <li Class="QuestNode_End" />
+                  </nodes>
+                </node>
+              </li>
+              <!-- Failure -->
+              <li Class="QuestNode_Signal">
+                <inSignal>shuttle.SentUnsatisfied</inSignal>
+                <node Class="QuestNode_Sequence">
+                  <nodes>
+                    <li Class="PlayerTrade.Missions.Quest.QuestNode_ReturnColonists">
+                      <guid>$guid</guid>
+                      <shuttle>$shuttle</shuttle>
+                    </li>
+                    <li Class="QuestNode_End">
+                      <outcome>Fail</outcome>
+                    </li>
+                  </nodes>
+                </node>
+              </li>
+
+              <!-- Shuttle destroyed -->
+              <li Class="QuestNode_Signal">
+                <inSignal>shuttle.Destroyed</inSignal>
+                <node Class="QuestNode_End">
+                  <outcome>Fail</outcome>
+                </node>
+              </li>
+            </nodes>
+          </node>
+        </li>
+
+        <!-- Cleanup any left behind pawns -->
+        <li Class="PlayerTrade.Missions.Quest.QuestNode_CleanupRemainingPawns">
+          <guid>$guid</guid>
+          <pawns>$pawns</pawns>
+        </li>
+      </nodes>
+    </root>
+  </QuestScriptDef>
+
 </Defs>
