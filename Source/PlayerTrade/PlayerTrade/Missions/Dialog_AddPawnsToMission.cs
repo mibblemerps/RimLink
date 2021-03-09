@@ -46,7 +46,7 @@ namespace PlayerTrade.Missions
 
             const int pawnRowHeight = 50;
             Rect viewRect = new Rect(0, 0, inRect.width - 16f, pawnRowHeight * _availablePawns.Count);
-            GUI.BeginScrollView(new Rect(0, y, inRect.width, inRect.height - y - 45f), _scrollPosition, viewRect);
+            _scrollPosition = GUI.BeginScrollView(new Rect(0, y, inRect.width, inRect.height - y - 45f), _scrollPosition, viewRect);
             int i = 0;
             foreach (Pawn pawn in _availablePawns)
             {
