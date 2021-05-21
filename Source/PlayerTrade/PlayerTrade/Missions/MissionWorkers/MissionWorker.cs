@@ -178,9 +178,9 @@ namespace PlayerTrade.Missions.MissionWorkers
 
             rules.AddRange(GrammarUtility.RulesForPawn("firstPawn", Offer.Colonists.First()));
 
-            QuestGen.AddQuestNameRules(rules);
-            QuestGen.AddQuestDescriptionRules(rules);
-            QuestGen.AddQuestContentRules(rules);
+            // QuestGen.AddQuestNameRules(rules);
+            // QuestGen.AddQuestDescriptionRules(rules);
+            // QuestGen.AddQuestContentRules(rules);
         }
 
         /// <summary>
