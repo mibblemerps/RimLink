@@ -62,7 +62,7 @@ namespace PlayerTrade.MainTab
                     if ((isForUs && trade.CountOffered <= 0) || (!isForUs && trade.CountOffered >= 0)) continue;
                     Thing thing = trade.AllThings.FirstOrDefault();
                     if (thing == null) continue; // null thing?
-                    Widgets.ThingIcon(new Rect(thingX, rect.y, RowHeight * 0.8f, RowHeight * 0.8f), thing);
+                    Widgets.ThingIcon(new Rect(thingX, rect.y, RowHeight * 0.8f, RowHeight * 0.8f).CenteredOnYIn(new Rect(0, RowHeight, 1, 1)), thing);
                     thingX += RowHeight;
                     
                     if (++thingCount >= 3) break; // limit things
