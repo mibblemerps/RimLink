@@ -14,9 +14,18 @@ namespace PlayerTrade.Missions
 {
     public class MissionSystem : ISystem
     {
+        public List<Pawn> EscapingLentColonists = new List<Pawn>();
+        
         public Client Client;
-        public List<MissionOffer> Offers => RimLinkComp.Instance.Missions;
 
+        /// <summary>
+        /// List of all offers that are pending or active. Use <see cref="AddOffer"/> to add new offers.
+        /// </summary>
+        public IEnumerable<MissionOffer> Offers => _offers;
+
+        private List<MissionOffer> _offers = new List<MissionOffer>();
+        
+        private float _queuedResearch;
         private float _lastResearchUpdate;
 
         public void OnConnected(Client client)
@@ -25,24 +34,49 @@ namespace PlayerTrade.Missions
             client.PacketReceived += OnPacketReceived;
         }
 
+        public void AddOffer(MissionOffer offer)
+        {
+            if (_offers.Any(o => o.Guid == offer.Guid))
+            {
+                Log.Warn("Attempt to add offer that's already added! " + offer.Guid);
+                return;
+            }
+            
+            _offers.Add(offer);
+        }
+
+        public MissionOffer GetOffer(string guid)
+        {
+            return Offers.FirstOrDefault(offer => offer.Guid == guid);
+        }
+        
         public void Update()
         {
+            // Update offers
             foreach (MissionOffer offer in Offers)
             {
                 if (offer.Active)
                     offer.Update();
             }
 
+            // Perform queued research
             if (Time.realtimeSinceStartup > _lastResearchUpdate + ResearchMissionWorker.ResearchUpdateInterval)
             {
                 _lastResearchUpdate = Time.realtimeSinceStartup;
 
                 ResearchManager research = Find.ResearchManager;
-                if (RimLinkComp.Instance.QueuedResearch > 0f && research.currentProj != null)
+                if (_queuedResearch > 0f && research.currentProj != null)
                 {
                     // Do research
-                    RimLinkComp.Instance.QueuedResearch -= ResearchUtil.AddResearchPoints(RimLinkComp.Instance.QueuedResearch);
+                    _queuedResearch -= ResearchUtil.AddResearchPoints(_queuedResearch);
                 }
+            }
+            
+            // Try and let escaping colonists escape
+            foreach (Pawn escapingLentColonist in EscapingLentColonists)
+            {
+                var comp = escapingLentColonist.TryGetComp<LentColonistComp>();
+                comp.TryEscape();
             }
         }
 
@@ -51,7 +85,7 @@ namespace PlayerTrade.Missions
             if (e.Packet is PacketMissionOffer offerPacket)
             {
                 MissionOffer offer = MissionOffer.FromPacket(offerPacket);
-                Offers.Add(offer);
+                AddOffer(offer);
                 Log.Message($"Received mission offer {offer.Guid} from {Client.GetName(offer.From)}");
                 offer.MissionWorker.OfferReceived();
             }
@@ -75,7 +109,7 @@ namespace PlayerTrade.Missions
             else if (e.Packet is PacketResearch researchPacket)
             {
                 // Queue research work
-                RimLinkComp.Instance.QueuedResearch += researchPacket.Research;
+                _queuedResearch += researchPacket.Research;
             }
         }
 
@@ -120,7 +154,7 @@ namespace PlayerTrade.Missions
 
         private void HandleReturnLentColonistsPacket(PacketReturnLentColonists packet)
         {
-            MissionOffer offer = RimLinkComp.Find().Missions.FirstOrDefault(o => o.Guid == packet.Guid);
+            MissionOffer offer = RimLinkComp.Instance.Get<MissionSystem>().GetOffer(packet.Guid);
             if (offer == null)
             {
                 Log.Warn("Attempt to return colonists for an unknown labor offer! " + packet.Guid);
@@ -133,9 +167,15 @@ namespace PlayerTrade.Missions
 
         private void HandleColonistUpdatePacket(PacketLentColonistUpdate packet)
         {
+            if (_offers == null)
+            {
+                Debug.LogError("offers is null!");
+                return;
+            }
+            
             Pawn pawn = null;
             MissionOffer activeOffer = null;
-            foreach (MissionOffer offer in Client.RimLinkComp.Missions)
+            foreach (MissionOffer offer in Offers)
             {
                 foreach (Pawn p in offer.Colonists)
                 {
@@ -186,7 +226,9 @@ namespace PlayerTrade.Missions
 
         public void ExposeData()
         {
-
+            Scriber.Collection(ref _offers, "missions", LookMode.Deep);
+            Scriber.Collection(ref EscapingLentColonists, "escaping_lent_colonists", LookMode.Reference);
+            Scribe_Values.Look(ref _queuedResearch, "queued_research");
         }
     }
 }

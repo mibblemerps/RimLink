@@ -38,16 +38,10 @@ namespace PlayerTrade
 
         public List<Player> RememberedPlayers;
 
-        public List<BountyRaid> RaidsPending = new List<BountyRaid>();
-        public List<MissionOffer> Missions = new List<MissionOffer>();
-        public List<Pawn> EscapingLentColonists = new List<Pawn>();
-
         /// <summary>
         /// Player factions. GUID -> Faction
         /// </summary>
         public Dictionary<string, Faction> PlayerFactions = new Dictionary<string, Faction>();
-
-        public float QueuedResearch;
 
         private List<string> _tmpPlayerFactionGuids;
         private List<Faction> _tmpPlayerFactions;
@@ -121,14 +115,8 @@ namespace PlayerTrade
             // Initialize lists
             if (RememberedPlayers == null)
                 RememberedPlayers = new List<Player>();
-            if (RaidsPending == null)
-                RaidsPending = new List<BountyRaid>();
-            if (Missions == null)
-                Missions = new List<MissionOffer>();
             if (PlayerFactions == null)
                 PlayerFactions = new Dictionary<string, Faction>();
-            if (EscapingLentColonists == null)
-                EscapingLentColonists = new List<Pawn>();
 
             // Generate a secret if we don't have one (not crytographically great - but it'll do for this)
             if (string.IsNullOrWhiteSpace(Secret))
@@ -267,32 +255,6 @@ namespace PlayerTrade
                 _lastUpdateSent = Time.realtimeSinceStartup;
                 Client?.MarkDirty(); // marking as dirty causes a new update to be sent
             }
-
-            foreach (Pawn escapingLentColonist in EscapingLentColonists)
-            {
-                var comp = escapingLentColonist.TryGetComp<LentColonistComp>();
-                comp.TryEscape();
-            }
-
-        }
-
-        public override void GameComponentTick()
-        {
-            base.GameComponentTick();
-
-            // Trigger pending raids
-            var raidsToRemove = new List<BountyRaid>();
-            foreach (BountyRaid raid in RaidsPending)
-            {
-                if (--raid.ArrivesInTicks <= 0)
-                {
-                    // Trigger raid
-                    raid.Execute();
-                    raidsToRemove.Add(raid);
-                }
-            }
-            foreach (BountyRaid raid in raidsToRemove)
-                RaidsPending.Remove(raid);
         }
 
         private void OnPlayerConnected(object sender, Player e)
@@ -324,12 +286,16 @@ namespace PlayerTrade
             Scribe_Values.Look(ref Guid, "guid");
             Scribe_Values.Look(ref Secret, "secret");
             Scribe_Collections.Look(ref RememberedPlayers, "players", LookMode.Deep);
-            Scribe_Collections.Look(ref RaidsPending, "raids_pending");
-            Scribe_Collections.Look(ref Missions, "missions", LookMode.Deep);
-            Scribe_Collections.Look(ref EscapingLentColonists, "escaping_lent_colonists", LookMode.Reference);
             Scribe_Collections.Look(ref PlayerFactions, "player_factions", LookMode.Value, LookMode.Reference, ref _tmpPlayerFactionGuids, ref _tmpPlayerFactions);
             Scribe_Values.Look(ref Anticheat, "anticheat", false, true);
-            Scribe_Values.Look(ref QueuedResearch, "queued_research");
+
+            // Expose systems
+            foreach (KeyValuePair<Type, ISystem> kv in Systems)
+            {
+                Scribe.EnterNode(kv.Key.FullName);
+                kv.Value.ExposeData();
+                Scribe.ExitNode();
+            }
         }
 
         /// <summary>

@@ -27,7 +27,7 @@ namespace PlayerTrade.Missions
                 return lentColonistComp.MissionOffer;
 
             var guid = pawn.TryGetComp<PawnGuidThingComp>().Guid;
-            return RimLinkComp.Instance.Missions.LastOrDefault(offer =>
+            return RimLinkComp.Instance.Get<MissionSystem>().Offers.FirstOrDefault(offer =>
             {
                 foreach (Pawn offerPawn in offer.Colonists)
                 {
@@ -104,7 +104,7 @@ namespace PlayerTrade.Missions
 
             offer.OfferSend();
 
-            RimLinkComp.Instance.Get<MissionSystem>().Offers.Add(offer);
+            RimLinkComp.Instance.Get<MissionSystem>().AddOffer(offer);
             RimLinkComp.Instance.Client.SendPacket(offer.ToPacket());
 
             return offer;

@@ -224,6 +224,7 @@
     <Compile Include="Util\ArrivalUtil.cs" />
     <Compile Include="Util\ListUtil.cs" />
     <Compile Include="Util\ResearchUtil.cs" />
+    <Compile Include="Util\Scriber.cs" />
     <Compile Include="Util\StringUtil.cs" />
   </ItemGroup>
   <ItemGroup />

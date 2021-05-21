@@ -75,7 +75,7 @@ namespace PlayerTrade.Missions
             // Set a time the colonist will try to "escape" home
             //TryEscapeHomeTick = Find.TickManager.TicksGame + Mathf.RoundToInt(Rand.Range(1f, 3f) * 60000);
             TryEscapeHomeTick = Find.TickManager.TicksGame + 1800;
-            RimLinkComp.Instance.EscapingLentColonists.Add(Pawn);
+            RimLinkComp.Instance.Get<MissionSystem>().EscapingLentColonists.Add(Pawn);
             MissionOffer.Notify_LentColonistEvent(Pawn, PacketLentColonistUpdate.ColonistEvent.Escaped);
         }
 

@@ -18,7 +18,7 @@ namespace PlayerTrade.Missions.Quest
 
             List<Pawn> returned = QuestGen.slate.Get("returned_pawns", new List<Pawn>());
 
-            MissionOffer offer = RimLinkComp.Instance.Missions.FirstOrDefault(o => o.Guid == Guid);
+            MissionOffer offer = RimLinkComp.Instance.Get<MissionSystem>().GetOffer(Guid);
             if (offer == null)
             {
                 Log.Error("Labor offer not found!");

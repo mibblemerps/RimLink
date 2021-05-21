@@ -25,7 +25,7 @@ namespace PlayerTrade.Missions.Quest
 
             Log.Message($"Return colonists. Required things loaded = {shuttleComp.AllRequiredThingsLoaded}, Contents = \"{shuttleComp.Transporter.innerContainer.ContentsString}\"");
 
-            MissionOffer offer = RimLinkComp.Find().Missions.First(o => o.Guid == Guid);
+            MissionOffer offer = RimLinkComp.Instance.Get<MissionSystem>().GetOffer(Guid);
             if (offer == null)
             {
                 Log.Warn($"Couldn't find labor offer: {Guid}");
