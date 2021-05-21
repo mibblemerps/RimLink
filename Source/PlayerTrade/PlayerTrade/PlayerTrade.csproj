@@ -97,6 +97,10 @@
     <Compile Include="Dialog_SetServerIp.cs" />
     <Compile Include="GameSettings.cs" />
     <Compile Include="ISystem.cs" />
+    <Compile Include="MainTab\ITab.cs" />
+    <Compile Include="MainTab\MainTabWindow_Server.cs" />
+    <Compile Include="MainTab\TabChat.cs" />
+    <Compile Include="MainTab\TabTrades.cs" />
     <Compile Include="Missions\ChoiceLetter_MissionOffer.cs" />
     <Compile Include="Missions\Dialog_AddPawnsToMission.cs" />
     <Compile Include="Missions\Dialog_MissionSelect.cs" />
@@ -137,7 +141,6 @@
     <Compile Include="Mail\Dialog_SendLetter.cs" />
     <Compile Include="Mail\MailSystem.cs" />
     <Compile Include="Mail\PacketMail.cs" />
-    <Compile Include="MainTabWindow_Server.cs" />
     <Compile Include="Mechanoids\Designer\Dialog_DesignMechCluster.cs" />
     <Compile Include="Mechanoids\Designer\MechCluster.cs" />
     <Compile Include="Mechanoids\Designer\MechPart.cs" />
@@ -227,7 +230,6 @@
     <Compile Include="Util\Scriber.cs" />
     <Compile Include="Util\StringUtil.cs" />
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>copy "$(TargetDir)\$(TargetFileName)" "$(SolutionDir)\..\..\Assemblies\PlayerTrade.dll"

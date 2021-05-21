@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using PlayerTrade.Net;
 using PlayerTrade.Net.Packets;
@@ -81,6 +83,17 @@ namespace PlayerTrade.Trade
             }
 
             return tradeOffer;
+        }
+
+        public static IEnumerable<ThingDef> GetSomeThingDefs(TradeOffer offer, int limit)
+        {
+            foreach (TradeOffer.TradeThing trade in offer.Things)
+            {
+                if (limit-- <= 0) break;
+                Thing thing = trade.AllThings.FirstOrDefault();
+                if (thing != null)
+                    yield return thing.def;
+            }
         }
     }
 }

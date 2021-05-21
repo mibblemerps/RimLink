@@ -1,72 +1,31 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using PlayerTrade.Chat;
 using RimWorld;
 using UnityEngine;
 using Verse;
 
-namespace PlayerTrade
+namespace PlayerTrade.MainTab
 {
-    public class MainTabWindow_Server : MainTabWindow
+    public class TabChat : ITab
     {
-        public override Vector2 RequestedTabSize => new Vector2(1000f, 520f);
-        public override MainTabWindowAnchor Anchor => MainTabWindowAnchor.Right;
-
         private string _chatBoxContent = "";
         private Vector2 _playersScrollPos;
         private Vector2 _chatHistoryScrollPos;
+        
         private float _lastHeight = -1f;
 
-        public MainTabWindow_Server()
+        public TabChat()
         {
-            closeOnAccept = false;
-
-            if (!RimLinkMod.Active)
-                return;
-
             RimLinkComp.Instance.Get<ChatSystem>().MessageReceived += (sender, message) =>
             {
                 _chatHistoryScrollPos = new Vector2(0, _lastHeight * 2f);
             };
         }
 
-        public override void PostOpen()
+        public void Draw(Rect mainRect)
         {
-            base.PostOpen();
-
-            if (!RimLinkMod.Active && string.IsNullOrWhiteSpace(RimLinkMod.Instance.Settings.ServerIp))
-            {
-                // Not connected, offer to connect to server
-                Find.WindowStack.Add(new Dialog_SetServerIp());
-                Close(false);
-            }
-        }
-
-        public override void DoWindowContents(Rect inRect)
-        {
-            base.DoWindowContents(inRect);
-
-            if (!RimLinkMod.Active)
-            {
-                DrawDisconnectedFromServer(inRect);
-                return;
-            }
-
-            Rect topBar = new Rect(0, 0, inRect.width, 35f);
-            Text.Anchor = TextAnchor.UpperLeft;
-            Text.Font = GameFont.Medium;
-            Widgets.Label(topBar, Faction.OfPlayer.Name);
-            Text.Font = GameFont.Small;
-            Text.Anchor = TextAnchor.UpperLeft;
-
-            if (Widgets.ButtonText(topBar.RightPartPixels(110f).TopPartPixels(20f), "Change Name"))
-                ChangeFactionName();
-
-            Rect mainRect = new Rect(0, topBar.yMax, inRect.width, inRect.height - topBar.height);
-
             Rect playersRect = mainRect.LeftPart(0.25f);
             DrawPlayerList(playersRect);
 
@@ -74,33 +33,10 @@ namespace PlayerTrade
             DrawChat(chatRect);
         }
 
-        private void DrawDisconnectedFromServer(Rect rect)
-        {
-            GUI.BeginGroup(rect);
-
-            Text.Font = GameFont.Medium;
-            Text.Anchor = TextAnchor.MiddleCenter;
-            Rect mainLabelRect = new Rect(0f, 20f, rect.width, 35f);
-            Widgets.Label(mainLabelRect, "Disconnected from server");
-            Text.Font = GameFont.Small;
-
-            Rect reconnectingLabelRect = new Rect(0, mainLabelRect.yMax + 20f, rect.width, 25f);
-            if (RimLinkComp.Instance.Connecting)
-                Widgets.Label(reconnectingLabelRect, $"Reconnecting now...");
-            else if (!float.IsNaN(RimLinkComp.Instance.TimeUntilReconnect))
-                Widgets.Label(reconnectingLabelRect, $"Reconnecting in {Mathf.CeilToInt(Mathf.Max(0f, RimLinkComp.Instance.TimeUntilReconnect))} seconds...");
-            Text.Anchor = TextAnchor.UpperLeft;
-
-            Rect buttonRect = new Rect((rect.width / 2f - 75f), reconnectingLabelRect.yMax + 20f, 150f, 35f);
-            if (!RimLinkComp.Instance.Connecting && Widgets.ButtonText(buttonRect, "Reconnect"))
-                RimLinkComp.Instance.QueueConnect();
-
-            GUI.EndGroup();
-        }
-
         private void DrawPlayerList(Rect rect)
         {
-            Widgets.DrawBoxSolid(rect, new Color(0.179f, 0.214f, 0.246f));
+            //Widgets.DrawBoxSolid(rect, new Color(0.179f, 0.214f, 0.246f));
+            Widgets.DrawMenuSection(rect);
 
             List<Player> players = RimLinkComp.Instance.Client.OnlinePlayers.Values.ToList();
 
@@ -201,7 +137,7 @@ namespace PlayerTrade
                 _chatBoxContent = "";
                 return;
             }
-            if (_chatBoxContent.Equals("/tcpclose"))
+            if (_chatBoxContent.Equals("/tcpclose", StringComparison.InvariantCultureIgnoreCase))
             {
                 RimLinkComp.Instance.Client.Tcp.Close();
                 _chatBoxContent = "";
@@ -218,20 +154,10 @@ namespace PlayerTrade
             _chatBoxContent = "";
         }
 
-        public override void WindowUpdate()
+        public void Update()
         {
-            base.WindowUpdate();
-
-            if (IsOpen && RimLinkMod.Active) // Causes messages to become "read"
+            if (RimLinkMod.Active) // Causes messages to become "read"
                 RimLinkComp.Instance.Get<ChatSystem>().ReadMessages();
-        }
-
-        private static void ChangeFactionName()
-        {
-            Find.WindowStack.Add(new Dialog_NamePlayerFaction
-            {
-                doCloseX = true
-            });
         }
     }
 }

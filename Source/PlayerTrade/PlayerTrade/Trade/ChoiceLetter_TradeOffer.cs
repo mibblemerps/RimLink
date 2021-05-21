@@ -24,6 +24,13 @@ namespace PlayerTrade.Trade
         {
             get
             {
+                if (!Offer.IsForUs)
+                {
+                    // We sent this offer - don't allow us to "accept" it!
+                    yield return Option_Close;
+                    yield break;
+                }
+                
                 var accept = new DiaOption("Accept");
                 accept.action = Accept;
                 accept.resolveTree = true;
