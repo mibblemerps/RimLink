@@ -5,15 +5,14 @@ using Verse;
 
 namespace PlayerTrade.Mail
 {
-    public class MailSystem
+    public class MailSystem : ISystem
     {
         public Client Client;
 
-        public MailSystem(Client client)
+        public void OnConnected(Client client)
         {
             Client = client;
-
-            Client.PacketReceived += OnPacketReceived;
+            client.PacketReceived += OnPacketReceived;
         }
 
         private void OnPacketReceived(object sender, PacketReceivedEventArgs e)
@@ -41,5 +40,9 @@ namespace PlayerTrade.Mail
                 Patch_CameraDriver_Update.PendingOneshots.Add(DefDatabase<SoundDef>.GetNamed(mail.SoundDefName));
             }
         }
+        
+        public void ExposeData() {}
+
+        public void Update() {}
     }
 }

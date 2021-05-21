@@ -1,4 +1,5 @@
-﻿using Verse;
+﻿using PlayerTrade.Util;
+using Verse;
 
 namespace PlayerTrade.Missions.Escape
 {
@@ -6,7 +7,7 @@ namespace PlayerTrade.Missions.Escape
     {
         public string reason;
 
-        public ArrivalMethod arrivalMethod = ArrivalMethod.WalkIn;
+        public ArrivalUtil.Method arrivalMethod = ArrivalUtil.Method.WalkIn;
 
         public bool tired = false;
         public bool hungry = false;

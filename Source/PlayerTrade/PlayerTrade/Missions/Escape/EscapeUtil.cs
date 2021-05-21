@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using PlayerTrade.Util;
 using RimWorld;
 using UnityEngine;
 using Verse;
@@ -53,25 +54,8 @@ namespace PlayerTrade.Missions.Escape
 
             Map map = Find.AnyPlayerHomeMap;
 
-            switch (escapeDef.arrivalMethod)
-            {
-                case LentColonistEscapeDef.ArrivalMethod.WalkIn:
-                    if (!RCellFinder.TryFindRandomPawnEntryCell(out IntVec3 cell, map, CellFinder.EdgeRoadChance_Friendly, false))
-                        goto case LentColonistEscapeDef.ArrivalMethod.DropPod; // use drop pods if we couldn't find an edge cell
-                    GenPlace.TryPlaceThing(pawn, cell, map, ThingPlaceMode.Near);
-                    pawn.Position = cell;
-                    break;
-
-                case LentColonistEscapeDef.ArrivalMethod.Shuttle:
-                    if (!ModLister.RoyaltyInstalled)
-                        goto case LentColonistEscapeDef.ArrivalMethod.DropPod; // fallback to drop pods if royalty isn't installed
-                    MakeDropoffShuttle(map, pawn);
-                    break;
-
-                case LentColonistEscapeDef.ArrivalMethod.DropPod:
-                    DropPodUtility.DropThingsNear(DropCellFinder.RandomDropSpot(map), map, new []{pawn}, leaveSlag: true, forbid: false);
-                    break;
-            }
+            // Pawns arrive
+            ArrivalUtil.Arrive(map, escapeDef.arrivalMethod, pawn);
 
             pawn.jobs?.StopAll();
             

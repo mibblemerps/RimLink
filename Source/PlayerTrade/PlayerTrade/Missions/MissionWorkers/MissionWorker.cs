@@ -2,10 +2,12 @@
 using System.Linq;
 using PlayerTrade.Net;
 using PlayerTrade.Net.Packets;
+using PlayerTrade.Util;
 using RimWorld;
 using RimWorld.QuestGen;
 using UnityEngine;
 using Verse;
+using Verse.Grammar;
 
 namespace PlayerTrade.Missions.MissionWorkers
 {
@@ -85,11 +87,7 @@ namespace PlayerTrade.Missions.MissionWorkers
         {
             // Spawn pawns
             Log.Verbose("Fulfilling as receiver: spawning pawns");
-            foreach (Pawn pawn in Offer.Colonists)
-            {
-                // Spawn pawn
-                TradeUtility.SpawnDropPod(DropCellFinder.TradeDropSpot(map), map, pawn);
-            }
+            ArrivalUtil.Arrive(map, Offer.MissionDef.arrivalMethod, Offer.Colonists.ToArray());
 
             // Create quest
             Log.Verbose("Fulfilling as receiver: creating quest");
@@ -165,6 +163,24 @@ namespace PlayerTrade.Missions.MissionWorkers
             slate.Set("pawns", Offer.Colonists);
             slate.Set("pawn_count", Offer.Colonists.Count);
             slate.Set("home_faction", RimLinkComp.Instance.PlayerFactions[Offer.From]);
+
+            slate.Set("pawnLabelSingular",  Offer.MissionDef.colonistsNounSingular);
+            slate.Set("pawnLabelPlural", Offer.MissionDef.colonistsNounPlural);
+            slate.Set("pawnLabelSingularCap", Offer.MissionDef.colonistsNounSingular.CapitalizeFirst());
+            slate.Set("pawnLabelPluralCap", Offer.MissionDef.colonistsNounPlural.CapitalizeFirst());
+
+            List<Rule> rules = new List<Rule>();
+
+            rules.Add(new Rule_String("pawnLabelSingular", Offer.MissionDef.colonistsNounSingular));
+            rules.Add(new Rule_String("pawnLabelPlural", Offer.MissionDef.colonistsNounPlural));
+            rules.Add(new Rule_String("pawnLabelSingularCap", Offer.MissionDef.colonistsNounSingular.CapitalizeFirst()));
+            rules.Add(new Rule_String("pawnLabelPluralCap", Offer.MissionDef.colonistsNounPlural.CapitalizeFirst()));
+
+            rules.AddRange(GrammarUtility.RulesForPawn("firstPawn", Offer.Colonists.First()));
+
+            QuestGen.AddQuestNameRules(rules);
+            QuestGen.AddQuestDescriptionRules(rules);
+            QuestGen.AddQuestContentRules(rules);
         }
 
         /// <summary>

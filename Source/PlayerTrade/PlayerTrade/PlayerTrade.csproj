@@ -96,6 +96,7 @@
     <Compile Include="Dialog_ConnectingToServer.cs" />
     <Compile Include="Dialog_SetServerIp.cs" />
     <Compile Include="GameSettings.cs" />
+    <Compile Include="ISystem.cs" />
     <Compile Include="Missions\ChoiceLetter_MissionOffer.cs" />
     <Compile Include="Missions\Dialog_AddPawnsToMission.cs" />
     <Compile Include="Missions\Dialog_MissionSelect.cs" />
@@ -104,6 +105,7 @@
     <Compile Include="Missions\LentColonistComp.cs" />
     <Compile Include="Missions\ConfigDialogs\BasicConfigDialog.cs" />
     <Compile Include="Missions\ConfigDialogs\LaborConfigDialog.cs" />
+    <Compile Include="Missions\MissionWorkers\DiplomaticMissionWorker.cs" />
     <Compile Include="Missions\MissionWorkers\LaborMissionWorker.cs" />
     <Compile Include="Missions\MissionWorkers\MissionWorker.cs" />
     <Compile Include="Missions\MissionWorkers\ResearchMissionWorker.cs" />
@@ -111,9 +113,11 @@
     <Compile Include="Missions\Packets\PacketLentColonistUpdate.cs" />
     <Compile Include="Missions\PlayerMissionDef.cs" />
     <Compile Include="Missions\Quest\QuestNode_CleanupRemainingPawns.cs" />
+    <Compile Include="Missions\Quest\QuestNode_DelayCanEndEarly.cs" />
     <Compile Include="Missions\Quest\QuestNode_ResearchSpeedModifier.cs" />
     <Compile Include="Missions\Quest\QuestNode_WorkTypeDefDisabled.cs" />
     <Compile Include="Missions\Quest\QuestPart_CleanupRemainingPawns.cs" />
+    <Compile Include="Missions\Quest\QuestPart_DelayCanEndEarly.cs" />
     <Compile Include="Missions\Quest\QuestPart_ResearchSpeedModifier.cs" />
     <Compile Include="Missions\Quest\QuestPart_WorkTypeDefDisabled.cs" />
     <Compile Include="MainMenuWidget.cs" />
@@ -217,6 +221,7 @@
     <Compile Include="LaunchUtil.cs" />
     <Compile Include="Trade\TradeOfferUI.cs" />
     <Compile Include="Trade\TradeSystem.cs" />
+    <Compile Include="Util\ArrivalUtil.cs" />
     <Compile Include="Util\ListUtil.cs" />
     <Compile Include="Util\ResearchUtil.cs" />
     <Compile Include="Util\StringUtil.cs" />

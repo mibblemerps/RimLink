@@ -34,9 +34,6 @@ namespace PlayerTrade.Net
         public delegate bool PacketPredicate(Packet packet);
 
         public RimLinkComp RimLinkComp;
-        public TradeSystem Trade;
-        public MissionSystem Mission;
-        public ChatSystem Chat;
 
         public ClientState State = ClientState.Disconnected;
         public float LastHeartbeat;
@@ -62,14 +59,6 @@ namespace PlayerTrade.Net
             PlayerUpdated += OnPlayerUpdated;
             PlayerConnected += OnPlayerConnected;
             PlayerDisconnected += OnPlayerDisconnected;
-
-            // Workers
-            Trade = new TradeSystem(this);
-            new RaidSystem(this);
-            Mission = new MissionSystem(this);
-            new MailSystem(this);
-            Chat = new ChatSystem(this);
-            new MechanoidSystem(this);
         }
 
         public async Task Connect(string ip, int port = 35562)
@@ -180,8 +169,6 @@ namespace PlayerTrade.Net
                 Log.Message("Connection timed out");
                 Disconnect();
             }
-
-            Mission.Update();
         }
 
         public void MarkDirty(bool sendPacket = true, bool mapIndependent = false)

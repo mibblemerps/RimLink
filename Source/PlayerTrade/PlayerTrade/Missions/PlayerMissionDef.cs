@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using PlayerTrade.Missions.MissionWorkers;
+using PlayerTrade.Util;
 using RimWorld;
 using Verse;
 
@@ -27,6 +28,10 @@ namespace PlayerTrade.Missions
 
         public FloatRange days = new FloatRange(0.1f, 9999f); // 4 years
         public IntRange colonists = new IntRange(1, 1);
+        public string colonistsNounSingular = "colonist";
+        public string colonistsNounPlural = "colonists";
+
+        public ArrivalUtil.Method arrivalMethod = ArrivalUtil.Method.DropPod;
 
         public string allReturnedLetterTitle = "All Colonists Returned ({player})";
         public string allReturnedLetterBody = "The {mission} has concluded. {player} has returned all your {colonists}.";

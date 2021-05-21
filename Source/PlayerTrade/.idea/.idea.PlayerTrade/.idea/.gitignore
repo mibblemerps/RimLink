@@ -1,0 +1,13 @@
+﻿# Default ignored files
+/shelf/
+/workspace.xml
+# Rider ignored files
+/modules.xml
+/contentModel.xml
+/projectSettingsUpdater.xml
+/.idea.PlayerTrade.iml
+# Datasource local storage ignored files
+/../../../../../../../../../../../../../:\Users\me\source\repos\RimWorld\Mods\PlayerTrade\Source\PlayerTrade\.idea\.idea.PlayerTrade\.idea/dataSources/
+/dataSources.local.xml
+# Editor-based HTTP Client requests
+/httpRequests/

@@ -27,7 +27,7 @@ namespace PlayerTrade
             if (!RimLinkMod.Active)
                 return;
 
-            RimLinkComp.Instance.Client.Chat.MessageReceived += (sender, message) =>
+            RimLinkComp.Instance.Get<ChatSystem>().MessageReceived += (sender, message) =>
             {
                 _chatHistoryScrollPos = new Vector2(0, _lastHeight * 2f);
             };
@@ -145,7 +145,7 @@ namespace PlayerTrade
             Rect viewRect = new Rect(0, 0, chatHistoryRect.width - 16f, _lastHeight < 0f ? chatHistoryRect.height : _lastHeight);
             Widgets.BeginScrollView(chatHistoryRect, ref _chatHistoryScrollPos, viewRect);
             _lastHeight = 0f;
-            foreach (var msg in RimLinkComp.Instance.Client.Chat.Messages)
+            foreach (var msg in RimLinkComp.Instance.Get<ChatSystem>().Messages)
             {
                 _lastHeight += DrawMessage(viewRect, _lastHeight, msg, false);
             }
@@ -197,7 +197,7 @@ namespace PlayerTrade
             }
             if (_chatBoxContent.Equals("/clear", StringComparison.InvariantCultureIgnoreCase))
             {
-                RimLinkComp.Instance.Client.Chat.Clear();
+                RimLinkComp.Instance.Get<ChatSystem>().Clear();
                 _chatBoxContent = "";
                 return;
             }
@@ -223,7 +223,7 @@ namespace PlayerTrade
             base.WindowUpdate();
 
             if (IsOpen && RimLinkMod.Active) // Causes messages to become "read"
-                RimLinkComp.Instance.Client.Chat.ReadMessages();
+                RimLinkComp.Instance.Get<ChatSystem>().ReadMessages();
         }
 
         private static void ChangeFactionName()

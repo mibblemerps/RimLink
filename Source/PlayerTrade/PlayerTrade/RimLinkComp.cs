@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using PlayerTrade.Anticheat;
+using PlayerTrade.Chat;
 using PlayerTrade.Mail;
+using PlayerTrade.Mechanoids;
 using PlayerTrade.Missions;
 using PlayerTrade.Net;
 using PlayerTrade.Raids;
@@ -52,6 +54,8 @@ namespace PlayerTrade
 
         public Client Client;
 
+        public readonly Dictionary<Type, ISystem> Systems = new Dictionary<Type, ISystem>();
+
         /// <summary>
         /// Should we attempt to reconnect when we see a disconnection? When we've been kicked, this is set to false.
         /// </summary>
@@ -67,6 +71,12 @@ namespace PlayerTrade
 
         public RimLinkComp(Game game)
         {
+            AddSystem(new TradeSystem());
+            AddSystem(new RaidSystem());
+            AddSystem(new MissionSystem());
+            AddSystem(new MailSystem());
+            AddSystem(new ChatSystem());
+            AddSystem(new MechanoidSystem());
         }
 
         public override void FinalizeInit()
@@ -140,7 +150,21 @@ namespace PlayerTrade
             QueueConnect();
         }
 
-        public void QueueConnect(float seconds = 0f)
+        /// <summary>
+        /// Get the instance of a mod sub-system.
+        /// </summary>
+        /// <typeparam name="T">Which system</typeparam>
+        public T Get<T>() where T : ISystem
+        {
+            return (T) Systems[typeof(T)];
+        }
+        
+        private void AddSystem(ISystem system)
+        {
+            Systems.Add(system.GetType(), system);
+        }
+
+        public void QueueConnect(float seconds = 0f) // todo: can we move this out of here?
         {
             if (Client?.Tcp != null && Client.Tcp.Connected)
             {
@@ -162,8 +186,13 @@ namespace PlayerTrade
             Log.Message("Connected to server. GUID: " + Guid);
             Messages.Message($"Connected to server", MessageTypeDefOf.NeutralEvent, false);
 
+            // Prompt to user to enable anticheat
             if (!Anticheat && Client.GameSettings.Anticheat)
                 AnticheatUtil.ShowEnableAnticheatDialog();
+
+            // Inform mod systems that we're connected
+            foreach (ISystem system in Systems.Values)
+                system.OnConnected(Client);
 
             Client.MarkDirty();
         }
@@ -225,6 +254,10 @@ namespace PlayerTrade
             base.GameComponentUpdate();
 
             Client?.Update();
+            
+            // Systems update
+            foreach (ISystem system in Systems.Values)
+                system.Update();
 
             ReconnectUpdate();
 

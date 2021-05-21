@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+
+  <QuestScriptDef>
+    <defName>PlayerMission_DiplomaticMission</defName>
+    <isRootSpecial>true</isRootSpecial>
+    <autoAccept>true</autoAccept>
+    <questDescriptionAndNameRules>
+      <rulesStrings>
+        <li>questName->Diplomat from [from]</li>
+        <li>questName->Diplomatic Mission with [from]</li>
+        <li>questName->Diplomatic Summit with [from]</li>
+        <li>questName->[royal_title] from [from]</li>
+        
+        <li>questDescription->[royalPawn], a [royal_title] from [from] is visiting your colony for [days] days.\n\nYou will be expected to keep them safe and satisfy their royal needs.\n\nTheir mood should be kept above 50%.</li>
+      </rulesStrings>
+    </questDescriptionAndNameRules>
+
+    <root Class="QuestNode_Sequence">
+      <nodes>
+        <li Class="QuestNode_SubScript">
+          <def>PlayerMission_Base</def>
+        </li>
+
+        <!-- Won't do work -->
+        <li Class="QuestNode_WorkDisabled">
+          <pawns>$pawns</pawns>
+          <disabledWorkTags>
+            <li>AllWork</li>
+          </disabledWorkTags>
+        </li>
+
+        <!-- Mood threshold -->
+        <li Class="QuestNode_MoodBelow">
+          <pawns>$pawns</pawns>
+          <threshold>0.5</threshold>
+          <node Class="QuestNode_Sequence">
+            <!-- Mood dropped too low. Call in shuttle to go home. -->
+            <nodes>
+              <li Class="QuestNode_Letter">
+                <label>$highest_ranking_pawn leaving</label>
+                <letterDef>NegativeEvent</letterDef>
+                <text>
+                  $highest_ranking_pawn is not happy with the conditions here and has decided to leave.\n\nThe shuttle will arrive shortly.
+                </text>
+              </li>
+              <li Class="QuestNode_Delay">
+                <delayTicksRange>1200~2200</delayTicksRange>
+                <node Class="QuestNode_SendSignals">
+                  <outSignals>
+                  <li>ShuttleArriveNow</li>
+                </outSignals>
+                </node>
+              </li>
+            </nodes>
+          </node>
+        </li>
+      </nodes>
+    </root>
+  </QuestScriptDef>
+  
+</Defs>

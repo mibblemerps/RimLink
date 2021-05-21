@@ -9,17 +9,16 @@ using Verse;
 
 namespace PlayerTrade.Trade
 {
-    public class TradeSystem
+    public class TradeSystem : ISystem
     {
         public Client Client;
 
         public List<TradeOffer> ActiveTradeOffers = new List<TradeOffer>();
 
-        public TradeSystem(Client client)
+        public void OnConnected(Client client)
         {
             Client = client;
-
-            Client.PacketReceived += OnPacketReceived;
+            client.PacketReceived += OnPacketReceived;
         }
 
         private void OnPacketReceived(object sender, PacketReceivedEventArgs e)
@@ -156,6 +155,16 @@ namespace PlayerTrade.Trade
             offer.TradeAccepted?.TrySetResult(confirm);
 
             ActiveTradeOffers.Remove(offer);
+        }
+
+        public void Update()
+        {
+            
+        }
+        
+        public void ExposeData()
+        {
+            
         }
     }
 }

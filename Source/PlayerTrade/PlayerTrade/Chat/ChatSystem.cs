@@ -8,7 +8,7 @@ using Verse;
 
 namespace PlayerTrade.Chat
 {
-    public class ChatSystem
+    public class ChatSystem : ISystem
     {
         public static int ChatMessageLimit = 200;
 
@@ -34,12 +34,15 @@ namespace PlayerTrade.Chat
         private int _unreadMessages = 0;
         private MainButtonDef _mainTabDef;
 
-        public ChatSystem(Client client)
+        public ChatSystem()
+        {
+            _mainTabDef = DefDatabase<MainButtonDef>.GetNamed("Server");
+        }
+
+        public void OnConnected(Client client)
         {
             Client = client;
-
-            Client.PacketReceived += OnPacketReceived;
-            _mainTabDef = DefDatabase<MainButtonDef>.GetNamed("Server");
+            client.PacketReceived += OnPacketReceived;
         }
 
         public void AddMessage(ChatMessage message)
@@ -87,5 +90,9 @@ namespace PlayerTrade.Chat
                 }
             }
         }
+        
+        public void ExposeData() {}
+
+        public void Update() {}
     }
 }

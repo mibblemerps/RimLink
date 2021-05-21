@@ -12,18 +12,17 @@ using Verse;
 
 namespace PlayerTrade.Missions
 {
-    public class MissionSystem
+    public class MissionSystem : ISystem
     {
         public Client Client;
         public List<MissionOffer> Offers => RimLinkComp.Instance.Missions;
 
         private float _lastResearchUpdate;
 
-        public MissionSystem(Client client)
+        public void OnConnected(Client client)
         {
             Client = client;
-
-            Client.PacketReceived += OnPacketReceived;
+            client.PacketReceived += OnPacketReceived;
         }
 
         public void Update()
@@ -99,9 +98,6 @@ namespace PlayerTrade.Missions
             bool fulfill = offer.CanFulfillAsSender;
 
             Log.Message($"Received acceptance of mission offer {offer.Guid}. Fulfill = {fulfill}");
-
-            // Add as active labor offer
-            RimLinkComp.Instance.Missions.Add(offer);
 
             Client.SendPacket(new PacketConfirmMissionOffer
             {

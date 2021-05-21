@@ -3,6 +3,11 @@
 
   <QuestScriptDef>
     <defName>PlayerMission_Base</defName>
+    <questContentRules>
+      <rulesStrings>
+        <li>shuttle_arrived(pawn_count==1)->The shuttle is here to return the [pawnLabelSingular] back to [from].\n\nIf the [pawnLabelSingular] isn't loaded onto the shuttle, they'll attempt to leave the map. If you capture them $from will be notified.</li>
+      </rulesStrings>
+    </questContentRules>
 
     <root Class="QuestNode_Sequence">
       <nodes>
@@ -17,8 +22,9 @@
         </li>
 
         <!-- Shuttle arrival delay -->
-        <li Class="QuestNode_Delay">
+        <li Class="PlayerTrade.Missions.Quest.QuestNode_DelayCanEndEarly">
           <delayTicks>$shuttle_arrival_ticks</delayTicks>
+          <inSignalEnd>ShuttleArriveNow</inSignalEnd>
           <node Class="QuestNode_Sequence">
             <nodes>
               <!-- Generate shuttle -->
@@ -36,7 +42,8 @@
               <li Class="QuestNode_Letter">
                 <label>Shuttle Arrived ($from)</label>
                 <text>
-                  The shuttle is here to return lent colonists back to $from.
+                  The shuttle is here to return the $noun back to $from.\n\n
+                  If the $noun aren't loaded onto the shuttle, they'll attempt to leave the map. If you capture them $from will be notified.
                 </text>
                 <lookTargets>$shuttle</lookTargets>
               </li>

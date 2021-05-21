@@ -104,7 +104,7 @@ namespace PlayerTrade.Missions
 
             offer.OfferSend();
 
-            RimLinkComp.Instance.Client.Mission.Offers.Add(offer);
+            RimLinkComp.Instance.Get<MissionSystem>().Offers.Add(offer);
             RimLinkComp.Instance.Client.SendPacket(offer.ToPacket());
 
             return offer;

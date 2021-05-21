@@ -3,14 +3,19 @@ using PlayerTrade.Net.Packets;
 
 namespace PlayerTrade.Raids
 {
-    public class RaidSystem
+    public class RaidSystem : ISystem
     {
         public Client Client;
 
-        public RaidSystem(Client client)
+        public void OnConnected(Client client)
         {
             Client = client;
-            Client.PacketReceived += OnPacketReceived;
+            client.PacketReceived += OnPacketReceived;
+        }
+
+        public void ExposeData()
+        {
+            
         }
 
         private void OnPacketReceived(object sender, PacketReceivedEventArgs e)
@@ -22,5 +27,7 @@ namespace PlayerTrade.Raids
                 raidPacket.Raid.InformTargetBountyPlaced();
             }
         }
+
+        public void Update() {}
     }
 }

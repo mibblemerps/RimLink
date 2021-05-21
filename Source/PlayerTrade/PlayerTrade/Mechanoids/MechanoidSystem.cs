@@ -1,21 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using PlayerTrade.Net;
+﻿using PlayerTrade.Net;
 using PlayerTrade.Net.Packets;
 
 namespace PlayerTrade.Mechanoids
 {
-    public class MechanoidSystem
+    public class MechanoidSystem : ISystem
     {
         public Client Client;
 
-        public MechanoidSystem(Client client)
+        public void OnConnected(Client client)
         {
             Client = client;
-
             client.PacketReceived += OnPacketReceived;
         }
 
@@ -26,5 +20,9 @@ namespace PlayerTrade.Mechanoids
                 Log.Message($"Mechanoid cluster from {mechPacket.From}. Parts = {mechPacket.Cluster.Parts.Count}");
             }
         }
+        
+        public void ExposeData() {}
+
+        public void Update() {}
     }
 }

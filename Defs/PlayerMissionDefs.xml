@@ -9,6 +9,8 @@
     <questScriptDefName>PlayerMission_Labor</questScriptDefName>
     <configDialogClass>PlayerTrade.Missions.ConfigDialogs.LaborConfigDialog</configDialogClass>
     <colonists>1~9999</colonists>
+    <colonistsNounSingular>laborer</colonistsNounSingular>
+    <colonistsNounPlural>laborers</colonistsNounPlural>
   </PlayerTrade.Missions.PlayerMissionDef>
 
   <PlayerTrade.Missions.PlayerMissionDef>
@@ -17,6 +19,20 @@
     <workerClass>PlayerTrade.Missions.MissionWorkers.ResearchMissionWorker</workerClass>
     <questScriptDefName>PlayerMission_Research</questScriptDefName>
     <days>4~4</days>
+    <colonistsNounSingular>researcher</colonistsNounSingular>
+    <colonistsNounPlural>researchers</colonistsNounPlural>
+  </PlayerTrade.Missions.PlayerMissionDef>
+
+  <PlayerTrade.Missions.PlayerMissionDef>
+    <defName>DiplomaticMission</defName>
+    <label>Diplomatic Mission</label>
+    <workerClass>PlayerTrade.Missions.MissionWorkers.DiplomaticMissionWorker</workerClass>
+    <questScriptDefName>PlayerMission_DiplomaticMission</questScriptDefName>
+    <days>2~7</days>
+    <colonists>1~1</colonists>
+    <arrivalMethod>Shuttle</arrivalMethod>
+    <colonistsNounSingular>diplomat</colonistsNounSingular>
+    <colonistsNounPlural>diplomats</colonistsNounPlural>
   </PlayerTrade.Missions.PlayerMissionDef>
 
   <!--
@@ -25,13 +41,6 @@
     <label>Work Experience</label>
     <days>2~7</days>
     <colonists>1~9999</colonists>
-  </PlayerTrade.Missions.PlayerMissionDef>
-
-  <PlayerTrade.Missions.PlayerMissionDef>
-    <defName>DiplomaticMission</defName>
-    <label>Diplomatic Mission</label>
-    <days>2~7</days>
-    <colonists>1~1</colonists>
   </PlayerTrade.Missions.PlayerMissionDef>
 
   <PlayerTrade.Missions.PlayerMissionDef>
