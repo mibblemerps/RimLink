@@ -64,6 +64,8 @@ namespace PlayerTrade
             Log.Enabled = Settings.LoggingEnabled;
 
             listing.CheckboxLabeled("Enable Main Menu Widget", ref Settings.MainMenuWidgetEnabled);
+            
+            listing.CheckboxLabeled("Enable Chat Notifications", ref Settings.ChatNotificationsEnabled);
 
             listing.End();
             base.DoSettingsWindowContents(inRect);

@@ -19,6 +19,8 @@ namespace PlayerTrade.Chat
         public Client Client;
         public List<ChatMessage> Messages = new List<ChatMessage>(ChatMessageLimit);
 
+        private MessageTypeDef _chatMessageTypeDef;
+
         public int UnreadMessages
         {
             get => _unreadMessages;
@@ -37,6 +39,7 @@ namespace PlayerTrade.Chat
         public ChatSystem()
         {
             _mainTabDef = DefDatabase<MainButtonDef>.GetNamed("Server");
+            _chatMessageTypeDef = DefDatabase<MessageTypeDef>.GetNamed("ChatMessage");
         }
 
         public void OnConnected(Client client)
@@ -53,6 +56,12 @@ namespace PlayerTrade.Chat
             Messages.Add(message);
             if (message.From != Client.Guid)
                 UnreadMessages++; // increment unread messages if it's not from us
+
+            if (RimLinkMod.Instance.Settings.ChatNotificationsEnabled && !message.IsServer)
+            {
+                // Show notification
+                Verse.Messages.Message($"{message.From.GuidToName(true)}: {message.Content}", _chatMessageTypeDef, false);
+            }
 
             MessageReceived?.Invoke(this, message);
         }
