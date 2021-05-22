@@ -106,7 +106,7 @@ namespace PlayerTrade.MainTab
             base.WindowUpdate();
 
             if (IsOpen)
-                _selectedTab.Update();
+                _selectedTab?.Update();
         }
 
         private static void ChangeFactionName()
