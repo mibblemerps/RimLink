@@ -205,6 +205,7 @@
     <Compile Include="Net\Packets\PacketInitiateTrade.cs" />
     <Compile Include="Net\Packets\PacketReceivedEventArgs.cs" />
     <Compile Include="Trade\Packets\PacketRequestColonyResources.cs" />
+    <Compile Include="Trade\Packets\PacketRetractTrade.cs" />
     <Compile Include="Trade\Packets\PacketTradeConfirm.cs" />
     <Compile Include="Trade\Packets\PacketTradeOffer.cs" />
     <Compile Include="Net\Packets\PacketTriggerRaid.cs" />

@@ -22,6 +22,9 @@ namespace PlayerTrade.MainTab
 
             List<TradeOffer> offers = RimLinkComp.Instance.Get<TradeSystem>().ActiveTradeOffers;
 
+            TradeOffer pendingRetract = null;
+            TradeOffer pendingReject = null;
+
             if (offers.Count == 0)
             {
                 Text.Anchor = TextAnchor.MiddleCenter;
@@ -62,7 +65,7 @@ namespace PlayerTrade.MainTab
                     if ((isForUs && trade.CountOffered <= 0) || (!isForUs && trade.CountOffered >= 0)) continue;
                     Thing thing = trade.AllThings.FirstOrDefault();
                     if (thing == null) continue; // null thing?
-                    Widgets.ThingIcon(new Rect(thingX, rect.y, RowHeight * 0.8f, RowHeight * 0.8f).CenteredOnYIn(new Rect(0, RowHeight, 1, 1)), thing);
+                    Widgets.ThingIcon(new Rect(thingX, rect.y, RowHeight * 0.8f, RowHeight * 0.8f).CenteredOnYIn(new Rect(0, rect.y, 1, RowHeight)), thing);
                     thingX += RowHeight;
                     
                     if (++thingCount >= 3) break; // limit things
@@ -78,35 +81,49 @@ namespace PlayerTrade.MainTab
 
                 Rect buttons = rect.RightPartPixels(300).TopPartPixels(30).CenteredOnYIn(rect);
                 buttons.x -= 8;
-                if (Widgets.ButtonInvisible(rect))
-                {
-                    ViewOffer(offer);
-                }
-                else if (offer.Fresh)
+                bool clicked = false;
+                if (offer.Fresh)
                 {
                     // View button
                     if (Widgets.ButtonText(buttons.LeftHalf(), "View"))
+                    {
                         ViewOffer(offer);
+                        clicked = true;
+                    }
 
                     if (isForUs)
                     {
                         // Reject button
                         if (Widgets.ButtonText(buttons.RightHalf(), "Reject"))
-                            offer.Reject();
+                        {
+                            pendingReject = offer;
+                            clicked = true;
+                        }
                     }
                     else
                     {
                         // Retract button
-                        if (Widgets.ButtonText(buttons.RightHalf(), "Retract", active: false))
+                        if (Widgets.ButtonText(buttons.RightHalf(), "Retract"))
                         {
-                            // todo                            
+                            pendingRetract = offer;
+                            clicked = true;
                         }
                     }
+                }
+                
+                if (!clicked && Widgets.ButtonInvisible(rect))
+                {
+                    ViewOffer(offer);
                 }
             }
             Widgets.EndScrollView();
             
             GUI.EndGroup();
+            
+            // Call pending actions (we do this outside the loop to prevent collection modified excepetions)
+            pendingReject?.Reject();
+            if (pendingRetract != null)
+                TradeUtil.RetractOffer(pendingRetract);
         }
 
         public void Update() {}

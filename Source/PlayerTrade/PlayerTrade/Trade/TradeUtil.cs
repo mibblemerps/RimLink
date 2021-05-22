@@ -85,14 +85,30 @@ namespace PlayerTrade.Trade
             return tradeOffer;
         }
 
-        public static IEnumerable<ThingDef> GetSomeThingDefs(TradeOffer offer, int limit)
+        /// <summary>
+        /// <p>Retract a trade offer.</p>
+        /// <p>If this is called by the <b>sender</b>, a packet is sent to inform the other player the trade is retracted.</p>
+        /// <p>If this is called by the <b>receiver</b>, a letter is presented indicating the offer is retracted.</p>
+        /// <p>In either case, the trade offer is removed from the active trade offers, so it will no longer be able to be fulfilled.</p>
+        /// </summary>
+        /// <param name="offer">Offer to retract.</param>
+        public static void RetractOffer(TradeOffer offer)
         {
-            foreach (TradeOffer.TradeThing trade in offer.Things)
+            RimLinkComp.Instance.Get<TradeSystem>().ActiveTradeOffers.Remove(offer);
+            
+            if (!offer.IsForUs)
             {
-                if (limit-- <= 0) break;
-                Thing thing = trade.AllThings.FirstOrDefault();
-                if (thing != null)
-                    yield return thing.def;
+                // Is our offer, send retraction to the target player
+                RimLinkComp.Instance.Client.SendPacket(new PacketRetractTrade {Guid = offer.Guid, For = offer.For});
+            }
+            else
+            {
+                // We received this offer. Tell player the offer has been retracted and remove it locally.
+                RimLinkComp.Instance.Get<TradeSystem>().ActiveTradeOffers.Remove(offer);
+
+                Find.LetterStack.ReceiveLetter($"Trade Offer Retracted ({offer.From.GuidToName()})",
+                    $"{offer.From.GuidToName(true)} has retracted a trade offer.",
+                    LetterDefOf.NegativeEvent);
             }
         }
     }

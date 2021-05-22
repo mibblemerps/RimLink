@@ -43,6 +43,10 @@ namespace PlayerTrade.Trade
             {
                 HandleConfirmTradePacket(confirmTradePacket);
             }
+            else if (e.Packet is PacketRetractTrade retractPacket)
+            {
+                TradeUtil.RetractOffer(ActiveTradeOffers.First(offer => offer.Guid == retractPacket.Guid));
+            }
         }
 
         public void SendOffer(TradeOffer tradeOffer)
