@@ -1,6 +1,6 @@
-﻿namespace PlayerTrade
+﻿namespace PlayerTrade.Util
 {
-    public static class NameUtil
+    public static class PlayerUtil
     {
         /// <summary>
         /// Resolve a GUID to a name in a safe way.
@@ -14,6 +14,16 @@
                 return "{" + guid + "}";
 
             return RimLinkComp.Instance.Client.GetName(guid, colored);
+        }
+
+        /// <summary>
+        /// Get player from their GUID.
+        /// </summary>
+        /// <param name="guid">GUID</param>
+        /// <returns>Player instance.</returns>
+        public static Player GuidToPlayer(this string guid)
+        {
+            return RimLinkMod.Active ? RimLinkComp.Instance.Client.GetPlayer(guid) : null;
         }
     }
 }

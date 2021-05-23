@@ -52,6 +52,12 @@ namespace TradeServer
             _serverTask = Server.Run(port);
             _serverTask.ContinueWith((t) =>
             {
+                if (t.IsFaulted)
+                {
+                    Log.Error("Server crashed.", t.Exception);
+                    if (t.Exception?.InnerException != null)
+                        Log.Error("Inner exception", t.Exception.InnerException);
+                }
                 Log.Message("Server stopped.");
             });
 

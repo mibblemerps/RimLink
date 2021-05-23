@@ -30,6 +30,7 @@ Global
 		{BEA52F26-27C3-4274-BCBF-4F664784C292}.Release|Any CPU.Build.0 = Release|Any CPU
 		{BEA52F26-27C3-4274-BCBF-4F664784C292}.Release|x64.ActiveCfg = Release|Any CPU
 		{BEA52F26-27C3-4274-BCBF-4F664784C292}.Release|x64.Build.0 = Release|Any CPU
+		{BEA52F26-27C3-4274-BCBF-4F664784C292}.Debug|Any CPU.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

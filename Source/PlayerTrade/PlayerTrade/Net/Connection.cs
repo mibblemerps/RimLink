@@ -227,7 +227,9 @@ namespace PlayerTrade.Net
                 catch (Exception e)
                 {
                     Disconnect();
-                    throw new Exception($"Exception reading packet {packet.GetType().Name} (Last Marker = {packetBuffer.LastMarker})", e);
+                    Exception readException = new Exception($"Exception reading packet {packet.GetType().Name} (Last Marker = {packetBuffer.LastMarker})", e);
+                    Log.Error(readException.Message, e);
+                    throw readException;
                 }
             }
 

@@ -13,11 +13,27 @@ namespace PlayerTrade.Mechanoids.Designer
     [StaticConstructorOnStartup]
     public class MechPartConfig : IPacketable
     {
-        public static readonly Texture2D DeleteX = ContentFinder<Texture2D>.Get("UI/Buttons/Delete", true);
+        public static Texture2D DeleteX;
 
         public MechPart MechPart;
 
         public virtual float Price => MechPart.BasePrice;
+
+        public virtual float CombatPower
+        {
+            get
+            {
+                switch (MechPart.Type)
+                {
+                    case MechPart.PartType.Building:
+                        return MechPart.ThingDef.building.combatPower;
+                    case MechPart.PartType.Pawn:
+                        return MechPart.PawnKindDef.combatPower;
+                    default:
+                        return 0;
+                }
+            }
+        }
 
         /// <summary>
         /// When set to true, this part should be removed when possible. This is done instead of directly removing to prevent issues when enumerating parts.
@@ -26,6 +42,15 @@ namespace PlayerTrade.Mechanoids.Designer
 
         public MechPartConfig()
         {
+            if (RimLinkMod.Instance != null) // ensure we are running in RimWorld (Not the server)
+            {
+                DeleteX = ContentFinder<Texture2D>.Get("UI/Buttons/Delete", true);
+            }
+        }
+
+        public virtual IEnumerable<ThingDef> GetThingDefs()
+        {
+            yield return MechPart.ThingDef;
         }
 
         public virtual Rect Draw(Rect rect) // Assumed height of 35
@@ -38,8 +63,11 @@ namespace PlayerTrade.Mechanoids.Designer
             // Label
             Text.Font = GameFont.Medium;
             Text.Anchor = TextAnchor.MiddleLeft;
-            Widgets.Label(rect, MechPart.ThingDef.LabelCap);
-            float labelWidth = Text.CalcSize(MechPart.ThingDef.LabelCap).x;
+            string label = MechPart.Type == MechPart.PartType.Pawn
+                ? MechPart.PawnKindDef.LabelCap
+                : MechPart.ThingDef.LabelCap;
+            Widgets.Label(rect, label);
+            float labelWidth = Text.CalcSize(label).x;
             Text.Anchor = TextAnchor.UpperLeft;
             Text.Font = GameFont.Small;
 
@@ -62,14 +90,21 @@ namespace PlayerTrade.Mechanoids.Designer
             return remainingRect;
         }
 
-        public virtual void Write(PacketBuffer buffer)
+        public virtual void Configure(Thing thing) {}
+        
+        public virtual void PostWrite(PacketBuffer buffer) {}
+        public virtual void PostRead(PacketBuffer buffer) {}
+        
+        public void Write(PacketBuffer buffer)
         {
-            buffer.WriteInt(Dialog_DesignMechCluster.AvailableParts.IndexOf(MechPart));
+            buffer.WriteInt(MechParts.Parts.IndexOf(MechPart));
+            PostWrite(buffer);
         }
 
-        public virtual void Read(PacketBuffer buffer)
+        public void Read(PacketBuffer buffer)
         {
-            MechPart = Dialog_DesignMechCluster.AvailableParts[buffer.ReadInt()];
+            MechPart = MechParts.Parts[buffer.ReadInt()];
+            PostRead(buffer);
         }
     }
 }

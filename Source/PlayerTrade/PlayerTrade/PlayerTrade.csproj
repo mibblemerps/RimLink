@@ -101,6 +101,7 @@
     <Compile Include="MainTab\MainTabWindow_Server.cs" />
     <Compile Include="MainTab\TabChat.cs" />
     <Compile Include="MainTab\TabTrades.cs" />
+    <Compile Include="Mechanoids\MechParts.cs" />
     <Compile Include="Missions\ChoiceLetter_MissionOffer.cs" />
     <Compile Include="Missions\Dialog_AddPawnsToMission.cs" />
     <Compile Include="Missions\Dialog_MissionSelect.cs" />
@@ -125,7 +126,6 @@
     <Compile Include="Missions\Quest\QuestPart_ResearchSpeedModifier.cs" />
     <Compile Include="Missions\Quest\QuestPart_WorkTypeDefDisabled.cs" />
     <Compile Include="MainMenuWidget.cs" />
-    <Compile Include="NameUtil.cs" />
     <Compile Include="Net\NetRoyalty.cs" />
     <Compile Include="Net\PacketAttribute.cs" />
     <Compile Include="Net\Packets\PacketDisconnect.cs" />
@@ -134,6 +134,8 @@
     <Compile Include="Net\Packets\PacketPingResponse.cs" />
     <Compile Include="Net\Packets\PingClient.cs" />
     <Compile Include="Patches\Patch_MainMenuDrawer.cs" />
+    <Compile Include="Patches\Patch_MechClusterGenerator.cs" />
+    <Compile Include="Patches\Patch_MechClusterUtility.cs" />
     <Compile Include="Patches\Patch_Pawn_GetDisabledWorkTypes.cs" />
     <Compile Include="Patches\Patch_ResearchManager_ResearchPerformed.cs" />
     <Compile Include="Patches\Patch_TradeUtility_EverPlayerSellable.cs" />
@@ -227,6 +229,7 @@
     <Compile Include="Trade\TradeSystem.cs" />
     <Compile Include="Util\ArrivalUtil.cs" />
     <Compile Include="Util\ListUtil.cs" />
+    <Compile Include="Util\PlayerUtil.cs" />
     <Compile Include="Util\ResearchUtil.cs" />
     <Compile Include="Util\Scriber.cs" />
     <Compile Include="Util\StringUtil.cs" />

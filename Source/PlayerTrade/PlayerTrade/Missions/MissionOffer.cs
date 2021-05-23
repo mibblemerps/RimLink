@@ -5,6 +5,7 @@ using PlayerTrade.Missions.Escape;
 using PlayerTrade.Missions.MissionWorkers;
 using PlayerTrade.Missions.Packets;
 using PlayerTrade.Net;
+using PlayerTrade.Util;
 using RimWorld;
 using UnityEngine;
 using Verse;

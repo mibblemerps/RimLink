@@ -19,12 +19,14 @@ namespace PlayerTrade.Mechanoids
 
         public override void Write(PacketBuffer buffer)
         {
+            base.Write(buffer);
             buffer.WriteString(From);
             buffer.WritePacketable(Cluster);
         }
 
         public override void Read(PacketBuffer buffer)
         {
+            base.Read(buffer);
             From = buffer.ReadString();
             Cluster = buffer.ReadPacketable<MechCluster>();
         }

@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using PlayerTrade.Net;
 using PlayerTrade.Net.Packets;
 using PlayerTrade.Trade.Packets;
+using PlayerTrade.Util;
 using RimWorld;
 using Verse;
 

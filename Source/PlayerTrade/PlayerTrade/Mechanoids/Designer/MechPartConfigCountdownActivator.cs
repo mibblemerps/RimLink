@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using PlayerTrade.Net;
 using PlayerTrade.Net.Packets;
+using RimWorld;
 using UnityEngine;
 using Verse;
 
@@ -13,7 +9,7 @@ namespace PlayerTrade.Mechanoids.Designer
     [Serializable]
     public class MechPartConfigCountdownActivator : MechPartConfig
     {
-        public float Days = 3;
+        public float Days = 4;
 
         [NonSerialized]
         private string _daysBuffer = "3";
@@ -40,15 +36,25 @@ namespace PlayerTrade.Mechanoids.Designer
             return Rect.zero;
         }
 
-        public new void Write(PacketBuffer buffer)
+        public override void Configure(Thing thing)
         {
-            base.Write(buffer);
+            base.Configure(thing);
+            CompSendSignalOnCountdown countdown = thing.TryGetComp<CompSendSignalOnCountdown>();
+            if (countdown != null)
+                countdown.ticksLeft = Mathf.RoundToInt(Days * 60000);
+            else
+                Log.Warn("Can't find countdown activator comp");
+        }
+
+        public override void PostWrite(PacketBuffer buffer)
+        {
+            base.PostWrite(buffer);
             buffer.WriteFloat(Days);
         }
 
-        public new void Read(PacketBuffer buffer)
+        public override void PostRead(PacketBuffer buffer)
         {
-            base.Read(buffer);
+            base.PostRead(buffer);
             Days = buffer.ReadFloat();
         }
     }

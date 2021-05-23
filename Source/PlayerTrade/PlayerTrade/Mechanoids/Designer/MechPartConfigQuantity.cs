@@ -1,5 +1,4 @@
-﻿using System;
-using PlayerTrade.Net;
+﻿using System.Collections.Generic;
 using PlayerTrade.Net.Packets;
 using UnityEngine;
 using Verse;
@@ -11,11 +10,19 @@ namespace PlayerTrade.Mechanoids.Designer
         public int Quantity = 1;
 
         public override float Price => base.Price * Quantity;
+        
+        public override float CombatPower => base.CombatPower * Quantity;
 
         private string _quantityBuffer = "1";
 
         public MechPartConfigQuantity()
         {
+        }
+
+        public override IEnumerable<ThingDef> GetThingDefs()
+        {
+            for (int i = 0; i < Quantity; i++)
+                yield return MechPart.ThingDef;
         }
 
         public override Rect Draw(Rect rect)
@@ -30,15 +37,15 @@ namespace PlayerTrade.Mechanoids.Designer
             return drawRect;
         }
 
-        public new void Write(PacketBuffer buffer)
+        public override void PostWrite(PacketBuffer buffer)
         {
-            base.Write(buffer);
+            base.PostWrite(buffer);
             buffer.WriteInt(Quantity);
         }
 
-        public new void Read(PacketBuffer buffer)
+        public override void PostRead(PacketBuffer buffer)
         {
-            base.Read(buffer);
+            base.PostRead(buffer);
             Quantity = buffer.ReadInt();
         }
     }

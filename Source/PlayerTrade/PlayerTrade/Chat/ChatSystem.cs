@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using PlayerTrade.Net;
 using PlayerTrade.Net.Packets;
+using PlayerTrade.Util;
 using RimWorld;
 using Verse;
 

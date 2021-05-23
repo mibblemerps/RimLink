@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using PlayerTrade.Net;
 using PlayerTrade.Net.Packets;
+using RimWorld;
 using UnityEngine;
 using Verse;
 
@@ -13,9 +14,9 @@ namespace PlayerTrade.Mechanoids.Designer
     [Serializable]
     public class MechPartConfigProximityActivator : MechPartConfigQuantity
     {
-        public int Proximity = 10;
+        public int Proximity = 13;
 
-        public override float Price => Mathf.Round(base.Price * Curve.Evaluate(Proximity));
+        //public override float Price => Mathf.Round(base.Price * Curve.Evaluate(Proximity));
 
         private static SimpleCurve Curve = new SimpleCurve(new []
         {
@@ -30,20 +31,30 @@ namespace PlayerTrade.Mechanoids.Designer
         {
             rect = base.Draw(rect);
 
-            Proximity = Mathf.RoundToInt(Widgets.HorizontalSlider(rect, Proximity, 3f, 45f, label: $"Proximity Distance: {Mathf.RoundToInt(Proximity)} tiles"));
+            Text.Anchor = TextAnchor.MiddleCenter;
+            Widgets.Label(rect, "<b>Proximity:</b> 13 tiles");
+            Text.Anchor = TextAnchor.UpperLeft;
+            //Proximity = Mathf.RoundToInt(Widgets.HorizontalSlider(rect, Proximity, 3f, 40f, label: $"Proximity Distance: {Mathf.RoundToInt(Proximity)} tiles"));
 
             return Rect.zero;
         }
 
-        public new void Write(PacketBuffer buffer)
+        public override void Configure(Thing thing)
         {
-            base.Write(buffer);
-            buffer.WriteInt(Proximity);
+            base.Configure(thing);
+            // Thought I could set proximity here, turns out you can't.
+            // Maybe one day I'll Harmony patch a way to set it...
         }
 
-        public new void Read(PacketBuffer buffer)
+        public override void PostWrite(PacketBuffer buffer)
         {
-            base.Read(buffer);
+            base.PostWrite(buffer);
+            buffer.WriteInt(Proximity);
+        }
+        
+        public override void PostRead(PacketBuffer buffer)
+        {
+            base.PostRead(buffer);
             Proximity = buffer.ReadInt();
         }
     }
