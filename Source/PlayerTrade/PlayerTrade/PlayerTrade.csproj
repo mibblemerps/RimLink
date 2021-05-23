@@ -186,6 +186,7 @@
     <Compile Include="Raids\Dialog_PlaceBounty.cs" />
     <Compile Include="Dialog_PlayerComms.cs" />
     <Compile Include="Trade\Dialog_ConfirmTrade.cs" />
+    <Compile Include="Trade\Dialog_LoadingTradeWindow.cs" />
     <Compile Include="Trade\Dialog_TradeIntermission.cs" />
     <Compile Include="HashUtil.cs" />
     <Compile Include="Log.cs" />

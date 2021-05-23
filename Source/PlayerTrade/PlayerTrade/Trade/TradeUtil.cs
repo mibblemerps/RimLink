@@ -35,6 +35,9 @@ namespace PlayerTrade.Trade
         /// <param name="player">Player to trade with</param>
         public static async Task InitiateTrade(Pawn negotiator, Player player)
         {
+            var loadingTradeWindow = new Dialog_LoadingTradeWindow();
+            Find.WindowStack.Add(loadingTradeWindow);
+            
             // Send trade request packet
             RimLinkComp.Instance.Client.SendPacket(new PacketInitiateTrade
             {
@@ -54,6 +57,8 @@ namespace PlayerTrade.Trade
             {
                 Log.Error("Error initiating trade", e);
             }
+            
+            loadingTradeWindow.Close();
         }
 
         public static TradeOffer FormTradeOffer()
