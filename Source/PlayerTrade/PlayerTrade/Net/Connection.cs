@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Net.Sockets;
 using System.Threading.Tasks;
+using UnityEngine;
 
 namespace PlayerTrade.Net
 {
@@ -18,6 +19,11 @@ namespace PlayerTrade.Net
 
         public TcpClient Tcp;
         public NetworkStream Stream;
+
+        /// <summary>
+        /// Artificial delay to add when sending packets. Used for testing.
+        /// </summary>
+        public float ArtificialSendDelay = 0;
 
         public bool IsConnected { get; protected set; }
 
@@ -51,6 +57,10 @@ namespace PlayerTrade.Net
             var pair = Packet.Packets.FirstOrDefault(p => p.Value == packet.GetType());
             if (pair.Value == null)
                 throw new Exception($"Packet {packet.GetType().FullName} isn't registered.");
+
+            // Wait artificial delay (testing) if set.
+            if (ArtificialSendDelay > 0)
+                await Task.Delay(Mathf.RoundToInt(ArtificialSendDelay * 1000));
 
             byte[] buffer;
             using (var stream = new MemoryStream())
