@@ -60,7 +60,7 @@ namespace PlayerTrade.Net
 
             // Wait artificial delay (testing) if set.
             if (ArtificialSendDelay > 0)
-                await Task.Delay(Mathf.RoundToInt(ArtificialSendDelay * 1000));
+                await Task.Delay(Mathf.RoundToInt(ArtificialSendDelay * 100));
 
             byte[] buffer;
             using (var stream = new MemoryStream())
