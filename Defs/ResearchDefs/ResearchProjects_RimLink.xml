@@ -26,7 +26,7 @@
 		<label>mechanoid relations</label>
 		<tab>RimLink</tab>
 		<description>Study the language of the mechanoids. Whilst mechanoids are not "diplomatic" creatures, they may be open to certain deals that benefit them.</description>
-		<baseCost>1400</baseCost>
+		<baseCost>2400</baseCost>
 		<techLevel>Industrial</techLevel>
 		<researchViewX>0.00</researchViewX>
 		<researchViewY>0.70</researchViewY>

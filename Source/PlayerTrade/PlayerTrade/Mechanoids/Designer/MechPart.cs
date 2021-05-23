@@ -12,7 +12,7 @@ namespace PlayerTrade.Mechanoids.Designer
 {
     public class MechPart
     {
-        private const float CombatPowerPriceMultiplier = 3.5f;
+        private const float CombatPowerPriceMultiplier = 3f;
         
         public PartType Type;
         public string DefName;

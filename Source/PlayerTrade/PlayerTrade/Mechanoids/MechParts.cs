@@ -23,15 +23,15 @@ namespace PlayerTrade.Mechanoids
             new MechPart(MechPart.PartType.Building, "Gloomlight", false, 150),
             
             // Problem causers
-            new MechPart(MechPart.PartType.Building, "EMIDynamo", true, 900),
-            new MechPart(MechPart.PartType.Building, "ToxicSpewer", true, 800),
-            new MechPart(MechPart.PartType.Building, "PsychicDroner", true, 800),
-            new MechPart(MechPart.PartType.Building, "PsychicSuppressor", true, 800),
-            new MechPart(MechPart.PartType.Building, "Defoliator", true, 800),
-            new MechPart(MechPart.PartType.Building, "SunBlocker", true, 700),
-            new MechPart(MechPart.PartType.Building, "SmokeSpewer", true, 700),
-            new MechPart(MechPart.PartType.Building, "WeatherController", true, 700),
-            new MechPart(MechPart.PartType.Building, "ClimateAdjuster", true, 700),
+            new MechPart(MechPart.PartType.Building, "EMIDynamo", true, 800),
+            new MechPart(MechPart.PartType.Building, "ToxicSpewer", true, 700),
+            new MechPart(MechPart.PartType.Building, "PsychicDroner", true, 700),
+            new MechPart(MechPart.PartType.Building, "PsychicSuppressor", true, 700),
+            new MechPart(MechPart.PartType.Building, "Defoliator", true, 700),
+            new MechPart(MechPart.PartType.Building, "SunBlocker", true, 600),
+            new MechPart(MechPart.PartType.Building, "SmokeSpewer", true, 600),
+            new MechPart(MechPart.PartType.Building, "WeatherController", true, 600),
+            new MechPart(MechPart.PartType.Building, "ClimateAdjuster", true, 600),
 
             // Creatures
             new MechPart(MechPart.PartType.Pawn, "Mech_Centipede", true),
