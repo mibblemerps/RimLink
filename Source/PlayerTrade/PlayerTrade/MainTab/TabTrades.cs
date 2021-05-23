@@ -21,7 +21,8 @@ namespace PlayerTrade.MainTab
         {
             Widgets.DrawMenuSection(mainRect);
 
-            List<TradeOffer> offers = RimLinkComp.Instance.Get<TradeSystem>().ActiveTradeOffers;
+            List<TradeOffer> offers = new List<TradeOffer>(RimLinkComp.Instance.Get<TradeSystem>().ActiveTradeOffers);
+            offers.Reverse();
 
             TradeOffer pendingRetract = null;
             TradeOffer pendingReject = null;
