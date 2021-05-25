@@ -12,7 +12,7 @@
         <li>questName->Diplomatic Summit with [from]</li>
         <li>questName->[royal_title] from [from]</li>
         
-        <li>questDescription->[royalPawn], a [royal_title] from [from] is visiting your colony for [days] days.\n\nYou will be expected to keep them safe and satisfy their royal needs.\n\nTheir mood should be kept above 50%.</li>
+        <li>questDescription->[royal_pawn], a [royal_title] from [from] is visiting your colony for [days] days.\n\nYou will be expected to keep them safe and satisfy their royal needs.\n\nTheir mood should be kept above 50%.</li>
       </rulesStrings>
     </questDescriptionAndNameRules>
 
@@ -20,6 +20,9 @@
       <nodes>
         <li Class="QuestNode_SubScript">
           <def>PlayerMission_Base</def>
+          <returnVarNames>
+            <li>shuttle</li>
+          </returnVarNames>
         </li>
 
         <!-- Won't do work -->
@@ -37,21 +40,44 @@
           <node Class="QuestNode_Sequence">
             <!-- Mood dropped too low. Call in shuttle to go home. -->
             <nodes>
+              
               <li Class="QuestNode_Letter">
-                <label>$highest_ranking_pawn leaving</label>
+                <label>$royal_pawn leaving</label>
                 <letterDef>NegativeEvent</letterDef>
-                <text>
-                  $highest_ranking_pawn is not happy with the conditions here and has decided to leave.\n\nThe shuttle will arrive shortly.
-                </text>
+                <text>$royal_pawn is not happy with the conditions here and has decided to leave.\n\nThe shuttle will arrive shortly.</text>
               </li>
+              
               <li Class="QuestNode_Delay">
                 <delayTicksRange>1200~2200</delayTicksRange>
                 <node Class="QuestNode_SendSignals">
                   <outSignals>
-                  <li>ShuttleArriveNow</li>
-                </outSignals>
+                    <li>Leaving</li> <!-- This disables the normal shuttle.SentSatisfied logic -->
+                    <li>ShuttleArriveNow</li>
+                  </outSignals>
                 </node>
               </li>
+              
+              <!-- New SentSatisfied logic that makes the mission still fail. -->
+              <li Class="QuestNode_Signal">
+                <inSignal>shuttle.SentSatisfied</inSignal>
+                <node Class="QuestNode_Sequence">
+                  <nodes>
+                    <li Class="QuestNode_Letter">
+                      <label>Test 1</label>
+                      <letterDef>NegativeEvent</letterDef>
+                      <text>help.</text>
+                    </li>
+                    <li Class="PlayerTrade.Missions.Quest.QuestNode_ReturnColonists">
+                      <guid>$guid</guid>
+                      <shuttle>$shuttle</shuttle>
+                    </li>
+                    <li Class="QuestNode_End">
+                      <outcome>Fail</outcome>
+                    </li>
+                  </nodes>
+                </node>
+              </li>
+              
             </nodes>
           </node>
         </li>

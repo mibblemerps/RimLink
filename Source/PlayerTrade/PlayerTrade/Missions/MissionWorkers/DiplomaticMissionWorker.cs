@@ -35,12 +35,15 @@ namespace PlayerTrade.Missions.MissionWorkers
                     highestRanking = pawn;
                 }
             }
-            if (highestTitle == null)
-                Log.Error("Couldn't find royal title on mission pawns!");
-            else
-                slate.Set("royal_title", highestTitle.LabelCap);
 
-            QuestGen.AddQuestContentRules(GrammarUtility.RulesForPawn("royalPawn", highestRanking).ToList());
+            if (highestTitle == null)
+            {
+                Log.Error("Couldn't find royal title on mission pawns!");
+                return;
+            }
+
+            slate.Set("royal_title", highestTitle.LabelCap);
+            slate.Set("royal_pawn", highestRanking.LabelCap);
 
             base.SetSlateVars(slate);
         }
