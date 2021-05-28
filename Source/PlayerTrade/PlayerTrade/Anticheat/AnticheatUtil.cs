@@ -31,8 +31,11 @@ namespace PlayerTrade.Anticheat
         public static void ShowEnableAnticheatDialog()
         {
             var msgBox = new Dialog_MessageBox("This server uses anticheat.\n\n" +
-                                               "This will enable commitment mode and permanently disable developer mode on this save.\n\n" +
-                                               "This cannot be undone.", title: "Anticheat");
+                                               " - Commitment mode will be enabled.\n" +
+                                               " - Developer tools will be disabled on this save.\n" +
+                                               " - Certain events will trigger an autosave (death, raids, etc.)\n\n" +
+                                               "This is specific to this save and cannot be undone.\n" +
+                                               "This does not prevent cheating using client modifications.", title: "Anticheat");
 
             msgBox.buttonAText = "Confirm";
             msgBox.buttonADestructive = true;
