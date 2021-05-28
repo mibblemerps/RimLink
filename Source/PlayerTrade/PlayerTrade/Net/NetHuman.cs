@@ -47,8 +47,9 @@ namespace PlayerTrade.Net
         public bool SelfTend;
 
         public List<string> Schedule;
-
+        
         public List<NetNeed> Needs;
+        public List<NetMemory> Memories;
 
         public NetRoyalty Royalty;
 
@@ -163,6 +164,12 @@ namespace PlayerTrade.Net
             foreach (NetNeed need in Needs)
                 buffer.WritePacketable(need);
 
+            // Memories
+            buffer.WriteMarker("Memories");
+            buffer.WriteInt(Memories.Count);
+            foreach (NetMemory memory in Memories)
+                buffer.WritePacketable(memory);
+            
             // Royalty
             buffer.WriteMarker("Royalty");
             if (Royalty == null)
@@ -287,6 +294,13 @@ namespace PlayerTrade.Net
             for (int i = 0; i < needsCount; i++)
                 Needs.Add(buffer.ReadPacketable<NetNeed>());
 
+            // Memories
+            buffer.ReadMarker("Memories");
+            int memoriesCount = buffer.ReadInt();
+            Memories = new List<NetMemory>(memoriesCount);
+            for (int i = 0; i < memoriesCount; i++)
+                Memories.Add(buffer.ReadPacketable<NetMemory>());
+            
             // Royalty
             buffer.ReadMarker("Royalty");
             if (buffer.ReadBoolean())
@@ -365,6 +379,30 @@ namespace PlayerTrade.Net
             {
                 NeedDefName = buffer.ReadString();
                 Level = buffer.ReadFloat();
+            }
+        }
+
+        public class NetMemory : IPacketable
+        {
+            public string ThoughtDefName;
+            public float MoodPowerFactor;
+            public int Age;
+            public int Stage;
+            
+            public void Write(PacketBuffer buffer)
+            {
+                buffer.WriteString(ThoughtDefName);
+                buffer.WriteFloat(MoodPowerFactor);
+                buffer.WriteInt(Age);
+                buffer.WriteInt(Stage);
+            }
+
+            public void Read(PacketBuffer buffer)
+            {
+                ThoughtDefName = buffer.ReadString();
+                MoodPowerFactor = buffer.ReadFloat();
+                Age = buffer.ReadInt();
+                Stage = buffer.ReadInt();
             }
         }
     }

@@ -10,6 +10,12 @@ namespace PlayerTrade
 {
     public static class NetHumanUtil
     {
+        /// <summary>These thoughts are not sent over the network.</summary>
+        public static List<string> NonNetworkedThoughtDefNames = new List<string>
+        {
+            "OnDuty",
+        };
+        
         private static FieldInfo GetsPermanent_PainCategory = typeof(HediffComp_GetsPermanent).GetField("painCategory", BindingFlags.NonPublic | BindingFlags.Instance);
 
         private static MethodInfo ImmunityHandler_TryAddImmunityRecord = typeof(ImmunityHandler).GetMethod("TryAddImmunityRecord", BindingFlags.NonPublic | BindingFlags.Instance);
@@ -211,6 +217,29 @@ namespace PlayerTrade
                     Level = (float) Need_CurLevel.GetValue(need)
                 });
             }
+
+            // Memories
+            human.Memories = new List<NetHuman.NetMemory>();
+            List<Thought_Memory> memoriesToRemove = new List<Thought_Memory>();
+            foreach (Thought_Memory memory in pawn.needs.mood.thoughts.memories.Memories)
+            {
+                if (memory.otherPawn != null) continue; // Ignore memories that involve another pawn
+
+                if (NonNetworkedThoughtDefNames.Contains(memory.def.defName)) continue; // Not networked thought
+                
+                human.Memories.Add(new NetHuman.NetMemory
+                {
+                    ThoughtDefName = memory.def.defName,
+                    Age = memory.age,
+                    MoodPowerFactor = memory.moodPowerFactor,
+                    Stage = memory.CurStageIndex
+                });
+                
+                memoriesToRemove.Add(memory);
+            }
+            // Remove any sent memories so they aren't duplicated when the colonist is returned
+            foreach (Thought_Memory memory in memoriesToRemove)
+                pawn.needs.mood.thoughts.memories.RemoveMemory(memory);
 
             // Royalty
             if (ModLister.RoyaltyInstalled && pawn.royalty != null)
@@ -444,6 +473,30 @@ namespace PlayerTrade
                 if (need == null)
                     Log.Warn($"Unable to set need {netNeed.NeedDefName} - need couldn't be found on pawn");
                 Need_CurLevel.SetValue(need, netNeed.Level);
+            }
+            
+            // Memories
+            foreach (NetHuman.NetMemory netMemory in human.Memories)
+            {
+                ThoughtDef def = DefDatabase<ThoughtDef>.GetNamed(netMemory.ThoughtDefName);
+                Thought_Memory thought = (Thought_Memory) Activator.CreateInstance(def.ThoughtClass);
+                thought.def = def;
+                thought.age = netMemory.Age;
+                thought.SetForcedStage(netMemory.Stage);
+                thought.moodPowerFactor = netMemory.MoodPowerFactor;
+                thought.Init();
+                
+                // Remove any thought that conflicts with this one
+                var memoriesToRemove = new List<Thought_Memory>();
+                foreach (Thought_Memory oldMemory in pawn.needs.mood.thoughts.memories.Memories)
+                {
+                    if (thought.GroupsWith(oldMemory)) // Conflicts with new memory, remove it
+                        memoriesToRemove.Add(oldMemory);
+                }
+                foreach (Thought_Memory oldMemory in memoriesToRemove)
+                    pawn.needs.mood.thoughts.memories.RemoveMemory(oldMemory);
+                
+                pawn.needs.mood.thoughts.memories.TryGainMemory(thought);
             }
 
             // Royalty
