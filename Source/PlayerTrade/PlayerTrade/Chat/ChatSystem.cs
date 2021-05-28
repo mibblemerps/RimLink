@@ -58,7 +58,7 @@ namespace PlayerTrade.Chat
             if (message.From != Client.Guid)
                 UnreadMessages++; // increment unread messages if it's not from us
 
-            if (RimLinkMod.Instance.Settings.ChatNotificationsEnabled && !message.IsServer)
+            if (RimLinkMod.Instance.Settings.ChatNotificationsEnabled && !message.IsServer && message.From != Client.Guid)
             {
                 // Show notification
                 Verse.Messages.Message($"{message.From.GuidToName(true)}: {message.Content}", _chatMessageTypeDef, false);
