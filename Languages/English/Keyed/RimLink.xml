@@ -1,0 +1,8 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!-- Misc RimLink translations -->
+<LanguageData>
+    <Rl_Mail>{0} ({1})</Rl_Mail>
+    
+    <Rl_MechanoidCluster>Mechanoid cluster ({0})</Rl_MechanoidCluster>
+    <Rl_MechanoidClusterDesc>{0} has paid the mechanoid faction to establish a mech cluster at your colony.</Rl_MechanoidClusterDesc>
+</LanguageData>

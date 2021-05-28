@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using PlayerTrade.Util;
 using Verse;
 
 namespace PlayerTrade.Trade
@@ -14,8 +15,8 @@ namespace PlayerTrade.Trade
             Offer = offer;
 
             def = DefDatabase<LetterDef>.GetNamed("PlayerTradeOffer");
-            label = $"Trade Offer ({RimLinkComp.Instance.Client.GetName(Offer.From)})";
-            text = $"{RimLinkComp.Instance.Client.GetName(offer.From)} has presented a trade offer.";
+            label = "Rl_TradeOffer".Translate(offer.From.GuidToName());
+            text = "Rl_TradeOfferDesc".Translate(offer.From.GuidToName(true));
         }
 
         public ChoiceLetter_TradeOffer() { }

@@ -125,13 +125,15 @@ namespace PlayerTrade.Missions
             if (!packet.Accept)
             {
                 // Other player rejected
-                Find.LetterStack.ReceiveLetter($"{offer.MissionDef.LabelCap} Rejected ({RimLinkComp.Find().Client.GetName(offer.For)})", "Your offer has been rejected.", LetterDefOf.NegativeEvent);
+                Find.LetterStack.ReceiveLetter(
+                    "Rl_MissionOfferRejected".Translate(offer.MissionDef.LabelCap, offer.For.GuidToName()),
+                    "Rl_MissionOfferRejectedDesc".Translate(), LetterDefOf.NegativeEvent);
                 return;
             }
 
             bool fulfill = offer.CanFulfillAsSender;
 
-            Log.Message($"Received acceptance of mission offer {offer.Guid}. Fulfill = {fulfill}");
+            Log.Message($"Rl_Received acceptance of mission offer {offer.Guid}. Fulfill = {fulfill}");
 
             Client.SendPacket(new PacketConfirmMissionOffer
             {
@@ -143,12 +145,18 @@ namespace PlayerTrade.Missions
             if (fulfill)
             {
                 offer.FulfillAsSender(Find.CurrentMap);
-                Find.LetterStack.ReceiveLetter($"{offer.MissionDef.LabelCap} Offer Accepted ({offer.For.GuidToName()})", $"Your offer to lend colonists has been accepted.\n\n" +
-                    $"Your {(offer.Colonists.Count == 1 ? "colonist" : "colonists")} should be returned in {offer.Days.ToString().Colorize(ColoredText.DateTimeColor)} day{offer.Days.MaybeS()}.", LetterDefOf.PositiveEvent);
+                Find.LetterStack.ReceiveLetter(
+                    "Rl_MissionOfferAccepted".Translate(offer.MissionDef.LabelCap, offer.For.GuidToName()),
+                    "Rl_MissionOfferAcceptedDesc".Translate(
+                        offer.Colonists.Count == 1 ? "colonist" : "colonists",
+                        offer.Days.ToString().Colorize(ColoredText.DateTimeColor),
+                        "day" + offer.Days.MaybeS()
+                        ), LetterDefOf.PositiveEvent);
             }
             else
             {
-                Find.LetterStack.ReceiveLetter($"{offer.MissionDef.LabelCap} Offer Aborted ({RimLinkComp.Find().Client.GetName(offer.For)})", "The colonists offered are not in the same condition as when they were initially offered.", LetterDefOf.NegativeEvent);
+                Find.LetterStack.ReceiveLetter("Rl_MissionOfferAborted".Translate(offer.For.GuidToName()),
+                    "Rl_MissionOfferAbortedDesc".Translate(), LetterDefOf.NegativeEvent);
             }
         }
 
@@ -198,27 +206,26 @@ namespace PlayerTrade.Missions
             {
                 case PacketLentColonistUpdate.ColonistEvent.Dead:
                     pawn.Kill(null);
-                    Find.LetterStack.ReceiveLetter("Killed on duty: " + pawn.Name,
-                        $"{pawn.NameFullColored}, who you lent to {RimLinkComp.Instance.Client.GetName(activeOffer.From)}, has been died.",
+                    Find.LetterStack.ReceiveLetter("Rl_KilledOnDuty".Translate(pawn.NameShortColored, activeOffer.From.GuidToName()),
+                        "Rl_KilledOnDutyDesc".Translate(pawn.NameFullColored, activeOffer.From.GuidToName(true)),
                         LetterDefOf.NegativeEvent);
                     break;
 
                 case PacketLentColonistUpdate.ColonistEvent.Imprisoned:
-                    Find.LetterStack.ReceiveLetter("Imprisoned: " + pawn.Name,
-                        $"{pawn.NameFullColored}, who you lent to {RimLinkComp.Instance.Client.GetName(activeOffer.From)}, has been imprisoned.",
+                    Find.LetterStack.ReceiveLetter("Rl_Imprisoned".Translate(pawn.NameShortColored, activeOffer.From.GuidToName()),
+                        "Rl_Imprisoned".Translate(pawn.NameFullColored, activeOffer.From.GuidToName(true)),
                         LetterDefOf.NegativeEvent);
                     break;
 
                 case PacketLentColonistUpdate.ColonistEvent.Gone:
-                    Find.LetterStack.ReceiveLetter("Missing: " + pawn.Name,
-                        $"{RimLinkComp.Instance.Client.GetName(activeOffer.From)} has lost {pawn.NameFullColored}.",
+                    Find.LetterStack.ReceiveLetter("Rl_Missing".Translate(pawn.NameShortColored, activeOffer.From.GuidToName()),
+                        "Rl_Missing".Translate(pawn.NameFullColored, activeOffer.From.GuidToName(true)),
                         LetterDefOf.NegativeEvent);
                     break;
 
                 case PacketLentColonistUpdate.ColonistEvent.Escaped:
-                    Find.LetterStack.ReceiveLetter("Escaped: " + pawn.Name,
-                        $"{pawn.NameFullColored}, who you lent to {RimLinkComp.Instance.Client.GetName(activeOffer.From)}, has managed to flee after not being returned.\n\n" +
-                        $"They will try to find their way home.",
+                    Find.LetterStack.ReceiveLetter("Rl_Escaped".Translate(pawn.NameShortColored, activeOffer.From.GuidToName()),
+                        "Rl_Escaped".Translate(pawn.NameFullColored, activeOffer.From.GuidToName(true)),
                         LetterDefOf.NeutralEvent);
                     break;
             }

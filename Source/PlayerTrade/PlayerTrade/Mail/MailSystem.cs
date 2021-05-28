@@ -1,6 +1,7 @@
 ﻿using PlayerTrade.Net;
 using PlayerTrade.Net.Packets;
 using PlayerTrade.Patches;
+using PlayerTrade.Util;
 using Verse;
 
 namespace PlayerTrade.Mail
@@ -28,7 +29,7 @@ namespace PlayerTrade.Mail
         {
             // Receive letter
             StandardLetter letter = (StandardLetter) LetterMaker.MakeLetter(DefDatabase<LetterDef>.GetNamed("PlayerMail"));
-            letter.label = $"{mail.Title} - {RimLinkComp.Find().Client.GetName(mail.From)}";
+            letter.label = "Rl_Mail".Translate(mail.Title, mail.From.GuidToName());
             letter.title = mail.Title;
             letter.text = mail.Body;
             Find.LetterStack.ReceiveLetter(letter);

@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+    <Rl_MissionOfferAccepted>{0} offer rejected ({1})</Rl_MissionOfferAccepted>
+    <Rl_MissionOfferAcceptedDesc>Your offer to lend colonists has been accepted.\n\nYour {0} should be returned in {1} {2}.</Rl_MissionOfferAcceptedDesc>
+    
+    <Rl_MissionOfferRejected>{0} rejected ({1})</Rl_MissionOfferRejected>
+    <Rl_MissionOfferRejectedDesc>Your offer has been rejected.</Rl_MissionOfferRejectedDesc>
+
+    <Rl_MissionOfferAborted>Mission offer aborted ({0})</Rl_MissionOfferAborted>
+    <Rl_MissionOfferAbortedDesc>The offer was aborted.\nThe other parties pawns were not in the same condition they were when the offer was put forward.</Rl_MissionOfferAbortedDesc>
+
+    <Rl_KilledOnDuty>Killed on duty: {0} ({1})</Rl_KilledOnDuty>
+    <Rl_KilledOnDutyDesc>{0}, who was in the care of {1}, has died.</Rl_KilledOnDutyDesc>
+
+    <Rl_Imprisoned>Imprisoned: {0} ({1})</Rl_Imprisoned>
+    <Rl_ImprisonedDesc>{0} has been arrested by {1}!</Rl_ImprisonedDesc>
+
+    <Rl_Missing>Missing: {0} ({1})</Rl_Missing>
+    <Rl_MissingDesc>{0}, who was in the care of {1}, has gone missing.</Rl_MissingDesc>
+
+    <Rl_Escaped>Escaped: {0} ({1})</Rl_Escaped>
+    <Rl_EscapedDesc>{0} has escaped {1}! They will try to find their way home.</Rl_EscapedDesc>
+</LanguageData>

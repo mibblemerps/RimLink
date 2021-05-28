@@ -4,6 +4,7 @@ using System.Linq;
 using PlayerTrade.Net;
 using PlayerTrade.Net.Packets;
 using PlayerTrade.Trade.Packets;
+using PlayerTrade.Util;
 using RimWorld;
 using Verse;
 
@@ -99,7 +100,7 @@ namespace PlayerTrade.Trade
             if (!acceptOffer.CanFulfill(false))
             {
                 // We cannot fulfill the trade
-                Messages.Message($"Unable to fulfill trade for {acceptOffer.For} - missing resources.", MessageTypeDefOf.NeutralEvent, false);
+                Messages.Message("Rl_MissingResources".Translate(acceptOffer.For.GuidToName(true)), MessageTypeDefOf.NeutralEvent, false);
                 confirm = false;
             }
 
@@ -119,7 +120,8 @@ namespace PlayerTrade.Trade
             }
             else
             {
-                Find.LetterStack.ReceiveLetter($"Trade Rejected ({RimLinkComp.Find().Client.GetName(acceptOffer.For)})", $"{acceptOffer.For} rejected your trade offer.", LetterDefOf.NeutralEvent);
+                Find.LetterStack.ReceiveLetter("Rl_TradeRejected".Translate(acceptOffer.For.GuidToName()),
+                    "Rl_TradeRejectedDesc".Translate(acceptOffer.For.GuidToName(true)), LetterDefOf.NeutralEvent);
             }
 
             acceptOffer.TradeAccepted?.TrySetResult(confirm);
@@ -153,7 +155,8 @@ namespace PlayerTrade.Trade
             }
             else
             {
-                Find.LetterStack.ReceiveLetter($"Trade Failed ({RimLinkComp.Instance.Client.GetName(offer.From)})", $"Trade from {RimLinkComp.Instance.Client.GetName(offer.From)} is no longer available.", LetterDefOf.NeutralEvent);
+                Find.LetterStack.ReceiveLetter("Rl_TradeFailed".Translate(offer.From.GuidToName()),
+                    "Rl_TradeFailedDesc".Translate(offer.From.GuidToName(true)), LetterDefOf.NeutralEvent);
             }
 
             offer.TradeAccepted?.TrySetResult(confirm);

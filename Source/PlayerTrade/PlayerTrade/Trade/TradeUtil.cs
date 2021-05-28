@@ -112,8 +112,8 @@ namespace PlayerTrade.Trade
                 // We received this offer. Tell player the offer has been retracted and remove it locally.
                 RimLinkComp.Instance.Get<TradeSystem>().ActiveTradeOffers.Remove(offer);
 
-                Find.LetterStack.ReceiveLetter($"Trade Offer Retracted ({offer.From.GuidToName()})",
-                    $"{offer.From.GuidToName(true)} has retracted a trade offer.",
+                Find.LetterStack.ReceiveLetter("Rl_TradeRetracted".Translate(offer.From.GuidToName()),
+                    "Rl_TradeRetractedDesc".Translate(offer.From.GuidToName(true)),
                     LetterDefOf.NegativeEvent);
             }
         }

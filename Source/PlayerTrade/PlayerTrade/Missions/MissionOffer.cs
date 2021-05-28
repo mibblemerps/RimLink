@@ -97,16 +97,14 @@ namespace PlayerTrade.Missions
 
             Log.Message($"Labor offer {Guid} confirmed");
 
-            if (/*packetConfirm.Confirm*/ true)
+            if (packetConfirm.Confirm)
             {
                 FulfillAsReceiver(Find.AnyPlayerHomeMap);
             }
             else
             {
-                Find.LetterStack.ReceiveLetter($"Mission Offer Aborted ({From.GuidToName()})",
-                    "The offer was aborted.\n" +
-                    "The other parties pawns were not in the same condition they were when the offer was put forward.",
-                    LetterDefOf.NeutralEvent);
+                Find.LetterStack.ReceiveLetter("Rl_MissionOfferAborted".Translate(From.GuidToName()),
+                    "Rl_MissionOfferAbortedDesc".Translate(), LetterDefOf.NeutralEvent);
             }
         }
 

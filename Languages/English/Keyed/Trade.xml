@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+    <Rl_TradeOffer>Trade offer ({0})</Rl_TradeOffer>
+    <Rl_TradeOfferDesc>{0} has presented a trade offer.</Rl_TradeOfferDesc>
+    
+    <Rl_TradeRejected>Trade rejected ({0})</Rl_TradeRejected>
+    <Rl_TradeRejectedDesc>{0} has declined your trade offer.</Rl_TradeRejectedDesc>
+    
+    <Rl_TradeFailed>Trade failed ({0})</Rl_TradeFailed>
+    <Rl_TradeFailedDesc>Trade from {0} is no longer available.</Rl_TradeFailedDesc>
+    
+    <Rl_TradeRetracted>Trade offer retracted ({0})</Rl_TradeRetracted>
+    <Rl_TradeRetractedDesc>Trade offer retracted ({0})</Rl_TradeRetractedDesc>
+    
+    <Rl_MissingResources>Unable to fulfill trade for {0} - missing resources.</Rl_MissingResources>
+</LanguageData>

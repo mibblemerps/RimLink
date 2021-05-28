@@ -49,9 +49,8 @@ namespace PlayerTrade.Mechanoids
             if (from != null)
             {
                 incidentParams.customLetterDef = LetterDefOf.ThreatBig;
-                incidentParams.customLetterLabel = "Mechanoid cluster (" + from.Name + ")";
-                incidentParams.customLetterText =
-                    $"{from.Name.Colorize(from.Color.ToColor())} has paid the mechanoid faction to establish a mech cluster at your colony.";
+                incidentParams.customLetterLabel = "Rl_MechanoidCluster".Translate(from.Name);
+                incidentParams.customLetterText = "Rl_MechanoidClusterDesc".Translate(from.Name.Colorize(from.Color.ToColor()));
             }
             
             IncidentDefOf.MechCluster.Worker.TryExecute(incidentParams);
