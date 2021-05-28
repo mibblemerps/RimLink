@@ -97,7 +97,7 @@ namespace TradeServer
                 {
                     // Timed out
                     Log.Message($"Connection with {this} timed out.");
-                    Disconnect();
+                    Disconnect(DisconnectReason.Network);
                 }
 
                 SendPacket(new PacketHeartbeat());
@@ -152,7 +152,7 @@ namespace TradeServer
                         if (forPlayer.For == null)
                         {
                             Log.Error($"PacketForPlayer has no target player set. (for == null)");
-                            Disconnect();
+                            Disconnect(DisconnectReason.Error);
                             return;
                         }
 
@@ -291,7 +291,7 @@ namespace TradeServer
             catch (Exception ex)
             {
                 Log.Error($"Error handling packet from {this}! Connection terminated.", ex);
-                Disconnect();
+                Disconnect(DisconnectReason.Error);
             }
         }
 

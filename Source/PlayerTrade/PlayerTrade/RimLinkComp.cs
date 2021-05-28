@@ -50,10 +50,6 @@ namespace PlayerTrade
 
         public readonly Dictionary<Type, ISystem> Systems = new Dictionary<Type, ISystem>();
 
-        /// <summary>
-        /// Should we attempt to reconnect when we see a disconnection? When we've been kicked, this is set to false.
-        /// </summary>
-        public bool ReconnectOnNextDisconnect = true;
         public float TimeUntilReconnect => Mathf.Max(0, _reconnectIn);
         public bool Connecting => _connecting;
 
@@ -167,7 +163,6 @@ namespace PlayerTrade
         {
             _connecting = false;
             _failedAttempts = 0; // reset failed attempts
-            ReconnectOnNextDisconnect = true; // enable auto reconnect
 
             Client.Disconnected += ClientOnDisconnected;
 
@@ -188,7 +183,7 @@ namespace PlayerTrade
         private void ClientOnDisconnected(object sender, EventArgs e)
         {
             Messages.Message("Disconnected from server", MessageTypeDefOf.NeutralEvent, false);
-            if (ReconnectOnNextDisconnect)
+            if (Client.AllowReconnect)
                 QueueConnect();
         }
 

@@ -178,7 +178,7 @@ namespace PlayerTrade.Net
                     {
                         Log.Error("Exception writing packet", e);
                         if (!(packet is PacketDisconnect)) // don't trigger a disconnect if that's what we're already doing
-                            Disconnect();
+                            Disconnect(DisconnectReason.Error);
                         throw;
                     }
                 }
@@ -198,7 +198,7 @@ namespace PlayerTrade.Net
                 // Failed to send packet
                 Log.Warn($"Failed to send packet ({packet.GetType().Name})! {e}");
                 if (!(packet is PacketDisconnect)) // don't trigger a disconnect if that's what we're already doing
-                    Disconnect();
+                    Disconnect(DisconnectReason.Error);
                 throw;
             }
         }
@@ -293,7 +293,7 @@ namespace PlayerTrade.Net
             if (readByteCount == 0)
             {
                 // 0 bytes read means end of stream.
-                Disconnect();
+                Disconnect(DisconnectReason.Network);
                 return null;
             }
 
@@ -302,19 +302,20 @@ namespace PlayerTrade.Net
 
             if (!Packet.Packets.ContainsKey(packetId))
             {
-                Disconnect();
+                Disconnect(DisconnectReason.Error);
                 throw new Exception("Invalid packet ID: " + packetId);
             }
 
             // Do some sanity checking
+            // We treat these as network errors since they should never happen unless the connection becomes corrupt
             if (packetLength > 3145728) // 3MiB max size
             {
-                Disconnect();
+                Disconnect(DisconnectReason.Network);
                 throw new Exception("Packet over max size (3MiB) - possible packet overflow");
             }
             if (!Packet.Packets.ContainsKey(packetId))
             {
-                Disconnect();
+                Disconnect(DisconnectReason.Network);
                 throw new Exception($"Packet ID {packetId} doesn't exist");
             }
 
@@ -330,7 +331,7 @@ namespace PlayerTrade.Net
                 catch (Exception) {}
                 if (readByteCount == 0)
                 {
-                    Disconnect();
+                    Disconnect(DisconnectReason.Error);
                     throw new Exception("Unexpected end of stream reading packet content.");
                 }
             }

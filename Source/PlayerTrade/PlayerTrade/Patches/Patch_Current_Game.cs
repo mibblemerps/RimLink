@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using HarmonyLib;
 using PlayerTrade.Anticheat;
+using PlayerTrade.Net;
 using Verse;
 
 namespace PlayerTrade.Patches
@@ -21,7 +22,7 @@ namespace PlayerTrade.Patches
                 try
                 {
                     if (RimLinkComp.Instance.Client != null)
-                        RimLinkComp.Instance.Client.Disconnect();
+                        RimLinkComp.Instance.Client.Disconnect(DisconnectReason.User);
                     RimLinkComp.Instance.Client = null;
                 }
                 catch (Exception e)

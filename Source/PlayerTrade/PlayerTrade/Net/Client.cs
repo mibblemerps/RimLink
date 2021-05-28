@@ -256,7 +256,7 @@ namespace PlayerTrade.Net
                     {
                         Log.Error("Exception processing awaited packet!", awaitException);
                         _awaitingPackets.Clear();
-                        Disconnect();
+                        Disconnect(DisconnectReason.Error);
                     }
                 }
 
@@ -283,7 +283,7 @@ namespace PlayerTrade.Net
                     case PacketKick kickPacket:
                     {
                         if (!kickPacket.AllowReconnect) // Disable auto reconnect
-                            RimLinkComp.ReconnectOnNextDisconnect = false;
+                            Disconnect(DisconnectReason.Kicked);
 
                         if (kickPacket.Reason != null)
                         {
