@@ -85,6 +85,8 @@
   <ItemGroup>
     <Compile Include="AnnouncementUtility.cs" />
     <Compile Include="Anticheat\AnticheatUtil.cs" />
+    <Compile Include="Anticheat\Patch_LetterStack_ReceiveLetter.cs" />
+    <Compile Include="Anticheat\Patch_Root_Shutdown.cs" />
     <Compile Include="Artifacts\ArtifactsSystem.cs" />
     <Compile Include="Artifacts\ArtifactType.cs" />
     <Compile Include="Artifacts\PacketArtifact.cs" />

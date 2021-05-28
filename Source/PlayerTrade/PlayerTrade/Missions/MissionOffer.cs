@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using PlayerTrade.Anticheat;
 using PlayerTrade.Missions.Escape;
 using PlayerTrade.Missions.MissionWorkers;
 using PlayerTrade.Missions.Packets;
@@ -139,6 +140,9 @@ namespace PlayerTrade.Missions
 
             // Worker handles any payments or whatever
             MissionWorker.FulfillAsSender(map);
+            
+            // Autosave to prevent reverting mission
+            AnticheatUtil.AnticheatAutosave(true);
         }
 
         public void FulfillAsReceiver(Map map)
@@ -170,6 +174,9 @@ namespace PlayerTrade.Missions
             {
                 Log.Error("Exception fulfilling mission as receiver.", e);
             }
+            
+            // Autosave to prevent reverting mission
+            AnticheatUtil.AnticheatAutosave(true);
         }
 
         /// <summary>

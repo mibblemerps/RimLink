@@ -131,7 +131,7 @@ namespace TradeServer
         {
             try
             {
-                File.WriteAllText(ServerSettingsFile, JsonConvert.SerializeObject(GameSettings, new JsonSerializerSettings
+                File.WriteAllText(ServerSettingsFile, JsonConvert.SerializeObject(ServerSettings, new JsonSerializerSettings
                 {
                     Formatting = Formatting.Indented
                 }));

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using PlayerTrade.Anticheat;
 using PlayerTrade.Net;
 using PlayerTrade.Trade.Packets;
 using RimWorld;
@@ -186,6 +187,9 @@ namespace PlayerTrade.Trade
 
                     }
                 }
+                
+                // Perform anticheat autosave to prevent reverting the trade.
+                AnticheatUtil.AnticheatAutosave();
             }
 
             var dropPodLocations = new List<IntVec3>();

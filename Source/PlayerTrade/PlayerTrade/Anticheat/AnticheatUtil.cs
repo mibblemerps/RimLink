@@ -5,12 +5,29 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using RimWorld;
+using UnityEngine;
 using Verse;
 
 namespace PlayerTrade.Anticheat
 {
     public static class AnticheatUtil
     {
+        public static bool IsEnabled { get; private set; }
+        
+        /// <summary>
+        /// Letter defs that will trigger an anticheat autosave.
+        /// </summary>
+        public static List<LetterDef> AutosaveOnLetterDefs = new List<LetterDef>
+        {
+            LetterDefOf.ThreatBig,
+            LetterDefOf.ThreatSmall,
+            LetterDefOf.Death,
+            LetterDefOf.BetrayVisitors,
+        };
+
+        private static FieldInfo TicksSinceLastSaveField =
+            typeof(Autosaver).GetField("ticksSinceSave", BindingFlags.Instance | BindingFlags.NonPublic);
+        
         public static void ShowEnableAnticheatDialog()
         {
             var msgBox = new Dialog_MessageBox("This server uses anticheat.\n\n" +
@@ -39,7 +56,7 @@ namespace PlayerTrade.Anticheat
 
         public static void EnableAnticheat()
         {
-            RimLinkComp.Find().Anticheat = true;
+            RimLinkComp.Instance.Anticheat = true; // this value will be saved into the save file, making this game permanently anticheat
             Messages.Message("Anticheat enabled", MessageTypeDefOf.NeutralEvent, false);
 
             ApplyAnticheat();
@@ -47,6 +64,12 @@ namespace PlayerTrade.Anticheat
 
         public static void ApplyAnticheat()
         {
+            if (IsEnabled)
+            {
+                Log.Warn("Attempt to apply anticheat while it's already applied!");
+                return;
+            }
+            
             Log.Message("Applying anticheat...");
 
             // Enable permadeath if it's not on
@@ -58,17 +81,41 @@ namespace PlayerTrade.Anticheat
                 Find.Autosaver.DoAutosave();
             }
 
+            Application.wantsToQuit += OnApplicationWantsToQuit;
+
             // Disable dev mode
             SetDevModeDisabled(true);
 
+            IsEnabled = true;
             Log.Message("Anticheat applied.");
         }
 
         public static void ShutdownAnticheat()
         {
+            if (!IsEnabled)
+            {
+                Log.Warn("Attempt to shutdown anticheat when it's not enabled!");
+                return;
+            }
+            
             ResetDevModeDisabled();
+            
+            Application.wantsToQuit -= OnApplicationWantsToQuit;
 
+            IsEnabled = false;
             Log.Message("Anticheat shutdown");
+        }
+
+        /// <summary>
+        /// Autosave the game for the purposes of anticheat. Won't do anything if anticheat is disabled.
+        /// </summary>
+        /// <param name="evenIfAnticheatDisabled">Autosave even if anticheat is disabled. Good for things where a reload would be detrimental to other players (i.e. lend colonists)</param>
+        public static void AnticheatAutosave(bool evenIfAnticheatDisabled = false)
+        {
+            if (!IsEnabled && !evenIfAnticheatDisabled) return; // Only anticheat autosave if anticheat is enabled.
+            
+            TicksSinceLastSaveField.SetValue(Current.Game.autosaver, 0);
+            LongEventHandler.QueueLongEvent(Current.Game.autosaver.DoAutosave, "Autosaving", false, null);
         }
 
         private static void SetDevModeDisabled(bool disabled)
@@ -105,6 +152,24 @@ namespace PlayerTrade.Anticheat
             {
                 Log.Error("(Anticheat) Failed to reset dev mode!", e);
             }
+        }
+
+        /// <summary>
+        /// Intercept application quit when anticheat is enabled and trigger a save and quit to OS.<br />
+        /// Note: The <see cref="Root.Shutdown()"/> method is patched so anticheat is disabled when the game is actually shutting down.
+        /// </summary>
+        private static bool OnApplicationWantsToQuit()
+        {
+            // Save and quit to OS
+            LongEventHandler.QueueLongEvent(() => {
+                // Save game
+                GameDataSaveLoader.SaveGame(Current.Game.Info.permadeathModeUniqueName);
+
+                // Shutdown game
+                LongEventHandler.ExecuteWhenFinished(() => Root.Shutdown());
+            }, "SavingLongEvent", false, null, false);
+
+            return false;
         }
 
         [DebugAction("RimLink", "ApplyAnticheat", actionType = DebugActionType.Action, allowedGameStates = AllowedGameStates.Playing)]
