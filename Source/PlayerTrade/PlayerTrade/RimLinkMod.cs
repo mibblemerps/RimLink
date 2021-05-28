@@ -29,7 +29,7 @@ namespace PlayerTrade
 
                 try
                 {
-                    return RimLinkComp.Instance.Client.State == Client.ClientState.Authenticated;
+                    return RimLinkComp.Instance.Client.State == Client.ConnectionState.Authenticated;
                 }
                 catch (Exception)
                 {

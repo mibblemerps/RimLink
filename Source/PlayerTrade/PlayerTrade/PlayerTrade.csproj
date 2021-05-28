@@ -126,6 +126,7 @@
     <Compile Include="Missions\Quest\QuestPart_ResearchSpeedModifier.cs" />
     <Compile Include="Missions\Quest\QuestPart_WorkTypeDefDisabled.cs" />
     <Compile Include="MainMenuWidget.cs" />
+    <Compile Include="Net\DisconnectReason.cs" />
     <Compile Include="Net\NetRoyalty.cs" />
     <Compile Include="Net\PacketAttribute.cs" />
     <Compile Include="Net\Packets\PacketDisconnect.cs" />

@@ -19,7 +19,6 @@ namespace TradeServer
         public event EventHandler<ClientEventArgs> Authenticated;
         public event EventHandler<ClientEventArgs> ColonyInfoReceived;
 
-        public ClientState State { get; set; } = ClientState.Auth;
         public float LastHeartbeat;
 
         public Player Player;
@@ -32,16 +31,32 @@ namespace TradeServer
 
         private TaskCompletionSource<Resources> _colonyResourcesCompletionSource;
 
-        public Client(TcpClient connection)
+        public Client()
         {
-            Tcp = connection;
-            Stream = connection.GetStream();
-            IsConnected = true;
-
             PacketReceived += OnPacketReceived;
             Authenticated += OnAuthenticated;
 
             CommandCaller = new ClientCaller(this);
+        }
+
+        public override async Task Handshake()
+        {
+            while (true)
+            {
+                Packet packet = await ReceivePacket();
+                
+                if (packet is PacketConnect connect)
+                {
+                    await HandleConnectPacket(connect);
+                    break;
+                }
+                
+                if (packet is PacketPing)
+                    await HandlePingPacket();
+            }
+
+            // Player now authenticated
+            Authenticated?.Invoke(this, new ClientEventArgs(this));
         }
 
         public void Run()
@@ -76,7 +91,7 @@ namespace TradeServer
 
         public async Task Heartbeat()
         {
-            while (Tcp.Connected)
+            while (IsConnected)
             {
                 if (LastHeartbeat > 0f && Program.Stopwatch.Elapsed.TotalSeconds - LastHeartbeat > PlayerTrade.Net.Client.TimeoutThresholdSeconds)
                 {
@@ -109,8 +124,9 @@ namespace TradeServer
         {
             try
             {
-                if (State == ClientState.Auth)
+                if (State == ConnectionState.Connected)
                 {
+                    // Connected but not authenticated.
                     switch (e.Packet)
                     {
                         case PacketConnect connectPacket:
@@ -123,12 +139,9 @@ namespace TradeServer
                             throw new Exception($"Cannot handle packet now! {e.Packet.GetType().Name}");
                     }
                 }
-                else
+                else if (State == ConnectionState.Authenticated)
                 {
-                    /*
-                     * Sending colonist only works once, then it breaks until server is restarted.
-                     * Possibly related to this code I dunno??
-                     */
+                    // Connected and authenticated as a player.
                     if (e.Packet is PacketForPlayer forPlayer)
                     {
                         if (forPlayer.For == Player.Guid)
@@ -159,6 +172,10 @@ namespace TradeServer
                     {
                         case PacketHeartbeat _:
                             LastHeartbeat = (float)Program.Stopwatch.Elapsed.TotalSeconds;
+                            break;
+                        
+                        case PacketDisconnect _:
+                            Disconnect(DisconnectReason.User, "User disconnect");
                             break;
 
                         case PacketColonyInfo colonyInfoPacket:
@@ -303,8 +320,7 @@ namespace TradeServer
                     FailReason = failReason,
                     AllowReconnect = false
                 });
-                Disconnect(false);
-                return;
+                throw new ConnectionFailedException("Player attempted to join with an incorrect version of RimLink.");
             }
 
             // Check this GUID isn't already connected
@@ -319,8 +335,7 @@ namespace TradeServer
                     FailReason = "This game is already connected to the server.",
                     AllowReconnect = false
                 });
-                Disconnect(false);
-                return;
+                throw new ConnectionFailedException("Game already connected to the server.");
             }
 
             // Load player info
@@ -339,8 +354,7 @@ namespace TradeServer
                     FailReason = "Game secret incorrect. RimLink data may be corrupted.",
                     AllowReconnect = false
                 });
-                Disconnect(false);
-                return;
+                throw new ConnectionFailedException("Game secret incorrect.");
             }
 
             // Assign secret
@@ -369,8 +383,7 @@ namespace TradeServer
                                  (PlayerInfo.BanReason == null ? "" : $"\n{PlayerInfo.BanReason}"),
                     AllowReconnect = false
                 });
-                Disconnect(false);
-                return;
+                throw new ConnectionFailedException($"Banned from the server ({banExpiryMessage})");
             }
 
             // Send connect response with connected player data
@@ -384,9 +397,6 @@ namespace TradeServer
                 ConnectedPlayers = players,
                 Settings = Program.Server.GameSettings
             });
-
-            State = ClientState.Normal;
-            Authenticated?.Invoke(this, new ClientEventArgs(this));
         }
 
         private async Task HandlePingPacket()

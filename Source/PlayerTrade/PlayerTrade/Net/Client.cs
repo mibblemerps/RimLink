@@ -14,8 +14,7 @@ namespace PlayerTrade.Net
     public class Client : Connection
     {
         public const float TimeoutThresholdSeconds = 6f;
-
-        public event EventHandler Connected;
+        
         public event EventHandler<PlayerUpdateEventArgs> PlayerUpdated;
         public event EventHandler<Player> PlayerConnected;
         public event EventHandler<Player> PlayerDisconnected;
@@ -25,8 +24,7 @@ namespace PlayerTrade.Net
         public delegate bool PacketPredicate(Packet packet);
 
         public RimLinkComp RimLinkComp;
-
-        public ClientState State = ClientState.Disconnected;
+        
         public float LastHeartbeat;
 
         public Player Player { get; private set; }
@@ -52,26 +50,8 @@ namespace PlayerTrade.Net
             PlayerDisconnected += OnPlayerDisconnected;
         }
 
-        public async Task Connect(string ip, int port = 35562)
+        public override async Task Handshake()
         {
-            Tcp?.Close();
-
-            Tcp = new TcpClient();
-            try
-            {
-                Log.Message("Connecting to: " + ip + ":" + port);
-                await Tcp.ConnectAsync(ip, port);
-            }
-            catch (Exception e)
-            {
-                throw new ConnectionFailedException(e.Message, true, e);
-            }
-            IsConnected = true;
-            State = ClientState.Connected;
-            Log.Message("TCP connection established.");
-
-            Stream = Tcp.GetStream();
-
             // Send connect request
             SendPacket(new PacketConnect
             {
@@ -86,24 +66,16 @@ namespace PlayerTrade.Net
             // Await connection response
             PacketConnectResponse response = (PacketConnectResponse) await AwaitPacket(packet => packet is PacketConnectResponse, 2000);
             if (response == null)
-            {
-                Tcp.Close();
                 throw new ConnectionFailedException("No connect response received. Is the server running and reachable?", true);
-            }
 
             if (!response.Success)
-            {
-                Tcp.Close();
                 throw new ConnectionFailedException("Server refused connection: " + response.FailReason, response.AllowReconnect);
-            }
-
-            Log.Message("Connected!");
-            Log.Message($"GameSettings: RaidBasePrice={response.Settings.RaidBasePrice} MaxRaidStrength={response.Settings.RaidMaxStrengthPercent} Anticheat={response.Settings.Anticheat}");
-
-            State = ClientState.Authenticated;
 
             GameSettings = response.Settings;
-            Connected?.Invoke(this, EventArgs.Empty);
+            
+            // Connected
+            Log.Message("Connected!");
+            Log.Message($"GameSettings: RaidBasePrice={response.Settings.RaidBasePrice} MaxRaidStrength={response.Settings.RaidMaxStrengthPercent} Anticheat={response.Settings.Anticheat}");
         }
 
         public void Run()
@@ -138,12 +110,6 @@ namespace PlayerTrade.Net
             }
         }
 
-        public override void Disconnect(bool sendDisconnectPacket = true)
-        {
-            _awaitingPackets.Clear();
-            base.Disconnect(sendDisconnectPacket);
-        }
-
         public void Update()
         {
             // Process received packets pending in queue
@@ -154,11 +120,11 @@ namespace PlayerTrade.Net
             }
 
             // Check if we've timed out
-            if (State == ClientState.Authenticated && LastHeartbeat > 0f && Time.realtimeSinceStartup - LastHeartbeat > TimeoutThresholdSeconds)
+            if (State == ConnectionState.Authenticated && LastHeartbeat > 0f && Time.realtimeSinceStartup - LastHeartbeat > TimeoutThresholdSeconds)
             {
                 // Timed out
                 Log.Message("Connection timed out");
-                Disconnect();
+                Disconnect(DisconnectReason.Network);
             }
         }
 
@@ -166,7 +132,7 @@ namespace PlayerTrade.Net
         {
             Player = Player.Self(mapIndependent);
             OnlinePlayers[Guid] = Player; // add ourselves to the player list
-            if (sendPacket && State == ClientState.Authenticated)
+            if (sendPacket && State == ConnectionState.Authenticated)
                 SendColonyInfo();
         }
 
@@ -262,7 +228,8 @@ namespace PlayerTrade.Net
 
         private void OnDisconnected(object sender, EventArgs e)
         {
-            State = ClientState.Disconnected;
+            State = ConnectionState.Disconnected;
+            _awaitingPackets.Clear();
         }
 
         private void OnPacketReceived(object sender, PacketReceivedEventArgs e)
@@ -302,7 +269,7 @@ namespace PlayerTrade.Net
                 {
                     case PacketDisconnect _:
                     {
-                        Disconnect(false);
+                        Disconnect(DisconnectReason.Error);
                         break;
                     }
 
@@ -444,13 +411,6 @@ namespace PlayerTrade.Net
                 OldPlayer = oldPlayer;
                 Player = player;
             }
-        }
-
-        public enum ClientState
-        {
-            Disconnected,
-            Connected,
-            Authenticated
         }
     }
 }

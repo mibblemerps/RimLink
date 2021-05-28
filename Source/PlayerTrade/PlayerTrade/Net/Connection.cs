@@ -10,13 +10,16 @@ using UnityEngine;
 
 namespace PlayerTrade.Net
 {
-    public class Connection
+    public abstract class Connection
     {
         private const int SendQueueMaxSize = 128;
 
-        public event EventHandler<PacketReceivedEventArgs> PacketReceived;
+        public event EventHandler Connected;
         public event EventHandler Disconnected;
+        public event EventHandler<PacketReceivedEventArgs> PacketReceived;
 
+        public ConnectionState State = ConnectionState.Disconnected;
+        
         public TcpClient Tcp;
         public NetworkStream Stream;
 
@@ -25,10 +28,108 @@ namespace PlayerTrade.Net
         /// </summary>
         public float ArtificialSendDelay = 0;
 
-        public bool IsConnected { get; protected set; }
+        /// <summary>
+        /// Is connected and/or authenticated?
+        /// </summary>
+        public bool IsConnected => State != ConnectionState.Disconnected;
+        
+        /// <summary>
+        /// Is the connection allowed to auto-reconnect at this time?
+        /// When certain disconnect types occur, an auto reconnect might not be appropriate.
+        /// </summary>
+        public bool AllowReconnect { get; protected set; }
 
         private readonly Queue<Packet> _sendQueue = new Queue<Packet>(SendQueueMaxSize);
         private TaskCompletionSource<bool> _packetQueuedCompletionSource = new TaskCompletionSource<bool>();
+
+        /// <summary>
+        /// Connect to a server as a client.
+        /// </summary>
+        /// <param name="ip">Server IP</param>
+        /// <param name="port">Server port</param>
+        /// <exception cref="ConnectionFailedException"></exception>
+        public async Task Connect(string ip, int port = 35562)
+        {
+            Tcp?.Close();
+            Tcp = new TcpClient();
+            
+            try
+            {
+                Log.Message("Connecting to: " + ip + ":" + port);
+                await Tcp.ConnectAsync(ip, port);
+            }
+            catch (Exception e)
+            {
+                throw new ConnectionFailedException(e.Message, true, e);
+            }
+            
+            // We now have a TCP connection
+            State = ConnectionState.Connected;
+            Stream = Tcp.GetStream();
+            Log.Message("TCP connection established.");
+
+            try
+            {
+                // Perform handshake process
+                await Handshake();
+            }
+            catch (ConnectionFailedException connectionFailedException)
+            {
+                Disconnect(DisconnectReason.Kicked, connectionFailedException.Message);
+                throw;
+            }
+            catch (Exception e)
+            {
+                Disconnect(DisconnectReason.Error, e.Message); // todo: this could cause rapid disconnect/reconnect loops
+                throw;
+            }
+
+            // Successfully connected and completed handshake
+            State = ConnectionState.Authenticated;
+            AllowReconnect = true;
+            Connected?.Invoke(this, EventArgs.Empty);
+        }
+
+        /// <summary>
+        /// Adopt an existing connect as a connected client.
+        /// </summary>
+        /// <param name="connection">Remote connection</param>
+        public async Task Serve(TcpClient connection)
+        {
+            Tcp?.Close();
+            Tcp = connection;
+            Stream = Tcp.GetStream();
+
+            State = ConnectionState.Connected;
+
+            try
+            {
+                // Perform handshake process
+                await Handshake();
+            }
+            catch (ConnectionFailedException connectionFailedException)
+            {
+                Disconnect(DisconnectReason.Kicked, connectionFailedException.Message);
+                throw;
+            }
+            catch (Exception e)
+            {
+                Disconnect(DisconnectReason.Error, e.Message);
+                throw;
+            }
+            
+            // Handshake successful at this point
+            State = ConnectionState.Authenticated;
+            AllowReconnect = true;
+            Connected?.Invoke(this, EventArgs.Empty);
+        }
+
+        /// <summary>
+        /// Where connection implementations can perform their custom handshaking process.
+        /// Throw a <see cref="ConnectionFailedException"/> if the handshake is unsuccessful.
+        /// </summary>
+        /// <returns></returns>
+        public abstract Task Handshake();
 
         /// <summary>
         /// Adds a packet to the send queue to be sent shortly.
@@ -95,7 +196,7 @@ namespace PlayerTrade.Net
             catch (Exception e)
             {
                 // Failed to send packet
-                Log.Warn("Failed to send packet. " + e.Message);
+                Log.Warn($"Failed to send packet ({packet.GetType().Name})! {e}");
                 if (!(packet is PacketDisconnect)) // don't trigger a disconnect if that's what we're already doing
                     Disconnect();
                 throw;
@@ -114,15 +215,7 @@ namespace PlayerTrade.Net
             while (_sendQueue.Count > 0)
             {
                 Packet packet = _sendQueue.Dequeue();
-                try
-                {
-                    await SendPacketDirect(packet);
-                }
-                catch (Exception e)
-                {
-                    Log.Error("Exception trying to send packet from send queue", e);
-                    Disconnect(false);
-                }
+                await SendPacketDirect(packet);
             }
 
             // Reset completion source so we know when new packets are queued
@@ -135,13 +228,17 @@ namespace PlayerTrade.Net
         /// <p>This also invokes the Disconnected event, allowing the disconnection to be handled by the rest of the code.</p>
         /// </summary>
         /// <param name="sendDisconnectPacket">Should the disconnect packet be sent.</param>
-        public virtual void Disconnect(bool sendDisconnectPacket = true)
+        /// <param name="allowAutoReconnect">Should we be allowed to attempt to automatically reconnect to the server?</param>
+        [Obsolete("Use Disconnect with DisconnectReason instead")]
+        public void Disconnect(bool sendDisconnectPacket = true, bool allowAutoReconnect = false)
         {
             _sendQueue?.Clear();
 
-            if (!IsConnected)
+            if (State == ConnectionState.Disconnected)
                 return; // Already disconnected
-            IsConnected = false;
+            State = ConnectionState.Disconnected;
+
+            AllowReconnect = allowAutoReconnect;
 
             Disconnected?.Invoke(this, EventArgs.Empty);
             if (!Tcp.Connected)
@@ -152,14 +249,33 @@ namespace PlayerTrade.Net
                 // Try to send a disconnect packet. This is more a courtesy than anything, it just ensures the connection is immediately and cleanly closed on both ends.
                 try
                 {
-                    SendPacketDirect(new PacketDisconnect()).Wait();
+                    SendPacketDirect(new PacketDisconnect()).Wait(2000);
                 }
-                catch (Exception)
-                {
-                }
+                catch (Exception) { /* ignored - disconnect packet is a courtesy */ }
             }
 
             Tcp?.Close();
+        }
+
+        public void Disconnect(DisconnectReason reason, string reasonMessage = null)
+        {
+#pragma warning disable 618
+            switch (reason)
+            {
+                case DisconnectReason.Error:
+                    Disconnect(true, true);
+                    break;
+                case DisconnectReason.Network:
+                    Disconnect(true, false);
+                    break;
+                case DisconnectReason.User:
+                    Disconnect(true, false);
+                    break;
+                case DisconnectReason.Kicked:
+                    Disconnect(false, false);
+                    break;
+            }
+#pragma warning restore 618
         }
 
         public async Task<Packet> ReceivePacket()
@@ -236,7 +352,7 @@ namespace PlayerTrade.Net
                 }
                 catch (Exception e)
                 {
-                    Disconnect();
+                    Disconnect(DisconnectReason.Error);
                     Exception readException = new Exception($"Exception reading packet {packet.GetType().Name} (Last Marker = {packetBuffer.LastMarker})", e);
                     Log.Error(readException.Message, e);
                     throw readException;
@@ -246,6 +362,13 @@ namespace PlayerTrade.Net
             PacketReceived?.Invoke(this, new PacketReceivedEventArgs(packetId, packet));
 
             return packet;
+        }
+        
+        public enum ConnectionState
+        {
+            Disconnected,
+            Connected,
+            Authenticated
         }
     }
 }

@@ -22,20 +22,17 @@ namespace PlayerTrade.MainTab
         {
             closeOnAccept = false;
 
-            if (!RimLinkMod.Active)
-                return;
-
-            _chat = new TabChat();
-            _trades = new TabTrades();
-            
-            // Default tab
-            _selectedTab = _chat;
-
             _tabs = new List<TabRecord>
             {
                 new TabRecord("Chat", () => { _selectedTab = _chat; }, () => _selectedTab == _chat),
                 new TabRecord("Trades", () => { _selectedTab = _trades; }, () => _selectedTab == _trades),
             };
+            
+            _chat = new TabChat();
+            _trades = new TabTrades();
+
+            // Default tab
+            _selectedTab = _chat;
         }
 
         public override void PostOpen()
@@ -73,7 +70,7 @@ namespace PlayerTrade.MainTab
             Rect mainRect = new Rect(0, topBar.yMax + 32, inRect.width, inRect.height - topBar.height - 32);
 
             _selectedTab?.Draw(mainRect);
-            
+
             TabDrawer.DrawTabs(mainRect, _tabs);
         }
 

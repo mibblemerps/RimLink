@@ -23,5 +23,10 @@ namespace PlayerTrade.Net.Packets
                 return null;
             }
         }
+
+        public override async Task Handshake()
+        {
+            // Ping doesn't require a handshake
+        }
     }
 }

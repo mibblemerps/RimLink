@@ -45,8 +45,9 @@ namespace TradeServer
                     TcpClient tcp = await Listener.AcceptTcpClientAsync();
                     Log.Message($"Accepted TCP connection from {tcp.Client.RemoteEndPoint}");
 
-                    var client = new Client(tcp);
+                    var client = new Client();
                     client.Authenticated += ClientOnAuthenticated;
+                    await client.Serve(tcp);
                     client.Run();
                 }
                 catch (Exception e)
@@ -83,7 +84,7 @@ namespace TradeServer
                     shouldQueue = true;
             }
 
-            if (client != null && client.State == ClientState.Normal && client.Tcp.Connected)
+            if (client != null && client.State == Connection.ConnectionState.Authenticated && client.Tcp.Connected)
             {
                 // Client connected - send packet
                 client.SendPacket(packet);
