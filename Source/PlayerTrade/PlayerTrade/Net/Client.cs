@@ -45,7 +45,6 @@ namespace PlayerTrade.Net
 
             Disconnected += OnDisconnected;
             PacketReceived += OnPacketReceived;
-            PlayerUpdated += OnPlayerUpdated;
             PlayerConnected += OnPlayerConnected;
             PlayerDisconnected += OnPlayerDisconnected;
         }
@@ -363,25 +362,6 @@ namespace PlayerTrade.Net
             catch (Exception ex)
             {
                 Log.Error($"Exception handling packet! ({e.Packet.GetType().Name})", ex);
-            }
-        }
-
-        private void OnPlayerUpdated(object sender, PlayerUpdateEventArgs e)
-        {
-            // If this is a new player, or if their tradeable status has changed - issue a message
-            if (e.OldPlayer == null || e.Player.TradeableNow != e.OldPlayer.TradeableNow)
-            {
-                if (e.Player.TradeableNow)
-                {
-                    Log.Message($"{e.Player.Name} is now tradable");
-                    Messages.Message($"{e.Player.Name} is now tradable", def: MessageTypeDefOf.NeutralEvent, false);
-
-                }
-                else if (e.OldPlayer != null) // only show this message if the player previously existed
-                {
-                    Log.Message($"{e.Player.Name} no longer tradable");
-                    Messages.Message($"{e.Player.Name} is no longer tradable", def: MessageTypeDefOf.NeutralEvent, false);
-                }
             }
         }
 

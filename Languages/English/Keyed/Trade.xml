@@ -12,5 +12,8 @@
     <Rl_TradeRetracted>Trade offer retracted ({0})</Rl_TradeRetracted>
     <Rl_TradeRetractedDesc>Trade offer retracted ({0})</Rl_TradeRetractedDesc>
     
+    <Rl_MessagePlayerIsNowTradeable>{0} is now tradeable</Rl_MessagePlayerIsNowTradeable>
+    <Rl_MessagePlayerIsNoLongerTradeable>{0} is no longer tradeable</Rl_MessagePlayerIsNoLongerTradeable>
+    
     <Rl_MissingResources>Unable to fulfill trade for {0} - missing resources.</Rl_MissingResources>
 </LanguageData>

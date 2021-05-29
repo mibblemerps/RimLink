@@ -20,6 +20,7 @@ namespace PlayerTrade.Trade
         {
             Client = client;
             client.PacketReceived += OnPacketReceived;
+            client.PlayerUpdated += OnPlayerUpdated;
         }
 
         private void OnPacketReceived(object sender, PacketReceivedEventArgs e)
@@ -47,6 +48,19 @@ namespace PlayerTrade.Trade
             else if (e.Packet is PacketRetractTrade retractPacket)
             {
                 TradeUtil.RetractOffer(ActiveTradeOffers.First(offer => offer.Guid == retractPacket.Guid));
+            }
+        }
+        
+        private void OnPlayerUpdated(object sender, Client.PlayerUpdateEventArgs e)
+        {
+            if (e.OldPlayer == null) return; // Don't issue update for newly joined players
+            
+            // If tradeable status changed
+            if (e.Player.TradeableNow != e.OldPlayer.TradeableNow)
+            {
+                Messages.Message((e.Player.TradeableNow ? "Rl_MessagePlayerIsNowTradeable" : "Rl_MessagePlayerIsNoLongerTradeable")
+                        .Translate(e.Player.Name.Colorize(e.Player.Color.ToColor())),
+                    def: MessageTypeDefOf.NeutralEvent, false);
             }
         }
 
