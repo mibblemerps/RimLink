@@ -84,6 +84,8 @@ namespace PlayerTrade.Net
             buffer.WriteString(Childhood, true);
             buffer.WriteString(Adulthood, true);
             buffer.WriteByte((byte) Gender);
+            
+            buffer.WriteMarker("Groups");
 
             // Skills
             buffer.WriteGroup("Skills", group =>
@@ -239,7 +241,7 @@ namespace PlayerTrade.Net
             Adulthood = buffer.ReadString(true);
             Gender = (Gender) buffer.ReadByte();
             
-            buffer.WriteMarker("Groups");
+            buffer.ReadMarker("Groups");
 
             // Skills
             buffer.ReadGroup("Skills", group =>
