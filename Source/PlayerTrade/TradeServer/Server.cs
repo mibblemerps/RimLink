@@ -47,8 +47,9 @@ namespace TradeServer
 
                     var client = new Client();
                     client.Authenticated += ClientOnAuthenticated;
-                    await client.Serve(tcp);
-                    client.Run();
+                    
+                    // Serve will setup the connection and perform the handshake. Once that's done, begin the send/receive loops
+                    _ = client.Serve(tcp).ContinueWith(t => client.Run());
                 }
                 catch (Exception e)
                 {
