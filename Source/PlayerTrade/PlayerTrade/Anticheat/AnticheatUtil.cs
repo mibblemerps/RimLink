@@ -116,9 +116,15 @@ namespace PlayerTrade.Anticheat
         public static void AnticheatAutosave(bool evenIfAnticheatDisabled = false)
         {
             if (!IsEnabled && !evenIfAnticheatDisabled) return; // Only anticheat autosave if anticheat is enabled.
-            
-            TicksSinceLastSaveField.SetValue(Current.Game.autosaver, 0);
-            LongEventHandler.QueueLongEvent(Current.Game.autosaver.DoAutosave, "Autosaving", false, null);
+
+            Autosaver autosaver = Current.Game.autosaver;
+
+            // Don't force autosave if we already did a few ticks ago
+            // Good for situations that generate multiple letters (eg. bounty placed letter, then immediate raid letter)
+            if ((int) TicksSinceLastSaveField.GetValue(autosaver) < 5) return;
+
+            TicksSinceLastSaveField.SetValue(autosaver, 0);
+            LongEventHandler.QueueLongEvent(autosaver.DoAutosave, "Autosaving", false, null);
         }
 
         private static void SetDevModeDisabled(bool disabled)
