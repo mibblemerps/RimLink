@@ -95,6 +95,7 @@
     <Compile Include="Chat\ChatSystem.cs" />
     <Compile Include="Chat\PacketReceiveChatMessage.cs" />
     <Compile Include="Chat\PacketSendChatMessage.cs" />
+    <Compile Include="Colony.cs" />
     <Compile Include="Dialog_ConnectingToServer.cs" />
     <Compile Include="Dialog_SetServerIp.cs" />
     <Compile Include="GameSettings.cs" />

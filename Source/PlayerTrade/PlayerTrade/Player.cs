@@ -19,6 +19,8 @@ namespace PlayerTrade
         public string Name;
         public float[] Color = ColoredText.FactionColor_Neutral.ToFloats();
 
+        public List<Colony> Colonies;
+        
         public int Wealth;
         public int Day;
         public string Weather;
@@ -51,6 +53,21 @@ namespace PlayerTrade
             {
                 player.Weather = Find.CurrentMap.weatherManager.curWeather.defName;
                 player.Temperature = Mathf.RoundToInt(Find.CurrentMap.mapTemperature.OutdoorTemp);
+                
+                // Colonies
+                player.Colonies = new List<Colony>();
+                foreach (var settlement in Find.WorldObjects.SettlementBases
+                    .Where(settlement => settlement.Faction == RimWorld.Faction.OfPlayer))
+                {
+                    player.Colonies.Add(new Colony
+                    {
+                        Id = settlement.ID,
+                        OwnerGuid = player.Guid,
+                        Name = settlement.Name,
+                        Seed = Find.World.info.seedString,
+                        Tile = settlement.Map.Tile,
+                    });
+                }
             }
 
             // Populate factions

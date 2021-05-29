@@ -213,19 +213,19 @@ namespace PlayerTrade.Missions
 
                 case PacketLentColonistUpdate.ColonistEvent.Imprisoned:
                     Find.LetterStack.ReceiveLetter("Rl_Imprisoned".Translate(pawn.NameShortColored, activeOffer.From.GuidToName()),
-                        "Rl_Imprisoned".Translate(pawn.NameFullColored, activeOffer.From.GuidToName(true)),
+                        "Rl_ImprisonedDesc".Translate(pawn.NameFullColored, activeOffer.From.GuidToName(true)),
                         LetterDefOf.NegativeEvent);
                     break;
 
                 case PacketLentColonistUpdate.ColonistEvent.Gone:
                     Find.LetterStack.ReceiveLetter("Rl_Missing".Translate(pawn.NameShortColored, activeOffer.From.GuidToName()),
-                        "Rl_Missing".Translate(pawn.NameFullColored, activeOffer.From.GuidToName(true)),
+                        "Rl_MissingDesc".Translate(pawn.NameFullColored, activeOffer.From.GuidToName(true)),
                         LetterDefOf.NegativeEvent);
                     break;
 
                 case PacketLentColonistUpdate.ColonistEvent.Escaped:
                     Find.LetterStack.ReceiveLetter("Rl_Escaped".Translate(pawn.NameShortColored, activeOffer.From.GuidToName()),
-                        "Rl_Escaped".Translate(pawn.NameFullColored, activeOffer.From.GuidToName(true)),
+                        "Rl_EscapedDesc".Translate(pawn.NameFullColored, activeOffer.From.GuidToName(true)),
                         LetterDefOf.NeutralEvent);
                     break;
             }
