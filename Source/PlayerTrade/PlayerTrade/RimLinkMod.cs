@@ -14,7 +14,7 @@ namespace PlayerTrade
 {
     public class RimLinkMod : Mod
     {
-        public static readonly int ProtocolVersion = 4;
+        public static readonly int ProtocolVersion = 5;
 
         public static RimLinkMod Instance { get; private set; }
 
