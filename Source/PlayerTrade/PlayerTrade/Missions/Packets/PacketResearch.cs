@@ -8,7 +8,7 @@ namespace PlayerTrade.Missions.Packets
     /// <summary>
     /// Sent when a lent colonist is doing joint research. This adds research points onto the host colonies research.
     /// </summary>
-    [Packet(HideFromLog = false)]
+    [Packet(HideFromLog = true)]
     public class PacketResearch : PacketForPlayer
     {
         public override bool ShouldQueue => true;
