@@ -37,7 +37,7 @@
         <!-- Research speed multiplier-->
         <li Class="PlayerTrade.Missions.Quest.QuestNode_ResearchSpeedModifier">
           <pawns>$pawns</pawns>
-          <multiplier>1.25</multiplier>
+          <multiplier>1.2</multiplier>
         </li>
       </nodes>
     </root>
