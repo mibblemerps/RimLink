@@ -86,101 +86,129 @@ namespace PlayerTrade.Net
             buffer.WriteByte((byte) Gender);
 
             // Skills
-            buffer.WriteMarker("Skills");
-            buffer.WriteInt(Skills.Count);
-            foreach (NetSkill skill in Skills)
-                buffer.WritePacketable(skill);
-
+            buffer.WriteGroup("Skills", group =>
+            {
+                group.WriteInt(Skills.Count);
+                foreach (NetSkill skill in Skills)
+                    group.WritePacketable(skill);
+            });
+            
             // Traits
-            buffer.WriteMarker("Traits");
-            buffer.WriteInt(Traits.Count);
-            foreach (NetTrait trait in Traits)
-                buffer.WritePacketable(trait);
+            buffer.WriteGroup("Traits", group =>
+            {
+                group.WriteInt(Traits.Count);
+                foreach (NetTrait trait in Traits)
+                    group.WritePacketable(trait);
+            });
 
             // Equipment
-            buffer.WriteMarker("Equipment");
-            buffer.WriteInt(Equipment.Count);
-            foreach (NetThing thing in Equipment)
-                buffer.WritePacketable(thing);
+            buffer.WriteGroup("Equipment", group =>
+            {
+                group.WriteInt(Equipment.Count);
+                foreach (NetThing thing in Equipment)
+                    group.WritePacketable(thing);                
+            });
 
             // Apparel
-            buffer.WriteMarker("Apparel");
-            buffer.WriteInt(Apparel.Count);
-            foreach (NetThing thing in Apparel)
-                buffer.WritePacketable(thing);
+            buffer.WriteGroup("Apparel", group =>
+            {
+                group.WriteInt(Apparel.Count);
+                foreach (NetThing thing in Apparel)
+                    group.WritePacketable(thing);                
+            });
 
             // Inventory
-            buffer.WriteMarker("Inventory");
-            buffer.WriteInt(Inventory.Count);
-            foreach (NetThing thing in Inventory)
-                buffer.WritePacketable(thing);
+            buffer.WriteGroup("Inventory", group =>
+            {
+                group.WriteInt(Inventory.Count);
+                foreach (NetThing thing in Inventory)
+                    group.WritePacketable(thing);                
+            });
 
             // Hediffs
-            buffer.WriteMarker("Hediffs");
-            buffer.WriteInt(Hediffs.Count);
-            foreach (NetHediff hediff in Hediffs)
-                buffer.WritePacketable(hediff);
-
-            buffer.WriteByte((byte) HealthState);
+            buffer.WriteGroup("Hediffs", group =>
+            {
+                group.WriteInt(Hediffs.Count);
+                foreach (NetHediff hediff in Hediffs)
+                    group.WritePacketable(hediff);
+                
+                group.WriteByte((byte) HealthState);
+            });
 
             // Work priorities
-            buffer.WriteMarker("WorkPriorities");
-            buffer.WriteInt(WorkPriorities.Count);
-            foreach (var priority in WorkPriorities)
+            buffer.WriteGroup("WorkPriorities", group =>
             {
-                buffer.WriteString(priority.Key);
-                buffer.WriteInt(priority.Value);
-            }
+                group.WriteInt(WorkPriorities.Count);
+                foreach (var priority in WorkPriorities)
+                {
+                    group.WriteString(priority.Key);
+                    group.WriteInt(priority.Value);
+                }                
+            });
 
             // Records
-            buffer.WriteMarker("Records");
-            buffer.WriteInt(Records.Count);
-            foreach (var record in Records)
+            buffer.WriteGroup("Records", group =>
             {
-                buffer.WriteString(record.Key);
-                buffer.WriteFloat(record.Value);
-            }
+                group.WriteInt(Records.Count);
+                foreach (var record in Records)
+                {
+                    group.WriteString(record.Key);
+                    group.WriteFloat(record.Value);
+                }
+            });
 
             // Inspiration
-            buffer.WriteMarker("Inspiration");
-            buffer.WriteString(InspirationDefName, true);
-            buffer.WriteInt(InspirationAge);
-            buffer.WriteString(InspirationReason, true);
+            buffer.WriteGroup("Inspiration", group =>
+            {
+                group.WriteString(InspirationDefName, true);
+                group.WriteInt(InspirationAge);
+                group.WriteString(InspirationReason, true);                
+            });
 
             // Player settings
-            buffer.WriteMarker("PlayerSettings");
-            buffer.WriteByte((byte) MedicalCare);
-            buffer.WriteByte((byte) HostilityResponseMode);
-            buffer.WriteBoolean(SelfTend);
+            buffer.WriteGroup("PlayerSettings", group =>
+            {
+                group.WriteByte((byte) MedicalCare);
+                group.WriteByte((byte) HostilityResponseMode);
+                group.WriteBoolean(SelfTend);                
+            });
 
             // Schedule
-            buffer.WriteMarker("Schedule");
-            for (int i = 0; i < 24; i++)
-                buffer.WriteString(Schedule[i]);
+            buffer.WriteGroup("Schedule", group =>
+            {
+                for (int i = 0; i < 24; i++)
+                    group.WriteString(Schedule[i]);                
+            });
 
             // Needs
-            buffer.WriteMarker("Needs");
-            buffer.WriteInt(Needs.Count);
-            foreach (NetNeed need in Needs)
-                buffer.WritePacketable(need);
+            buffer.WriteGroup("Needs", group =>
+            {
+                group.WriteInt(Needs.Count);
+                foreach (NetNeed need in Needs)
+                    group.WritePacketable(need);                
+            });
 
             // Memories
-            buffer.WriteMarker("Memories");
-            buffer.WriteInt(Memories.Count);
-            foreach (NetMemory memory in Memories)
-                buffer.WritePacketable(memory);
-            
+            buffer.WriteGroup("Memories", group =>
+            {
+                group.WriteInt(Memories.Count);
+                foreach (NetMemory memory in Memories)
+                    group.WritePacketable(memory);                
+            });
+
             // Royalty
-            buffer.WriteMarker("Royalty");
-            if (Royalty == null)
+            buffer.WriteGroup("Royalty", group =>
             {
-                buffer.WriteBoolean(false);
-            }
-            else
-            {
-                buffer.WriteBoolean(true);
-                buffer.WritePacketable(Royalty);
-            }
+                if (Royalty == null)
+                {
+                    group.WriteBoolean(false);
+                }
+                else
+                {
+                    group.WriteBoolean(true);
+                    group.WritePacketable(Royalty);
+                }                
+            });
         }
 
         public void Read(PacketBuffer buffer)
@@ -210,101 +238,131 @@ namespace PlayerTrade.Net
             Childhood = buffer.ReadString(true);
             Adulthood = buffer.ReadString(true);
             Gender = (Gender) buffer.ReadByte();
+            
+            buffer.WriteMarker("Groups");
 
             // Skills
-            buffer.ReadMarker("Skills");
-            int skillCount = buffer.ReadInt();
-            Skills = new List<NetSkill>(skillCount);
-            for (int i = 0; i < skillCount; i++)
-                Skills.Add(buffer.ReadPacketable<NetSkill>());
+            buffer.ReadGroup("Skills", group =>
+            {
+                int skillCount = group.ReadInt();
+                Skills = new List<NetSkill>(skillCount);
+                for (int i = 0; i < skillCount; i++)
+                    Skills.Add(group.ReadPacketable<NetSkill>());                
+            }, () => Skills = null);
 
             // Traits
-            buffer.ReadMarker("Traits");
-            int traitsCount = buffer.ReadInt();
-            Traits = new List<NetTrait>(traitsCount);
-            for (int i = 0; i < traitsCount; i++)
-                Traits.Add(buffer.ReadPacketable<NetTrait>());
+            buffer.ReadGroup("Traits", group =>
+            {
+                int traitsCount = group.ReadInt();
+                Traits = new List<NetTrait>(traitsCount);
+                for (int i = 0; i < traitsCount; i++)
+                    Traits.Add(group.ReadPacketable<NetTrait>());                
+            }, () => Traits = null);
 
             // Equipment
-            buffer.ReadMarker("Equipment");
-            int equipmentCount = buffer.ReadInt();
-            Equipment = new List<NetThing>(equipmentCount);
-            for (int i = 0; i < equipmentCount; i++)
-                Equipment.Add(buffer.ReadPacketable<NetThing>());
+            buffer.ReadGroup("Equipment", group =>
+            {
+                int equipmentCount = group.ReadInt();
+                Equipment = new List<NetThing>(equipmentCount);
+                for (int i = 0; i < equipmentCount; i++)
+                    Equipment.Add(group.ReadPacketable<NetThing>());                
+            }, () => Equipment = null);
 
             // Apparel
-            buffer.ReadMarker("Apparel");
-            int apparelCount = buffer.ReadInt();
-            Apparel = new List<NetThing>(apparelCount);
-            for (int i = 0; i < apparelCount; i++)
-                Apparel.Add(buffer.ReadPacketable<NetThing>());
+            buffer.ReadGroup("Apparel", group =>
+            {
+                int apparelCount = group.ReadInt();
+                Apparel = new List<NetThing>(apparelCount);
+                for (int i = 0; i < apparelCount; i++)
+                    Apparel.Add(group.ReadPacketable<NetThing>());                
+            }, () => Apparel = null);
 
             // Inventory
-            buffer.ReadMarker("Inventory");
-            int inventoryCount = buffer.ReadInt();
-            Inventory = new List<NetThing>(inventoryCount);
-            for (int i = 0; i < inventoryCount; i++)
-                Inventory.Add(buffer.ReadPacketable<NetThing>());
+            buffer.ReadGroup("Inventory", group =>
+            {
+                int inventoryCount = group.ReadInt();
+                Inventory = new List<NetThing>(inventoryCount);
+                for (int i = 0; i < inventoryCount; i++)
+                    Inventory.Add(group.ReadPacketable<NetThing>());                
+            }, () => Inventory = null);
 
             // Hediffs
-            buffer.ReadMarker("Hediffs");
-            int hediffCount = buffer.ReadInt();
-            Hediffs = new List<NetHediff>(hediffCount);
-            for (int i = 0; i < hediffCount; i++)
-                Hediffs.Add(buffer.ReadPacketable<NetHediff>());
-
-            HealthState = (PawnHealthState) buffer.ReadByte();
+            buffer.ReadGroup("Hediffs", group =>
+            {
+                int hediffCount = group.ReadInt();
+                Hediffs = new List<NetHediff>(hediffCount);
+                for (int i = 0; i < hediffCount; i++)
+                    Hediffs.Add(group.ReadPacketable<NetHediff>());
+                
+                HealthState = (PawnHealthState) group.ReadByte();
+            }, () => Hediffs = null);
 
             // Work priorities
-            buffer.ReadMarker("WorkPriorities");
-            int priorityCount = buffer.ReadInt();
-            WorkPriorities = new Dictionary<string, int>(priorityCount);
-            for (int i = 0; i < priorityCount; i++)
-                WorkPriorities.SetOrAdd(buffer.ReadString(), buffer.ReadInt());
+            buffer.ReadGroup("WorkPriorities", group =>
+            {
+                int priorityCount = group.ReadInt();
+                WorkPriorities = new Dictionary<string, int>(priorityCount);
+                for (int i = 0; i < priorityCount; i++)
+                    WorkPriorities.SetOrAdd(group.ReadString(), group.ReadInt());                
+            }, () => WorkPriorities = null);
 
             // Records
-            buffer.ReadMarker("Records");
-            int recordCount = buffer.ReadInt();
-            Records = new Dictionary<string, float>(recordCount);
-            for (int i = 0; i < recordCount; i++)
-                Records.SetOrAdd(buffer.ReadString(), buffer.ReadFloat());
+            buffer.ReadGroup("Records", group =>
+            {
+                int recordCount = group.ReadInt();
+                Records = new Dictionary<string, float>(recordCount);
+                for (int i = 0; i < recordCount; i++)
+                    Records.SetOrAdd(group.ReadString(), group.ReadFloat());                
+            }, () => Records = null);
 
             // Inspiration
-            buffer.ReadMarker("Inspiration");
-            InspirationDefName = buffer.ReadString(true);
-            InspirationAge = buffer.ReadInt();
-            InspirationReason = buffer.ReadString(true);
+            buffer.ReadGroup("Inspiration", group =>
+            {
+                InspirationDefName = group.ReadString(true);
+                InspirationAge = group.ReadInt();
+                InspirationReason = group.ReadString(true);                
+            });
 
             // Player settings
-            buffer.ReadMarker("PlayerSettings");
-            MedicalCare = (MedicalCareCategory) buffer.ReadByte();
-            HostilityResponseMode = (RimWorld.HostilityResponseMode) buffer.ReadByte();
-            SelfTend = buffer.ReadBoolean();
+            buffer.ReadGroup("PlayerSettings", group =>
+            {
+                MedicalCare = (MedicalCareCategory) group.ReadByte();
+                HostilityResponseMode = (RimWorld.HostilityResponseMode) group.ReadByte();
+                SelfTend = group.ReadBoolean();                
+            });
 
             // Schedule
-            buffer.ReadMarker("Schedule");
-            Schedule = new List<string>(24);
-            for (int i = 0; i < 24; i++)
-                Schedule.Add(buffer.ReadString());
+            buffer.ReadGroup("Schedule", group =>
+            {
+                Schedule = new List<string>(24);
+                for (int i = 0; i < 24; i++)
+                    Schedule.Add(group.ReadString());                
+            }, () => Schedule = null);
 
             // Needs
-            buffer.ReadMarker("Needs");
-            int needsCount = buffer.ReadInt();
-            Needs = new List<NetNeed>(needsCount);
-            for (int i = 0; i < needsCount; i++)
-                Needs.Add(buffer.ReadPacketable<NetNeed>());
+            buffer.ReadGroup("Needs", group =>
+            {
+                int needsCount = group.ReadInt();
+                Needs = new List<NetNeed>(needsCount);
+                for (int i = 0; i < needsCount; i++)
+                    Needs.Add(group.ReadPacketable<NetNeed>());                
+            }, () => Needs = null);
 
             // Memories
-            buffer.ReadMarker("Memories");
-            int memoriesCount = buffer.ReadInt();
-            Memories = new List<NetMemory>(memoriesCount);
-            for (int i = 0; i < memoriesCount; i++)
-                Memories.Add(buffer.ReadPacketable<NetMemory>());
-            
+            buffer.ReadGroup("Memories", group =>
+            {
+                int memoriesCount = group.ReadInt();
+                Memories = new List<NetMemory>(memoriesCount);
+                for (int i = 0; i < memoriesCount; i++)
+                    Memories.Add(group.ReadPacketable<NetMemory>());                
+            }, () => Memories = null);
+
             // Royalty
-            buffer.ReadMarker("Royalty");
-            if (buffer.ReadBoolean())
-                Royalty = buffer.ReadPacketable<NetRoyalty>();
+            buffer.ReadGroup("Royalty", group =>
+            {
+                if (group.ReadBoolean())
+                    Royalty = group.ReadPacketable<NetRoyalty>();                
+            }, () => Royalty = null);
         }
 
         public class NetSkill : IPacketable

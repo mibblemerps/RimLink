@@ -37,6 +37,69 @@ namespace PlayerTrade.Net.Packets
             }
         }
 
+        /// <summary>
+        /// Write data in a group. If anything goes wrong with reading/writing this data, only this group will fail,
+        /// instead of corrupting the entire packet.
+        /// </summary>
+        /// <param name="name">Group name - must match when reading</param>
+        /// <param name="action">Write to buffer</param>
+        public void WriteGroup(string name, Action<PacketBuffer> action)
+        {
+            // Write group to sub packet buffer
+            byte[] data = new byte[0];
+            using (var memory = new MemoryStream())
+            {
+                var subBuffer = new PacketBuffer(memory);
+                try
+                {
+                    action(subBuffer);
+                    data = memory.ToArray();
+                }
+                catch (Exception e)
+                {
+                    Log.Error($"Exception writing packet buffer group \"{name}\"!", e);
+                }
+            }
+
+            // Write group header
+            WriteString(name);
+            WriteByteArray(data);
+        }
+
+        /// <summary>
+        /// Read data in a group. If anything goes wrong with reading/writing this data, only this group will fail,
+        /// instead of corrupting the entire packet.
+        /// </summary>
+        /// <param name="name">Group name - must match what was written</param>
+        /// <param name="action">Read from buffer</param>
+        /// <param name="onFailed">Optional action called when reading failed - this allows you to revert things that were half read</param>
+        public void ReadGroup(string name, Action<PacketBuffer> action, Action onFailed = null)
+        {
+            // Read group name
+            string readName = ReadString();
+            if (name != null && name != readName)
+                throw new Exception($"Group name doesn't match! (got \"{readName}\", expected \"{name}\")");
+            
+            // Read data
+            byte[] data = ReadByteArray();
+
+            using (var memory = new MemoryStream(data))
+            {
+                var subBuffer = new PacketBuffer(memory);
+                try
+                {
+                    action(subBuffer);
+                    if (memory.Position != data.Length)
+                        throw new Exception("Not all data in group has been read!");
+                }
+                catch (Exception e)
+                {
+                    Log.Error($"Exception reading packet buffer group \"{name}\"!", e);
+                    onFailed?.Invoke();
+                }
+            }
+        }
+
         #region Read/Write Datatypes
 
         public void WriteByte(byte b)
