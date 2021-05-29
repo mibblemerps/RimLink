@@ -15,5 +15,6 @@ namespace PlayerTrade
 
         public float RaidBasePrice = Dialog_PlaceBounty.DefaultBasePrice;
         public int RaidMaxStrengthPercent = Dialog_PlaceBounty.DefaultMaxStrengthPercent;
+        public float RaidTribalDiscount = Dialog_PlaceBounty.DefaultTribalDiscount;
     }
 }

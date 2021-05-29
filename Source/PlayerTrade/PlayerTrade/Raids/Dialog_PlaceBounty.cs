@@ -16,10 +16,13 @@ namespace PlayerTrade.Raids
     {
         public const float DefaultBasePrice = 1000f;
         public const int DefaultMaxStrengthPercent = 500;
+        public const float DefaultTribalDiscount = 0.3f;
 
         public Player Player;
 
         public override Vector2 InitialSize => new Vector2(512f, 512f);
+
+        protected float TribalDiscount => RimLinkComp.Instance.Client.GameSettings.RaidTribalDiscount;
 
         private int _playerSilver;
 
@@ -81,13 +84,15 @@ namespace PlayerTrade.Raids
 
             Text.Font = GameFont.Medium;
             string label1 = $"Place Bounty on {(Player.Name.Colorize(ColoredText.FactionColor_Neutral))}";
-            Rect rect1 = new Rect(0, 0, Text.CalcSize(label1).x, 70f);
+            Rect rect1 = new Rect(0, 0, Text.CalcSize(label1).x, 50f);
             Widgets.Label(rect1, label1);
 
             Text.Font = GameFont.Small;
+            Text.Anchor = TextAnchor.MiddleLeft;
             string label2 = "Faction to place bounty with:";
-            Rect rect2 = new Rect(0, rect1.yMax + 20f, Text.CalcSize(label2).x, Text.CalcSize(label2).y);
+            Rect rect2 = new Rect(0, rect1.yMax + 35f, Text.CalcSize(label2).x, Text.CalcSize(label2).y);
             Widgets.Label(rect2, label2);
+            Text.Anchor = TextAnchor.UpperLeft;
 
             if (Widgets.ButtonText(new Rect(rect2.xMax + 10f, rect2.yMin, 220, 35), _selectedFaction == null ? "Select Faction" : _selectedFaction.Name))
             {
@@ -106,6 +111,11 @@ namespace PlayerTrade.Raids
                         // Allied or neutral factions cannot be used for bounties
                         option.Label += (faction.Goodwill >= 75) ? " (ally)" : " (neutral)";
                         option.Disabled = true;
+                    }
+                    else
+                    {
+                        if (faction.FindDef().techLevel < TechLevel.Industrial)
+                            option.Label += $" <color=\"#6e6e6e\">({Mathf.RoundToInt(TribalDiscount * 100)}% discount)</color>";
                     }
                     options.Add(option);
                 }
@@ -181,10 +191,15 @@ namespace PlayerTrade.Raids
             Rect costRect = new Rect(0, dropdownsRect.yMax + 10f, inRect.width, 35f);
             Text.Font = GameFont.Medium;
             Widgets.Label(costRect, "Cost: " + ("$" + cost).Colorize(insufficientSilver ? ColoredText.RedReadable : ColoredText.CurrencyColor));
+            
             Text.Font = GameFont.Tiny;
-            Rect insufficientSilverRect = new Rect(0, costRect.yMax + 5f, inRect.width, 30f);
+            Rect costExtraRect = new Rect(0, costRect.yMax + 5f, inRect.width, 30f);
+            string costExtraText = "";
             if (insufficientSilver)
-                Widgets.Label(insufficientSilverRect, "Insufficient silver");
+                costExtraText += "Insufficient silver\n";
+            if (TribalDiscount > 0 && _selectedFaction.FindDef().techLevel < TechLevel.Industrial)
+                costExtraText += $"{Mathf.RoundToInt(RimLinkComp.Instance.Client.GameSettings.RaidTribalDiscount * 100)}% discount for tribal";
+            Widgets.Label(costExtraRect, costExtraText);
             Text.Font = GameFont.Small;
 
             Rect sendRect = inRect.BottomPartPixels(35f).RightPartPixels(200f);
@@ -276,7 +291,12 @@ namespace PlayerTrade.Raids
             multiplier += _arrivalMode.Cost;
             multiplier += _arrivalSpeed.Cost;
 
-            return Mathf.RoundToInt(cost * multiplier);
+            cost = cost * multiplier;
+
+            if (_selectedFaction.FindDef().techLevel < TechLevel.Industrial)
+                cost *= 1f - TribalDiscount;
+
+            return Mathf.RoundToInt(cost);
         }
 
         private BountyRaid CreateRaidOptions()
