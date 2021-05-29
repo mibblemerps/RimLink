@@ -19,6 +19,8 @@ namespace PlayerTrade.Net
         public event EventHandler<PacketReceivedEventArgs> PacketReceived;
 
         public ConnectionState State = ConnectionState.Disconnected;
+
+        public DateTime ConnectedAt;
         
         public TcpClient Tcp;
         public NetworkStream Stream;
@@ -87,6 +89,7 @@ namespace PlayerTrade.Net
             // Successfully connected and completed handshake
             State = ConnectionState.Authenticated;
             AllowReconnect = true;
+            ConnectedAt = DateTime.Now;
             Connected?.Invoke(this, EventArgs.Empty);
         }
 

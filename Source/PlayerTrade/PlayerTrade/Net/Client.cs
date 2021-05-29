@@ -372,6 +372,9 @@ namespace PlayerTrade.Net
 
         private void OnPlayerConnected(object sender, Player e)
         {
+            // Don't show player connected messages from first join.
+            if (DateTime.Now - ConnectedAt < TimeSpan.FromSeconds(1)) return;
+            
             Messages.Message($"{e.Name.Colorize(ColoredText.FactionColor_Neutral)} connected", MessageTypeDefOf.NeutralEvent, false);
         }
 
