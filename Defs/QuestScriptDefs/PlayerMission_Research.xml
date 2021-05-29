@@ -33,6 +33,14 @@
             <li>PatientBedRest</li>
           </workTypeDefs>
         </li>
+        
+        <!-- Don't allow violence (so researcher can't be abused as a fighter) -->
+        <li Class="QuestNode_WorkDisabled">
+          <pawns>$pawns</pawns>
+          <disabledWorkTags>
+            <li>Violent</li>
+          </disabledWorkTags>
+        </li>
 
         <!-- Research speed multiplier-->
         <li Class="PlayerTrade.Missions.Quest.QuestNode_ResearchSpeedModifier">
