@@ -15,7 +15,7 @@ namespace PlayerTrade.Net
         private const int SendQueueMaxSize = 128;
 
         public event EventHandler Connected;
-        public event EventHandler Disconnected;
+        public event EventHandler<DisconnectedEventArgs> Disconnected;
         public event EventHandler<PacketReceivedEventArgs> PacketReceived;
 
         public ConnectionState State = ConnectionState.Disconnected;
@@ -223,59 +223,53 @@ namespace PlayerTrade.Net
         }
 
         /// <summary>
-        /// <p>Disconnect from server/client.</p>
-        /// <p>By default this will send a packet to the other party indicating that we're disconnecting, and that they should close the connection.</p>
-        /// <p>This also invokes the Disconnected event, allowing the disconnection to be handled by the rest of the code.</p>
+        /// Disconnect from server/client.
         /// </summary>
-        /// <param name="sendDisconnectPacket">Should the disconnect packet be sent.</param>
-        /// <param name="allowAutoReconnect">Should we be allowed to attempt to automatically reconnect to the server?</param>
-        [Obsolete("Use Disconnect with DisconnectReason instead")]
-        public void Disconnect(bool sendDisconnectPacket = true, bool allowAutoReconnect = false)
+        /// <param name="reason">Reason for disconnection.</param>
+        /// <param name="reasonMessage">Optional message describing disconnection.</param>
+        public void Disconnect(DisconnectReason reason, string reasonMessage = null)
         {
-            _sendQueue?.Clear();
+            if (State == ConnectionState.Disconnected) return; // Already disconnected
 
-            if (State == ConnectionState.Disconnected)
-                return; // Already disconnected
             State = ConnectionState.Disconnected;
-
-            AllowReconnect = allowAutoReconnect;
-
-            Disconnected?.Invoke(this, EventArgs.Empty);
-            if (!Tcp.Connected)
-                return;
+            
+            bool sendDisconnectPacket = false;
+            
+            switch (reason)
+            {
+                case DisconnectReason.Error:
+                    _sendQueue?.Clear();
+                    AllowReconnect = true;
+                    sendDisconnectPacket = true;
+                    break;
+                case DisconnectReason.Network:
+                    AllowReconnect = true;
+                    sendDisconnectPacket = false;
+                    break;
+                case DisconnectReason.User:
+                    AllowReconnect = false;
+                    sendDisconnectPacket = true;
+                    break;
+                case DisconnectReason.Kicked:
+                    AllowReconnect = false;
+                    sendDisconnectPacket = false;
+                    break;
+            }
 
             if (sendDisconnectPacket)
             {
-                // Try to send a disconnect packet. This is more a courtesy than anything, it just ensures the connection is immediately and cleanly closed on both ends.
+                // Try to send a disconnect packet.
+                // This is more a courtesy than anything, it just ensures the connection is immediately and cleanly closed on both ends.
                 try
                 {
                     SendPacketDirect(new PacketDisconnect()).Wait(2000);
                 }
                 catch (Exception) { /* ignored - disconnect packet is a courtesy */ }
             }
-
-            Tcp?.Close();
-        }
-
-        public void Disconnect(DisconnectReason reason, string reasonMessage = null)
-        {
-#pragma warning disable 618
-            switch (reason)
-            {
-                case DisconnectReason.Error:
-                    Disconnect(true, true);
-                    break;
-                case DisconnectReason.Network:
-                    Disconnect(true, false);
-                    break;
-                case DisconnectReason.User:
-                    Disconnect(true, false);
-                    break;
-                case DisconnectReason.Kicked:
-                    Disconnect(false, false);
-                    break;
-            }
-#pragma warning restore 618
+        
+            Tcp.Close();
+            
+            Disconnected?.Invoke(this, new DisconnectedEventArgs(reason, reasonMessage));
         }
 
         public async Task<Packet> ReceivePacket()

@@ -30,7 +30,7 @@ namespace TradeServer.Commands
                 {
                     Reason = reason,
                     AllowReconnect = false,
-                }).ContinueWith(t => { client.Disconnect(); });
+                }).ContinueWith(t => { client.Disconnect(DisconnectReason.Kicked); });
                 caller.Output("Kicked " + client.Player.Name);
             }
         }

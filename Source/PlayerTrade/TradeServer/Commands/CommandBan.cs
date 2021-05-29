@@ -73,7 +73,7 @@ namespace TradeServer.Commands
                     Reason = kickReason,
                     AllowReconnect = false,
                 });
-                onlineClient.Disconnect();
+                onlineClient.Disconnect(DisconnectReason.Kicked);
             }
 
             caller.Output($"Player {target.Guid} has been banned for {(banExpiry == DateTime.MaxValue ? "forever" : timeSpan.ToHumanString())}. Reason: {reason}");

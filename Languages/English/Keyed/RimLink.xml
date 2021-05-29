@@ -1,6 +1,11 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <!-- Misc RimLink translations -->
 <LanguageData>
+    <Rl_MessageDisconnected>Disconnected from server</Rl_MessageDisconnected>
+    <Rl_MessageDisconnectedError>Disconnected from server: Error</Rl_MessageDisconnectedError>
+    <Rl_MessageDisconnectedNetwork>Lost connection to server</Rl_MessageDisconnectedNetwork>
+    <Rl_MessageDisconnectedKicked>Kicked from server</Rl_MessageDisconnectedKicked>
+    
     <Rl_Mail>{0} ({1})</Rl_Mail>
     
     <Rl_MechanoidCluster>Mechanoid cluster ({0})</Rl_MechanoidCluster>

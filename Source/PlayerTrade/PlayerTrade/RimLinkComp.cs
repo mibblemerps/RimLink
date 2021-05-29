@@ -180,9 +180,29 @@ namespace PlayerTrade
             Client.MarkDirty();
         }
 
-        private void ClientOnDisconnected(object sender, EventArgs e)
+        private void ClientOnDisconnected(object sender, DisconnectedEventArgs e)
         {
-            Messages.Message("Disconnected from server", MessageTypeDefOf.NeutralEvent, false);
+            Log.Message($"Disconnect: {e.Reason}.{(e.ReasonMessage == null ? "" : $" Reason: {e.ReasonMessage}")}");
+            
+            string key = "Rl_MessageDisconnected";
+            switch (e.Reason)
+            {
+                case DisconnectReason.Error:
+                    key = "Rl_MessageDisconnectedError";
+                    break;
+                case DisconnectReason.Kicked:
+                    key = "Rl_MessageDisconnectedKicked";
+                    break;
+                case DisconnectReason.Network:
+                    key = "Rl_MessageDisconnectedNetwork";
+                    break;
+            }
+
+            string message = key.Translate();
+            if (e.ReasonMessage != null)
+                message += $" ({e.ReasonMessage})";
+            
+            Messages.Message(message, MessageTypeDefOf.NeutralEvent, false);
             if (Client.AllowReconnect)
                 QueueConnect();
         }
