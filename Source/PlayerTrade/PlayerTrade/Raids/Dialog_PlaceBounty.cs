@@ -58,6 +58,8 @@ namespace PlayerTrade.Raids
             new Strategy("Siege", "Siege", 0.66f),
         };
 
+        private ResearchProjectDef _nativeLanguageResearch;
+
         public Dialog_PlaceBounty(Player player)
         {
             Player = player;
@@ -66,6 +68,11 @@ namespace PlayerTrade.Raids
             forcePause = true;
 
             _playerSilver = LaunchUtil.LaunchableThingCount(Find.CurrentMap, ThingDefOf.Silver);
+
+            if (RimLinkMod.Instance != null)
+            {
+                _nativeLanguageResearch = DefDatabase<ResearchProjectDef>.GetNamed("NativeLanguage");
+            }
         }
 
         public override void PreOpen()
@@ -110,12 +117,23 @@ namespace PlayerTrade.Raids
                     {
                         // Allied or neutral factions cannot be used for bounties
                         option.Label += (faction.Goodwill >= 75) ? " (ally)" : " (neutral)";
-                        option.Disabled = true;
+                        //option.Disabled = true;
+                        continue; // just hide neutral/ally factions
                     }
                     else
                     {
                         if (faction.FindDef().techLevel < TechLevel.Industrial)
-                            option.Label += $" <color=\"#6e6e6e\">({Mathf.RoundToInt(TribalDiscount * 100)}% discount)</color>";
+                        {
+                            if (_nativeLanguageResearch.IsFinished)
+                            {
+                                option.Label += $" <color=\"#6e6e6e\">({Mathf.RoundToInt(TribalDiscount * 100)}% discount)</color>";
+                            }
+                            else
+                            {
+                                option.Label += $" <color=\"#6e6e6e\">({Mathf.RoundToInt(TribalDiscount * 100)}% discount) (missing research)</color>";
+                                option.Disabled = true;
+                            }
+                        }
                     }
                     options.Add(option);
                 }

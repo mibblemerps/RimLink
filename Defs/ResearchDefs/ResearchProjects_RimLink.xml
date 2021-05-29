@@ -31,5 +31,16 @@
 		<researchViewX>0.00</researchViewX>
 		<researchViewY>0.70</researchViewY>
 	</ResearchProjectDef>
+
+	<ResearchProjectDef>
+		<defName>NativeLanguage</defName>
+		<label>native languages</label>
+		<tab>RimLink</tab>
+		<description>Study the language of the native tribes. While this won't necessarily improve their relations towards you, it will allow you to give them bounty offers against other players.</description>
+		<baseCost>800</baseCost>
+		<techLevel>Neolithic</techLevel>
+		<researchViewX>0.00</researchViewX>
+		<researchViewY>1.40</researchViewY>
+	</ResearchProjectDef>
 	
 </Defs>
