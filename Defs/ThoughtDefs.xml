@@ -1,0 +1,71 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+
+    <ThoughtDef>
+        <defName>OnHoliday</defName>
+        <workerClass>PlayerTrade.Missions.ThoughtWorker_OnHoliday</workerClass>
+        <stages>
+            <li>
+                <label>on holiday</label>
+                <description>This place is an absolute dump. I can't wait to go home.</description>
+                <baseMoodEffect>-4</baseMoodEffect>
+            </li>
+            <li>
+                <label>on holiday</label>
+                <description>This place isn't great but it's better than nothing.</description>
+                <baseMoodEffect>4</baseMoodEffect>
+            </li>
+            <li>
+                <label>on holiday</label>
+                <description>It's not the most premium getaway, but it's still nice to get away from home every now and then.</description>
+                <baseMoodEffect>10</baseMoodEffect>
+            </li>
+            <li>
+                <label>on holiday</label>
+                <description>This place is nice. It's nice to get away from home every now and then.</description>
+                <baseMoodEffect>14</baseMoodEffect>
+            </li>
+            <li>
+                <label>on holiday</label>
+                <description>This place is amazing! It's nice to get away from home every now and then.</description>
+                <baseMoodEffect>18</baseMoodEffect>
+            </li>
+        </stages>
+    </ThoughtDef>
+
+    <ThoughtDef>
+        <defName>HadHoliday</defName>
+        <durationDays>10</durationDays>
+        <stackLimit>5</stackLimit>
+        <stackedEffectMultiplier>0.75</stackedEffectMultiplier>
+        <validWhileDespawned>true</validWhileDespawned>
+        <stages>
+            <li>
+                <label>went on holiday</label>
+                <description>That holiday was a disaster - I never want to go back there! I'm glad I'm home!</description>
+                <baseMoodEffect>-2</baseMoodEffect>
+            </li>
+            <li>
+                <label>went on holiday</label>
+                <description>That place wasn't great, but it was better than nothing.</description>
+                <baseMoodEffect>6</baseMoodEffect>
+            </li>
+            <li>
+                <label>went on holiday</label>
+                <description>That place was alright. I needed the time away from home.</description>
+                <baseMoodEffect>10</baseMoodEffect>
+            </li>
+            <li>
+                <label>went on holiday</label>
+                <description>That place was nice. Hopefully I can go back there sometime soon.</description>
+                <baseMoodEffect>14</baseMoodEffect>
+            </li>
+            <li>
+                <label>went on holiday</label>
+                <description>That place was great - I miss it already!</description>
+                <baseMoodEffect>18</baseMoodEffect>
+            </li>
+        </stages>
+    </ThoughtDef>
+
+</Defs>

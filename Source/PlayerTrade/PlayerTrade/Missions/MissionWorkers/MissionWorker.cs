@@ -98,7 +98,15 @@ namespace PlayerTrade.Missions.MissionWorkers
         }
 
         /// <summary>
-        /// <b>Step 5.</b> Colonists returned.
+        /// <b>Step 5.</b> Sending colonists back to original colony.
+        /// </summary>
+        /// <param name="pawns">Pawns about to be returned</param>
+        /// <param name="mainGroup">Is this the main group of returning colonists? If colonists are missing from this group the receiver has failed.</param>
+        /// <param name="escaped">Did these colonists escape instead of just being sent home.</param>
+        public virtual void ReturnColonists(List<Pawn> pawns, bool mainGroup, bool escaped) {}
+        
+        /// <summary>
+        /// <b>Step 6.</b> Colonists returned to original colony.
         /// </summary>
         /// <param name="pawns">Pawns that were just returned</param>
         /// <param name="moreLeft">Are there more pawns to be returned?</param>

@@ -1,0 +1,46 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+
+    <QuestScriptDef>
+        <defName>PlayerMission_Holiday</defName>
+        <isRootSpecial>true</isRootSpecial>
+        <autoAccept>true</autoAccept>
+        <questDescriptionAndNameRules>
+            <rulesStrings>
+                <li>questName(pawn_count==1)->Holiday From [from]</li>
+                <li>questName(pawn_count==1)->Sightseer From [from]</li>
+                <li>questName(pawn_count>=2)->Sightseers Team From [from]</li>
+
+                <li>questDescription(pawn_count==1)->[from] has sent a colonist to your settlement for a holiday.\n\nThey will not do any work.</li>
+                <li>questDescription(pawn_count>=2)->[from] has sent colonists to your settlement for a holiday.\n\nThey will not do any work.</li>
+            </rulesStrings>
+        </questDescriptionAndNameRules>
+
+        <root Class="QuestNode_Sequence">
+            <nodes>
+                <li Class="QuestNode_SubScript">
+                    <def>PlayerMission_Base</def>
+                </li>
+
+                <!-- Disable all work -->
+                <li Class="PlayerTrade.Missions.Quest.QuestNode_WorkTypeDefDisabled">
+                    <pawns>$pawns</pawns>
+                    <invert>true</invert>
+                    <workTypeDefs>
+                        <li>Patient</li>
+                        <li>PatientBedRest</li>
+                    </workTypeDefs>
+                </li>
+
+                <!-- Don't allow violence -->
+                <li Class="QuestNode_WorkDisabled">
+                    <pawns>$pawns</pawns>
+                    <disabledWorkTags>
+                        <li>Violent</li>
+                    </disabledWorkTags>
+                </li>
+            </nodes>
+        </root>
+    </QuestScriptDef>
+
+</Defs>

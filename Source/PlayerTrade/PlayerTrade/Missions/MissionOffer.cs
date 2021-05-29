@@ -183,6 +183,8 @@ namespace PlayerTrade.Missions
         public void ReturnColonists(List<Pawn> pawns, bool mainGroup, bool escaped = false)
         {
             Client client = RimLinkComp.Instance.Client;
+            
+            MissionWorker.ReturnColonists(pawns, mainGroup, escaped);
 
             var netPawns = new List<NetHuman>();
             foreach (Pawn pawn in pawns)

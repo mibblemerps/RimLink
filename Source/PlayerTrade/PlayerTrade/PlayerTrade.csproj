@@ -114,6 +114,7 @@
     <Compile Include="Missions\ConfigDialogs\BasicConfigDialog.cs" />
     <Compile Include="Missions\ConfigDialogs\LaborConfigDialog.cs" />
     <Compile Include="Missions\MissionWorkers\DiplomaticMissionWorker.cs" />
+    <Compile Include="Missions\MissionWorkers\HolidayMissionWorker.cs" />
     <Compile Include="Missions\MissionWorkers\LaborMissionWorker.cs" />
     <Compile Include="Missions\MissionWorkers\MissionWorker.cs" />
     <Compile Include="Missions\MissionWorkers\ResearchMissionWorker.cs" />
@@ -129,6 +130,7 @@
     <Compile Include="Missions\Quest\QuestPart_ResearchSpeedModifier.cs" />
     <Compile Include="Missions\Quest\QuestPart_WorkTypeDefDisabled.cs" />
     <Compile Include="MainMenuWidget.cs" />
+    <Compile Include="Missions\ThoughtWorker_OnHoliday.cs" />
     <Compile Include="Net\DisconnectedEventArgs.cs" />
     <Compile Include="Net\DisconnectReason.cs" />
     <Compile Include="Net\NetRoyalty.cs" />
