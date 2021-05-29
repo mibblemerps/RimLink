@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <LanguageData>
-    <Rl_MissionOfferAccepted>{0} offer rejected ({1})</Rl_MissionOfferAccepted>
+    <Rl_MissionOfferAccepted>{0} offer accepted ({1})</Rl_MissionOfferAccepted>
     <Rl_MissionOfferAcceptedDesc>Your offer to lend colonists has been accepted.\n\nYour {0} should be returned in {1} {2}.</Rl_MissionOfferAcceptedDesc>
     
     <Rl_MissionOfferRejected>{0} rejected ({1})</Rl_MissionOfferRejected>
