@@ -131,13 +131,11 @@ namespace PlayerTrade.Anticheat
         {
             try
             {
-                // ReSharper disable once PossibleNullReferenceException
                 typeof(DevModePermanentlyDisabledUtility).GetField("disabled",
-                    BindingFlags.Static | BindingFlags.NonPublic).SetValue(null, disabled);
+                    BindingFlags.Static | BindingFlags.NonPublic)?.SetValue(null, disabled);
 
-                // ReSharper disable once PossibleNullReferenceException
                 typeof(DevModePermanentlyDisabledUtility).GetField("initialized",
-                    BindingFlags.Static | BindingFlags.NonPublic).SetValue(null, true);
+                    BindingFlags.Static | BindingFlags.NonPublic)?.SetValue(null, true);
             }
             catch (Exception e)
             {
@@ -153,9 +151,8 @@ namespace PlayerTrade.Anticheat
             try
             {
                 // By setting initialized to false - next time the game tries to check if dev mode is enabled, it'll re-read from disk
-                // ReSharper disable once PossibleNullReferenceException
                 typeof(DevModePermanentlyDisabledUtility).GetField("initialized",
-                    BindingFlags.Static | BindingFlags.NonPublic).SetValue(null, false);
+                    BindingFlags.Static | BindingFlags.NonPublic)?.SetValue(null, false);
             }
             catch (Exception e)
             {
