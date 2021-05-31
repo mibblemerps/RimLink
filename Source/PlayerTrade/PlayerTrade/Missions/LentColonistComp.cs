@@ -61,7 +61,7 @@ namespace PlayerTrade.Missions
 
         public override void PostDeSpawn(Map map)
         {
-            if (Leaving && Pawn.CarriedBy == null)
+            if (Leaving && Pawn.CarriedBy == null && !Pawn.Dead)
                 BeginEscape();
 
             base.PostDeSpawn(map);
