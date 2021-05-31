@@ -16,6 +16,7 @@ namespace PlayerTrade
     {
         public static bool Enabled = true;
         public static PacketPingResponse LastPing;
+        public static Exception LastPingError;
 
         private static PingClient _pingClient = new PingClient();
 
@@ -24,6 +25,7 @@ namespace PlayerTrade
         private static PropertyInfo _shouldDoMainMenuPropertyInfo =
             typeof(UIRoot_Entry).GetProperty("ShouldDoMainMenu", BindingFlags.NonPublic | BindingFlags.Instance);
 
+        private static string _lastPingIp;
         private static Vector2 _scrollPos = Vector2.zero;
 
         public static void Init()
@@ -33,7 +35,7 @@ namespace PlayerTrade
 
         public static void OnGUI()
         {
-            if (!(Enabled && ShouldDoWidget && LastPing != null) && !string.IsNullOrWhiteSpace(RimLinkMod.Instance.Settings.ServerIp))
+            if (!(Enabled && ShouldDoWidget) && !string.IsNullOrWhiteSpace(RimLinkMod.Instance.Settings.ServerIp))
                 return;
 
             Rect widgetRect = new Rect(20, 0, 300, Mathf.Max(UI.screenHeight / 3f, 410f));
@@ -51,11 +53,16 @@ namespace PlayerTrade
             if (string.IsNullOrWhiteSpace(RimLinkMod.Instance.Settings.ServerIp))
             {
                 // No IP set
-                Text.Anchor = TextAnchor.MiddleCenter;
-                Widgets.Label(widgetRect.TopPartPixels(35f), "No server IP set");
-                Text.Anchor = TextAnchor.UpperLeft;
-                if (Widgets.ButtonText(new Rect(0, 35f, 180f, 35f).CenteredOnXIn(widgetRect), "Set Server IP"))
-                    Find.WindowStack.Add(new Dialog_SetServerIp());
+                OnGUINoServerIp(widgetRect);
+                return;
+            }
+
+            if (LastPing == null)
+            {
+                if (LastPingError == null)
+                    OnGUIConnecting(widgetRect);
+                else
+                    OnGUICannotConnect(widgetRect);
                 return;
             }
 
@@ -113,12 +120,60 @@ namespace PlayerTrade
             GUI.EndGroup();
         }
 
+        private static void OnGUINoServerIp(Rect rect)
+        {
+            Text.Anchor = TextAnchor.UpperCenter;
+            Rect textRect = rect.TopPartPixels(35f);
+            textRect.y += 10f;
+            Widgets.Label(textRect, "No server IP set");
+            Text.Anchor = TextAnchor.UpperLeft;
+            
+            Rect buttonRect = rect.BottomPartPixels(35f);
+            buttonRect.y -= 10f;
+            buttonRect.width = 180f;
+            buttonRect = buttonRect.CenteredOnXIn(rect);
+            if (Widgets.ButtonText(buttonRect, "Set Server IP"))
+                Find.WindowStack.Add(new Dialog_SetServerIp());
+        }
+
+        private static void OnGUIConnecting(Rect rect)
+        {
+            Text.Anchor = TextAnchor.MiddleCenter;
+            Widgets.Label(rect, "Connecting to server\n" + GenText.MarchingEllipsis(2));
+            Text.Anchor = TextAnchor.UpperLeft;
+        }
+
+        private static void OnGUICannotConnect(Rect rect)
+        {
+            Text.Anchor = TextAnchor.UpperCenter;
+            Rect textRect = rect.TopPartPixels(35f);
+            textRect.y += 10f;
+            Widgets.Label(rect.TopPartPixels(150f), "<b>RimLink Server Error</b>\n\n".Colorize(ColoredText.RedReadable) + LastPingError?.Message);
+            Text.Anchor = TextAnchor.UpperLeft;
+
+            Rect buttonRect = rect.BottomPartPixels(35f);
+            buttonRect.y -= 10f;
+            buttonRect.width = 180f;
+            buttonRect = buttonRect.CenteredOnXIn(rect);
+            if (Widgets.ButtonText(buttonRect, "Set Server IP"))
+                Find.WindowStack.Add(new Dialog_SetServerIp());
+        }
+
         private static async Task DoPingLoop()
         {
             while (true)
             {
                 if (ShouldDoWidget && !string.IsNullOrWhiteSpace(RimLinkMod.Instance.Settings.ServerIp))
                 {
+                    string pingIpStr = RimLinkMod.Instance.Settings.ServerIp + ":" +
+                                       RimLinkMod.Instance.Settings.ServerPort;
+                    if (pingIpStr != _lastPingIp)
+                    {
+                        // Trying new server - clear last error
+                        LastPingError = null;
+                        _lastPingIp = pingIpStr;
+                    }
+                    
                     // Do ping
                     try
                     {
@@ -131,10 +186,12 @@ namespace PlayerTrade
                         }
 
                         LastPing = await _pingClient.Ping();
+                        LastPingError = null;
                     }
                     catch (Exception e)
                     {
                         Log.Warn("Error doing server ping " + e.Message + "\n" + e.StackTrace);
+                        LastPingError = e;
                         LastPing = null;
                         _pingClient.Tcp?.Close();
                         _pingClient.Tcp = null;
