@@ -1,0 +1,1 @@
+﻿Major code contributions are not accepted at this time.
