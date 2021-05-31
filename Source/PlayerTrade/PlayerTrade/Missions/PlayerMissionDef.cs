@@ -44,11 +44,11 @@ namespace PlayerTrade.Missions
 
         private TaggedString _cachedLabelCap;
 
-        public QuestScriptDef QuestScriptDef => DefDatabase<RimWorld.QuestScriptDef>.GetNamed(questScriptDefName);
+        public QuestScriptDef QuestScriptDef => DefDatabase<QuestScriptDef>.GetNamed(questScriptDefName);
 
-        public MissionWorkers.MissionWorker CreateWorker(MissionOffer offer)
+        public MissionWorker CreateWorker(MissionOffer offer)
         {
-            MissionWorkers.MissionWorker worker = (MissionWorkers.MissionWorker) Activator.CreateInstance(Type.GetType(workerClass));
+            MissionWorker worker = (MissionWorker) Activator.CreateInstance(Type.GetType(workerClass));
             worker.Offer = offer;
             return worker;
         }

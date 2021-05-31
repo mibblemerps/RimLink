@@ -1,12 +1,12 @@
-﻿using Ionic.Zlib;
-using PlayerTrade.Net.Packets;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading.Tasks;
+using Ionic.Zlib;
+using PlayerTrade.Net.Packets;
 using UnityEngine;
 
 namespace PlayerTrade.Net

@@ -18,7 +18,7 @@ namespace PlayerTrade.Missions.Packets
         public string MissionDefName;
 
         public string WorkerClassName;
-        public MissionWorkers.MissionWorker Worker;
+        public MissionWorker Worker;
 
         public override bool ShouldQueue => false;
 
@@ -61,7 +61,7 @@ namespace PlayerTrade.Missions.Packets
             // We read worker very "manually" because it can be multiple types
             buffer.ReadMarker("MissionWorker");
             WorkerClassName = buffer.ReadString();
-            Worker = (MissionWorkers.MissionWorker) Activator.CreateInstance(Type.GetType(WorkerClassName));
+            Worker = (MissionWorker) Activator.CreateInstance(Type.GetType(WorkerClassName));
             Worker.Read(buffer);
         }
     }

@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using HarmonyLib;
+﻿using HarmonyLib;
 using PlayerTrade.Trade;
 using RimWorld;
 using Verse;

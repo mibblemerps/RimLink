@@ -10,7 +10,6 @@ using PlayerTrade.Util;
 using RimWorld;
 using UnityEngine;
 using Verse;
-using Exception = System.Exception;
 
 namespace PlayerTrade.Missions
 {
@@ -30,7 +29,7 @@ namespace PlayerTrade.Missions
 
         public PlayerMissionDef MissionDef = DefDatabase<PlayerMissionDef>.GetNamed("Labor");
 
-        public MissionWorkers.MissionWorker MissionWorker
+        public MissionWorker MissionWorker
         {
             get => _missionWorker ?? (_missionWorker = MissionDef?.CreateWorker(this));
             set => _missionWorker = value;
@@ -61,7 +60,7 @@ namespace PlayerTrade.Missions
         public bool CanFulfillAsSender => MissionWorker.CanFulfillAsSender();
         public bool CanFulfillAsReceiver => MissionWorker.CanFulfillAsReceiver();
 
-        private MissionWorkers.MissionWorker _missionWorker;
+        private MissionWorker _missionWorker;
 
         public void OfferSend()
         {

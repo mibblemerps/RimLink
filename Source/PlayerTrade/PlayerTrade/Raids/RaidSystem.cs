@@ -2,7 +2,6 @@
 using PlayerTrade.Net;
 using PlayerTrade.Net.Packets;
 using PlayerTrade.Util;
-using Verse;
 
 namespace PlayerTrade.Raids
 {

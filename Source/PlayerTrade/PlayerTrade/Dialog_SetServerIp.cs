@@ -1,6 +1,4 @@
-﻿using System.Threading.Tasks;
-using PlayerTrade.Net;
-using UnityEngine;
+﻿using UnityEngine;
 using Verse;
 
 namespace PlayerTrade

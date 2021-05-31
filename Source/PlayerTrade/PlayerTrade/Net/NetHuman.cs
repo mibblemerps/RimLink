@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using PlayerTrade.Net.Packets;
 using RimWorld;
 using UnityEngine;
@@ -329,7 +325,7 @@ namespace PlayerTrade.Net
             buffer.ReadGroup("PlayerSettings", group =>
             {
                 MedicalCare = (MedicalCareCategory) group.ReadByte();
-                HostilityResponseMode = (RimWorld.HostilityResponseMode) group.ReadByte();
+                HostilityResponseMode = (HostilityResponseMode) group.ReadByte();
                 SelfTend = group.ReadBoolean();                
             });
 
@@ -407,7 +403,7 @@ namespace PlayerTrade.Net
 
             public TraitDef TraitDef
             {
-                get => RimWorld.TraitDef.Named(TraitDefName);
+                get => TraitDef.Named(TraitDefName);
                 set => TraitDefName = value.defName;
             }
 

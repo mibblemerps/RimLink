@@ -1,7 +1,6 @@
 ﻿using HarmonyLib;
 using PlayerTrade.Missions;
 using PlayerTrade.Missions.MissionWorkers;
-using PlayerTrade.Missions.Packets;
 using PlayerTrade.Missions.Quest;
 using PlayerTrade.Util;
 using RimWorld;

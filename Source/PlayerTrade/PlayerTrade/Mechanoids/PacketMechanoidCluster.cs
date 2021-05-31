@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using PlayerTrade.Mechanoids.Designer;
+﻿using PlayerTrade.Mechanoids.Designer;
 using PlayerTrade.Net;
 using PlayerTrade.Net.Packets;
 

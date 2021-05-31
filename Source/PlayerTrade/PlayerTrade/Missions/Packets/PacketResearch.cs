@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using PlayerTrade.Net;
+﻿using PlayerTrade.Net;
 using PlayerTrade.Net.Packets;
 
 namespace PlayerTrade.Missions.Packets

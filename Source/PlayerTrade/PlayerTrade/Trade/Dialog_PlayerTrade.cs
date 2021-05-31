@@ -96,12 +96,12 @@ namespace PlayerTrade.Trade
             if (!TradeSession.giftMode)
             {
                 GUI.color = new Color(1f, 1f, 1f, 0.6f);
-                Verse.Text.Font = GameFont.Tiny;
+                Text.Font = GameFont.Tiny;
                 Rect rect3 = new Rect((float)((double)position.width / 2.0 - 100.0 - 30.0), 0.0f, 200f, position.height);
-                Verse.Text.Anchor = TextAnchor.LowerCenter;
+                Text.Anchor = TextAnchor.LowerCenter;
                 TaggedString label = "PositiveBuysNegativeSells".Translate();
                 Widgets.Label(rect3, label);
-                Verse.Text.Anchor = TextAnchor.UpperLeft;
+                Text.Anchor = TextAnchor.UpperLeft;
                 GUI.color = Color.white;
             }
             GUI.EndGroup();
@@ -172,7 +172,7 @@ namespace PlayerTrade.Trade
 
         private void FillMainRect(Rect mainRect)
         {
-            Verse.Text.Font = GameFont.Small;
+            Text.Font = GameFont.Small;
             float height = (float)(6.0 + cachedTradeables.Count * 30.0);
             Rect viewRect = new Rect(0.0f, 0.0f, mainRect.width - 16f, height);
             Widgets.BeginScrollView(mainRect, ref scrollPosition, viewRect);

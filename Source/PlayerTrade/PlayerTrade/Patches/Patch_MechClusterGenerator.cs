@@ -9,6 +9,7 @@ using RimWorld;
 using RimWorld.SketchGen;
 using UnityEngine;
 using Verse;
+
 // ReSharper disable RedundantAssignment
 
 namespace PlayerTrade.Patches

@@ -64,7 +64,7 @@ namespace PlayerTrade.Missions
 
         public static IEnumerable<Pawn> GetPawnsAvailableForMissions(PlayerMissionDef missionDef = null)
         {
-            MissionWorkers.MissionWorker worker = null;
+            MissionWorker worker = null;
             if (missionDef != null)
                 worker = missionDef.CreateWorker(null);
 
@@ -80,7 +80,7 @@ namespace PlayerTrade.Missions
             }
         }
 
-        public static MissionOffer SendMission(Player target, PlayerMissionDef missionDef, IEnumerable<Pawn> pawns, MissionWorkers.MissionWorker worker, float days)
+        public static MissionOffer SendMission(Player target, PlayerMissionDef missionDef, IEnumerable<Pawn> pawns, MissionWorker worker, float days)
         {
             if (worker == null)
                 worker = missionDef.CreateWorker(null); // was give the worker the LaborOffer instance shortly
