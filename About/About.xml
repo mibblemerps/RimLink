@@ -8,4 +8,11 @@
 		<li>1.2</li>
 	</supportedVersions>
 	<description>Brings multiplayer colony interactions to the Rim!</description>
+	<modDependencies>
+        <li>
+            <packageId>brrainz.harmony</packageId>
+            <displayName>Harmony</displayName>
+            <steamWorkshopUrl>steam://url/CommunityFilePage/2009463077</steamWorkshopUrl>
+        </li>
+    </modDependencies>
 </ModMetaData>
