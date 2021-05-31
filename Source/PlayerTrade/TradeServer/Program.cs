@@ -50,12 +50,10 @@ namespace TradeServer
             Console.WriteLine("=== RimWorld Trade Server ===\n");
             Console.ResetColor();
 
-            int port = 35562;
-            Console.WriteLine("    Port: " + port);
-            Console.WriteLine();
-
             Server = new Server();
-            _serverTask = Server.Run(port);
+            _serverTask = Server.Run(Server.ServerSettings.Port);
+            Console.WriteLine("    Port: " + Server.ServerSettings.Port);
+            Console.WriteLine();
             _serverTask.ContinueWith((t) =>
             {
                 if (t.IsFaulted)
