@@ -1,16 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
+using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
-using PlayerTrade;
 using TradeServer.Commands;
+using Command = TradeServer.Commands.Command;
+using Log = PlayerTrade.Log;
 
 namespace TradeServer
 {
     public class Program
     {
+        private const string DefaultRimWorldAssemblyPath = @"C:\Program Files (x86)\Steam\steamapps\common\RimWorld\RimWorldWin64_Data\Managed\Assembly-CSharp.dll";
+        
         public static Server Server;
 
         public static Stopwatch Stopwatch = new Stopwatch();
@@ -39,6 +42,9 @@ namespace TradeServer
 
         private static void Main(string[] args)
         {
+            // Check that RimWorld assembly is present
+            if (!CheckForRimWorldAssembly()) return;
+            
             Stopwatch.Start();
 
             Console.ForegroundColor = ConsoleColor.DarkCyan;
@@ -70,6 +76,42 @@ namespace TradeServer
         {
             string input = Console.ReadLine();
             CommandUtility.ExecuteCommand(ServerCaller, input);
+        }
+
+        private static bool CheckForRimWorldAssembly()
+        {
+            if (File.Exists("Assembly-CSharp.dll")) return true;
+
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.Write("Missing RimWorld assembly (Assembly-CSharp.dll)! ");
+            Console.ResetColor();
+            Console.WriteLine("This cannot be distributed with the server for legal reasons.\n");
+
+            if (File.Exists(DefaultRimWorldAssemblyPath))
+            {
+                // Found assembly in Steam dir
+                Console.ForegroundColor = ConsoleColor.DarkGreen;
+                Console.Write("Automatically found RimWorld assembly: ");
+                Console.ForegroundColor = ConsoleColor.DarkGray;
+                Console.WriteLine(DefaultRimWorldAssemblyPath);
+                Console.ResetColor();
+                File.Copy(DefaultRimWorldAssemblyPath, "Assembly-CSharp.dll");
+                Console.WriteLine("\nAssembly has been copied. Please restart the server.");
+            }
+            else
+            {
+                // Cannot find assembly - prompt user to copy it themself
+                Console.Write("You can find it in ");
+                Console.ForegroundColor = ConsoleColor.DarkGray;
+                Console.WriteLine(@"<RimWorld Install Dir>\RimWorldWin64_Data\Managed\Assembly-CSharp.dll");
+                Console.ResetColor();
+                Console.WriteLine("Please copy this file into the server directory, then restart the server.");
+            }
+
+            Thread.Sleep(100);
+            Console.WriteLine("\n\nPress any key to close...");
+            Console.ReadKey();
+            return false;
         }
     }
 }
