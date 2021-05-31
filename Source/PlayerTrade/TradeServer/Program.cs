@@ -4,9 +4,8 @@ using System.Diagnostics;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using PlayerTrade;
 using TradeServer.Commands;
-using Command = TradeServer.Commands.Command;
-using Log = PlayerTrade.Log;
 
 namespace TradeServer
 {
