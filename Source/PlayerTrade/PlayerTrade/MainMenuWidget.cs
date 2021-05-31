@@ -180,7 +180,8 @@ namespace PlayerTrade
                         if (_pingClient.Tcp == null || !_pingClient.Tcp.Connected)
                         {
                             // Connect
-                            _pingClient.Tcp = new TcpClient();
+                            _pingClient.Tcp = new TcpClient(AddressFamily.InterNetworkV6);
+                            _pingClient.Tcp.Client.SetSocketOption(SocketOptionLevel.IPv6, SocketOptionName.IPv6Only, false);
                             await _pingClient.Tcp.ConnectAsync(RimLinkMod.Instance.Settings.ServerIp, RimLinkMod.Instance.Settings.ServerPort);
                             _pingClient.Stream = _pingClient.Tcp.GetStream();
                         }

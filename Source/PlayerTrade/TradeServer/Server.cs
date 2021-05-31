@@ -35,7 +35,8 @@ namespace TradeServer
         {
             QueuedPacketStorage.Load();
 
-            Listener = new TcpListener(IPAddress.Any, port);
+            Listener = new TcpListener(IPAddress.IPv6Any, port);
+            Listener.Server.SetSocketOption(SocketOptionLevel.IPv6, SocketOptionName.IPv6Only, false);
             Listener.Start();
 
             while (true)

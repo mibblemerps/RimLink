@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Net.Sockets;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -45,20 +46,30 @@ namespace PlayerTrade.Net
         private TaskCompletionSource<bool> _packetQueuedCompletionSource = new TaskCompletionSource<bool>();
 
         /// <summary>
-        /// Connect to a server as a client.
+        /// Connect to a server as a client. Automatically resolves the given IP.
         /// </summary>
-        /// <param name="ip">Server IP</param>
-        /// <param name="port">Server port</param>
         /// <exception cref="ConnectionFailedException"></exception>
         public async Task Connect(string ip, int port = 35562)
         {
+            IPAddress resolved = (await Dns.GetHostAddressesAsync(ip)).FirstOrDefault();
+            if (resolved == null)
+                throw new Exception("Cannot resolve hostname: " + ip);
+            await Connect(new IPEndPoint(resolved, port));
+        }
+        
+        /// <summary>
+        /// Connect to a server as a client.
+        /// </summary>
+        /// <exception cref="ConnectionFailedException"></exception>
+        public async Task Connect(IPEndPoint endpoint)
+        {
             Tcp?.Close();
-            Tcp = new TcpClient();
-            
+            Tcp = new TcpClient(endpoint.AddressFamily);
+
             try
             {
-                Log.Message("Connecting to: " + ip + ":" + port);
-                await Tcp.ConnectAsync(ip, port);
+                Log.Message("Connecting to: " + endpoint);
+                await Tcp.ConnectAsync(endpoint.Address, endpoint.Port);
             }
             catch (Exception e)
             {
