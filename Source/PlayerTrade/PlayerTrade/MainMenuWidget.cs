@@ -50,19 +50,25 @@ namespace PlayerTrade
             {
                 // No IP set
                 OnGUINoServerIp(widgetRect);
-                return;
             }
-
-            if (LastPing == null)
+            else if (LastPing == null)
             {
                 if (LastPingError == null)
                     OnGUIConnecting(widgetRect);
                 else
                     OnGUICannotConnect(widgetRect);
-                return;
+            }
+            else
+            {
+                OnGUIMain(widgetRect);
             }
 
-            Rect titleRect = widgetRect.TopPartPixels(35f);
+            GUI.EndGroup();
+        }
+
+        private static void OnGUIMain(Rect rect)
+        {
+            Rect titleRect = rect.TopPartPixels(35f);
             Text.Font = GameFont.Medium;
             Text.Anchor = TextAnchor.MiddleLeft;
             Widgets.Label(titleRect, LastPing.ServerName);
@@ -72,7 +78,7 @@ namespace PlayerTrade
             if (LastPing.ProtocolVersion != RimLinkMod.ProtocolVersion)
             {
                 // Incorrect version
-                Widgets.Label(new Rect(0, titleRect.yMax + 20f, widgetRect.width, 20f), "Wrong version");
+                Widgets.Label(new Rect(0, titleRect.yMax + 20f, rect.width, 20f), "Wrong version");
                 return;
             }
 
@@ -84,7 +90,7 @@ namespace PlayerTrade
             Text.Anchor = TextAnchor.UpperLeft;
 
             // Player list
-            Rect playerList = new Rect(0, 35f, widgetRect.width, widgetRect.height - 70f);
+            Rect playerList = new Rect(0, 35f, rect.width, rect.height - 70f);
             if (LastPing.PlayersOnline.Count > 0)
             {
                 Rect viewRect = new Rect(0, 0, playerList.width - 16f, LastPing.PlayersOnline.Count * 20f);
@@ -108,12 +114,10 @@ namespace PlayerTrade
             }
 
             // Set server button
-            if (Widgets.ButtonText(widgetRect.BottomPartPixels(25f).RightPartPixels(130f), "Settings"))
+            if (Widgets.ButtonText(rect.BottomPartPixels(25f).RightPartPixels(130f), "Settings"))
             {
                 RimLinkMod.ShowModSettings();
             }
-
-            GUI.EndGroup();
         }
 
         private static void OnGUINoServerIp(Rect rect)
