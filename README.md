@@ -31,6 +31,8 @@ There are no arbitrary restrictions. You can arrest, kill or strip colonists len
 ### 🔬 Research Missions
 Send your researcher off to another player to do some research away from home. You will both get the research points and your colonist will research faster.
 
+It's mutually beneficial if you trust them to take good care of your colonist.
+
 ### ⛱ Holiday
 Everyone needs a holiday. Let your colonists see the sights of other player's colonies for a mood buff (hopefully).
 
