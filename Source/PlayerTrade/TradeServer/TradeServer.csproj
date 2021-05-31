@@ -50,7 +50,6 @@
   <ItemGroup>
     <Compile Include="BugReportFiler.cs" />
     <Compile Include="Client.cs" />
-    <Compile Include="ClientState.cs" />
     <Compile Include="Commands\Caller.cs" />
     <Compile Include="Commands\ClientCaller.cs" />
     <Compile Include="Commands\Command.cs" />
