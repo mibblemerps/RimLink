@@ -19,7 +19,7 @@ namespace PlayerTrade
             closeOnAccept = false;
 
             _ipInput = RimLinkMod.Instance.Settings.ServerIp;
-            if (RimLinkMod.Instance.Settings.ServerPort != 35562)
+            if (RimLinkMod.Instance.Settings.ServerPort != 35562 && RimLinkMod.Instance.Settings.ServerPort > 0)
                 _ipInput += ":" + RimLinkMod.Instance.Settings.ServerPort;
         }
 
