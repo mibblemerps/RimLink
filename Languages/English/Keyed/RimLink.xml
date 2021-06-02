@@ -6,6 +6,8 @@
     <Rl_MessageDisconnectedNetwork>Lost connection to server</Rl_MessageDisconnectedNetwork>
     <Rl_MessageDisconnectedKicked>Kicked from server</Rl_MessageDisconnectedKicked>
     
+    <Rl_MessageRunInBackgroundDisabled>Run in background is disabled when RimLink is connected!</Rl_MessageRunInBackgroundDisabled>
+    
     <Rl_Mail>{0} ({1})</Rl_Mail>
     
     <Rl_MechanoidCluster>Mechanoid cluster ({0})</Rl_MechanoidCluster>

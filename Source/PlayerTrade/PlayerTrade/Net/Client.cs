@@ -50,6 +50,10 @@ namespace PlayerTrade.Net
 
         public override async Task Handshake()
         {
+            // Enable running in background to prevent disconnects in background.
+            // This is enforced in Patch_PrefsData_Apply
+            Prefs.RunInBackground = true;
+            
             // Send connect request
             SendPacket(new PacketConnect
             {
