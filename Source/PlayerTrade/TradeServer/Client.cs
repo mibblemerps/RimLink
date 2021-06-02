@@ -41,6 +41,7 @@ namespace TradeServer
             while (true)
             {
                 Packet packet = await ReceivePacket();
+                if (packet == null) throw new Exception("Client disconnected");
                 
                 if (packet is PacketConnect connect)
                 {

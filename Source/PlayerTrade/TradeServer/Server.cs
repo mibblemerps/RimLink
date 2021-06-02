@@ -49,7 +49,16 @@ namespace TradeServer
                     client.Authenticated += ClientOnAuthenticated;
                     
                     // Serve will setup the connection and perform the handshake. Once that's done, begin the send/receive loops
-                    _ = client.Serve(tcp).ContinueWith(t => client.Run());
+                    _ = client.Serve(tcp).ContinueWith(t =>
+                    {
+                        if (t.IsFaulted)
+                        {
+                            if (t.Exception != null) throw t.Exception;
+                            return;
+                        }
+
+                        client.Run();
+                    });
                 }
                 catch (Exception e)
                 {
