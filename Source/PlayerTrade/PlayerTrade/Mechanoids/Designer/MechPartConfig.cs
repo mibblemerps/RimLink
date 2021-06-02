@@ -13,7 +13,9 @@ namespace PlayerTrade.Mechanoids.Designer
 
         public MechPart MechPart;
 
-        public virtual float Price => MechPart.BasePrice;
+        public float DiscountPercent = 0f;
+
+        public virtual float Price => MechPart.BasePrice * (1f - DiscountPercent);
 
         public virtual float CombatPower
         {
@@ -94,12 +96,14 @@ namespace PlayerTrade.Mechanoids.Designer
         public void Write(PacketBuffer buffer)
         {
             buffer.WriteInt(MechParts.Parts.IndexOf(MechPart));
+            buffer.WriteFloat(DiscountPercent);
             PostWrite(buffer);
         }
 
         public void Read(PacketBuffer buffer)
         {
             MechPart = MechParts.Parts[buffer.ReadInt()];
+            DiscountPercent = buffer.ReadFloat();
             PostRead(buffer);
         }
     }

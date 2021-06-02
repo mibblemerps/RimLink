@@ -61,6 +61,8 @@ namespace PlayerTrade
 
         public RimLinkComp(Game game)
         {
+            RimLinkMod.Init(); // this will init the main mod if needed
+            
             AddSystem(new TradeSystem());
             AddSystem(new RaidSystem());
             AddSystem(new MissionSystem());

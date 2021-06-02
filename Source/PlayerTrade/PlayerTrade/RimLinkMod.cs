@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Reflection;
 using HarmonyLib;
+using PlayerTrade.Mechanoids;
 using PlayerTrade.Net;
+using PlayerTrade.Raids;
+using PlayerTrade.Util;
 using RimWorld;
 using UnityEngine;
 using Verse;
@@ -15,6 +18,8 @@ namespace PlayerTrade
         public static RimLinkMod Instance { get; private set; }
 
         public ModSettings Settings;
+
+        private static bool DoneInit = false;
 
         public static bool Active
         {
@@ -43,7 +48,22 @@ namespace PlayerTrade
             // Initialize harmony
             var harmony = new Harmony("net.mitchfizz05.PlayerTrade");
             harmony.PatchAll(Assembly.GetExecutingAssembly());
+        }
 
+        public static void Init()
+        {
+            if (DoneInit) return;
+            DoneInit = true;
+
+            ResearchUtil.AddUnlockableInfo(MechanoidSystem.ResearchProjectDefOf_Mechanoids.MechanoidCommunications,
+                "Rl_AbilityToSendMechanoidClusters", ThingDef.Named("MechAssembler"));
+            ResearchUtil.AddUnlockableInfo(MechanoidSystem.ResearchProjectDefOf_Mechanoids.MechanoidRelations,
+                "Rl_MechanoidClusterDiscount", ThingDef.Named("MechAssembler"));
+
+            ResearchUtil.AddUnlockableInfo(RaidSystem.ResearchProjectDefOf_Raid.NativeLanguages,
+                "Rl_MinorTribalDiscount", ThingDef.Named("MeleeWeapon_Club"));
+            ResearchUtil.AddUnlockableInfo(RaidSystem.ResearchProjectDefOf_Raid.NativeCulture,
+                "Rl_MajorTribalDiscount", ThingDef.Named("MeleeWeapon_Club"));
         }
 
         public override void DoSettingsWindowContents(Rect inRect)

@@ -2,6 +2,8 @@
 using PlayerTrade.Net;
 using PlayerTrade.Net.Packets;
 using PlayerTrade.Util;
+using RimWorld;
+using Verse;
 
 namespace PlayerTrade.Raids
 {
@@ -47,6 +49,22 @@ namespace PlayerTrade.Raids
             }
             foreach (BountyRaid raid in raidsToRemove)
                 RaidsPending.Remove(raid);
+        }
+
+        public static float GetDiscount()
+        {
+            if (ResearchProjectDefOf_Raid.NativeCulture.IsFinished)
+                return 0.3f;
+            if (ResearchProjectDefOf_Raid.NativeLanguages.IsFinished)
+                return 0.15f;
+            return 0f;
+        }
+
+        [DefOf]
+        public static class ResearchProjectDefOf_Raid
+        {
+            public static ResearchProjectDef NativeLanguages;
+            public static ResearchProjectDef NativeCulture;
         }
     }
 }

@@ -8,6 +8,7 @@ namespace PlayerTrade.Mechanoids.Designer
     public class MechCluster : IPacketable
     {
         public List<MechPartConfig> Parts = new List<MechPartConfig>();
+        public float DiscountPercent = 1f;
         public bool HasWalls;
         public bool StartDormant = true;
 
@@ -49,6 +50,7 @@ namespace PlayerTrade.Mechanoids.Designer
                 buffer.WritePacketable(part);
             }
             
+            buffer.WriteFloat(DiscountPercent);
             buffer.WriteBoolean(HasWalls);
             buffer.WriteBoolean(StartDormant);
         }
@@ -66,6 +68,7 @@ namespace PlayerTrade.Mechanoids.Designer
                 Parts.Add(part);
             }
 
+            DiscountPercent = buffer.ReadFloat();
             HasWalls = buffer.ReadBoolean();
             StartDormant = buffer.ReadBoolean();
         }

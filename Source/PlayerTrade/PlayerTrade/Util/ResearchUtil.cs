@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Reflection;
+using PlayerTrade.Patches;
 using RimWorld;
 using UnityEngine;
 using Verse;
@@ -52,6 +53,18 @@ namespace PlayerTrade.Util
                 research.FinishProject(research.currentProj, true);
 
             return pointsToSpend;
+        }
+
+        public static void AddUnlockableInfo(ResearchProjectDef project, string key, Def icon)
+        {
+            if (!Patch_MainTabWindow_Research_DrawUnlockableHyperlinks.Unlockables.ContainsKey(project))
+                Patch_MainTabWindow_Research_DrawUnlockableHyperlinks.Unlockables.Add(project, new List<Patch_MainTabWindow_Research_DrawUnlockableHyperlinks.Entry>());
+            
+            Patch_MainTabWindow_Research_DrawUnlockableHyperlinks.Unlockables[project].Add(new Patch_MainTabWindow_Research_DrawUnlockableHyperlinks.Entry
+            {
+                Key = key,
+                Icon = icon
+            });
         }
     }
 }

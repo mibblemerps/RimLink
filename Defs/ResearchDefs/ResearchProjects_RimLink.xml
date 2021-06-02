@@ -21,26 +21,58 @@
 		</prerequisites>
 	</ResearchProjectDef>
 	
+	<!-- Mechanoid research -->
+
 	<ResearchProjectDef>
-		<defName>MechanoidRelations</defName>
-		<label>mechanoid relations</label>
+		<defName>MechanoidCommunications</defName>
+		<label>mechanoid communications</label>
 		<tab>RimLink</tab>
-		<description>Study the language of the mechanoids. Whilst mechanoids are not "diplomatic" creatures, they may be open to certain deals that benefit them.</description>
-		<baseCost>2400</baseCost>
+		<description>Learn the communication channels of the mechanoids. Whilst mechanoids are not "diplomatic" creatures, they may be open to certain deals that benefit them.</description>
+		<baseCost>1800</baseCost>
 		<techLevel>Industrial</techLevel>
 		<researchViewX>0.00</researchViewX>
 		<researchViewY>0.70</researchViewY>
 	</ResearchProjectDef>
+	
+	<ResearchProjectDef>
+		<defName>MechanoidRelations</defName>
+		<label>mechanoid relations</label>
+		<tab>RimLink</tab>
+		<description>Further study into the language and communication of mechanoid species. This will allow slightly more favourable deals with them.</description>
+		<baseCost>2200</baseCost>
+		<techLevel>Industrial</techLevel>
+		<researchViewX>1.00</researchViewX>
+		<researchViewY>0.70</researchViewY>
+		<prerequisites>
+			<li>MechanoidCommunications</li>
+		</prerequisites>
+	</ResearchProjectDef>
+	
+	<!-- Tribal research -->
 
 	<ResearchProjectDef>
-		<defName>NativeLanguage</defName>
+		<defName>NativeLanguages</defName>
 		<label>native languages</label>
 		<tab>RimLink</tab>
-		<description>Study the language of the native tribes. While this won't necessarily improve their relations towards you, it will allow you to give them bounty offers against other players.</description>
+		<description>Study the language of the native tribes. They will recognize this and will give you a slight discount for bounty work.</description>
 		<baseCost>800</baseCost>
 		<techLevel>Neolithic</techLevel>
 		<researchViewX>0.00</researchViewX>
 		<researchViewY>1.40</researchViewY>
+	</ResearchProjectDef>
+
+	<ResearchProjectDef>
+		<defName>NativeCulture</defName>
+		<label>native culture</label>
+		<tab>RimLink</tab>
+		<description>Develop a deeper cultural understanding of the tribal factions. They will recognize this and will give you a significant discount for bounty work.</description>
+		<baseCost>1600</baseCost>
+		<techLevel>Neolithic</techLevel>
+		<researchViewX>1.00</researchViewX>
+		<researchViewY>1.40</researchViewY>
+		<prerequisites>
+			<li>NativeLanguages</li>
+		</prerequisites>
 	</ResearchProjectDef>
 	
 </Defs>

@@ -12,13 +12,12 @@ namespace PlayerTrade.Raids
     {
         public const float DefaultBasePrice = 1000f;
         public const int DefaultMaxStrengthPercent = 500;
-        public const float DefaultTribalDiscount = 0.3f;
 
         public Player Player;
 
         public override Vector2 InitialSize => new Vector2(512f, 512f);
 
-        protected float TribalDiscount => RimLinkComp.Instance.Client.GameSettings.RaidTribalDiscount;
+        protected float TribalDiscount => RaidSystem.GetDiscount();
 
         private int _playerSilver;
 
@@ -54,8 +53,6 @@ namespace PlayerTrade.Raids
             new Strategy("Siege", "Siege", 0.66f),
         };
 
-        private ResearchProjectDef _nativeLanguageResearch;
-
         public Dialog_PlaceBounty(Player player)
         {
             Player = player;
@@ -64,11 +61,6 @@ namespace PlayerTrade.Raids
             forcePause = true;
 
             _playerSilver = LaunchUtil.LaunchableThingCount(Find.CurrentMap, ThingDefOf.Silver);
-
-            if (RimLinkMod.Instance != null)
-            {
-                _nativeLanguageResearch = DefDatabase<ResearchProjectDef>.GetNamed("NativeLanguage");
-            }
         }
 
         public override void PreOpen()
@@ -118,17 +110,10 @@ namespace PlayerTrade.Raids
                     }
                     else
                     {
-                        if (faction.FindDef().techLevel < TechLevel.Industrial)
+                        // Show tribal discount if applicable
+                        if (TribalDiscount > 0f && faction.FindDef().techLevel < TechLevel.Industrial)
                         {
-                            if (_nativeLanguageResearch.IsFinished)
-                            {
-                                option.Label += $" <color=\"#6e6e6e\">({Mathf.RoundToInt(TribalDiscount * 100)}% discount)</color>";
-                            }
-                            else
-                            {
-                                option.Label += $" <color=\"#6e6e6e\">({Mathf.RoundToInt(TribalDiscount * 100)}% discount) (missing research)</color>";
-                                option.Disabled = true;
-                            }
+                            option.Label += $" <color=\"#6e6e6e\">({Mathf.RoundToInt(TribalDiscount * 100)}% discount)</color>";
                         }
                     }
                     options.Add(option);
@@ -212,7 +197,7 @@ namespace PlayerTrade.Raids
             if (insufficientSilver)
                 costExtraText += "Insufficient silver\n";
             if (TribalDiscount > 0 && _selectedFaction.FindDef().techLevel < TechLevel.Industrial)
-                costExtraText += $"{Mathf.RoundToInt(RimLinkComp.Instance.Client.GameSettings.RaidTribalDiscount * 100)}% discount for tribal";
+                costExtraText += $"{Mathf.RoundToInt(TribalDiscount * 100)}% discount for tribal";
             Widgets.Label(costExtraRect, costExtraText);
             Text.Font = GameFont.Small;
 

@@ -1,4 +1,5 @@
-﻿using PlayerTrade.Mechanoids.Designer;
+﻿using System.Collections.Generic;
+using PlayerTrade.Mechanoids.Designer;
 using PlayerTrade.Net;
 using PlayerTrade.Net.Packets;
 using PlayerTrade.Patches;
@@ -54,6 +55,23 @@ namespace PlayerTrade.Mechanoids
             }
             
             IncidentDefOf.MechCluster.Worker.TryExecute(incidentParams);
+        }
+
+        public static bool IsCapableOfSending()
+        {
+            return ResearchProjectDefOf_Mechanoids.MechanoidCommunications.IsFinished;
+        }
+
+        public static float GetDiscount()
+        {
+            return ResearchProjectDefOf_Mechanoids.MechanoidRelations.IsFinished ? 0.2f : 0f;
+        }
+
+        [DefOf]
+        public static class ResearchProjectDefOf_Mechanoids
+        {
+            public static ResearchProjectDef MechanoidCommunications;
+            public static ResearchProjectDef MechanoidRelations;
         }
     }
 }

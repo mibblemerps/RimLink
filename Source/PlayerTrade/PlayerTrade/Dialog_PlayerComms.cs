@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using System.Text;
 using PlayerTrade.Mail;
+using PlayerTrade.Mechanoids;
 using PlayerTrade.Mechanoids.Designer;
 using PlayerTrade.Missions;
 using PlayerTrade.Raids;
@@ -18,7 +19,6 @@ namespace PlayerTrade
 
         private Player _self;
 
-        private static ResearchProjectDef MechRelationsResearchDef;
         private static PlayerMissionDef LaborMissionDef;
 
         public Dialog_PlayerComms(Pawn negotiator, Player player) : base(RootNodeForPlayer(negotiator, player), true)
@@ -127,7 +127,7 @@ namespace PlayerTrade
                 resolveTree = true,
                 action = () => { Find.WindowStack.Add(new Dialog_DesignMechCluster(player)); }
             };
-            if (!MechClusterResearchDone())
+            if (!MechanoidSystem.IsCapableOfSending())
                 mechClusterOption.Disable("missing research");
             node.options.Add(mechClusterOption);
 
@@ -148,13 +148,6 @@ namespace PlayerTrade
             node.options.Add(closeOption);
 
             return node;
-        }
-
-        private static bool MechClusterResearchDone()
-        {
-            if (MechRelationsResearchDef == null)
-                MechRelationsResearchDef = ResearchProjectDef.Named("MechanoidRelations");
-            return MechRelationsResearchDef.IsFinished;
         }
     }
 }

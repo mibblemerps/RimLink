@@ -142,6 +142,7 @@
     <Compile Include="Net\Packets\PacketPingResponse.cs" />
     <Compile Include="Net\Packets\PingClient.cs" />
     <Compile Include="Patches\Patch_MainMenuDrawer.cs" />
+    <Compile Include="Patches\Patch_MainTabWindow_Research_DrawUnlockableHyperlinks.cs" />
     <Compile Include="Patches\Patch_MechClusterGenerator.cs" />
     <Compile Include="Patches\Patch_MechClusterUtility.cs" />
     <Compile Include="Patches\Patch_Pawn_GetDisabledWorkTypes.cs" />

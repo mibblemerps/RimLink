@@ -14,6 +14,8 @@ namespace PlayerTrade.Mechanoids.Designer
 
         public MechCluster MechCluster = new MechCluster();
 
+        protected float MechanoidDiscount => MechanoidSystem.GetDiscount();
+
         private int _playerSilver;
         private Vector2 _scrollPosition = Vector2.zero;
 
@@ -25,6 +27,7 @@ namespace PlayerTrade.Mechanoids.Designer
             forcePause = true;
             
             _playerSilver = LaunchUtil.LaunchableThingCount(Find.CurrentMap, ThingDefOf.Silver);
+            MechCluster.DiscountPercent = MechanoidDiscount;
         }
 
         public override void DoWindowContents(Rect inRect)
@@ -32,17 +35,29 @@ namespace PlayerTrade.Mechanoids.Designer
             GUI.BeginGroup(inRect);
             inRect = inRect.AtZero();
 
+            // Header
             Rect headerRect = inRect.TopPartPixels(35f);
             Text.Font = GameFont.Medium;
             Widgets.Label(headerRect, "Create Mechanoid Cluster");
             Text.Font = GameFont.Small;
 
+            if (MechanoidDiscount > 0f)
+            {
+                // Discount text
+                Text.Font = GameFont.Tiny;
+                Text.Anchor = TextAnchor.MiddleRight;
+                Widgets.Label(headerRect.RightPart(0.5f), $"{Mathf.RoundToInt(MechanoidDiscount * 100f)}% discount".Colorize(ColoredText.CurrencyColor));
+                Text.Font = GameFont.Small;
+                Text.Anchor = TextAnchor.UpperLeft;
+            }
+            
+            // Add buttons
             Rect addPartsRect = new Rect(0, 40f, inRect.width, 35f);
             if (Widgets.ButtonText(addPartsRect.LeftPart(0.5f), "Add Building"))
             {
                 var options = new List<FloatMenuOption>();
                 foreach (var part in MechParts.Parts.Where(p => p.Type == MechPart.PartType.Building))
-                    options.Add(new FloatMenuOption(AddPriceToLabel(part.ThingDef.LabelCap, part.BasePrice), () => { AddPart(part); }, part.Icon, Color.white));
+                    options.Add(new FloatMenuOption(AddPriceToLabel(part.ThingDef.LabelCap, Mathf.RoundToInt(part.BasePrice * (1f - MechanoidDiscount))), () => { AddPart(part); }, part.Icon, Color.white));
                 Find.WindowStack.Add(new FloatMenu(options));
             }
             if (Widgets.ButtonText(addPartsRect.RightPart(0.5f), "Add Creature"))
@@ -53,21 +68,22 @@ namespace PlayerTrade.Mechanoids.Designer
                 Find.WindowStack.Add(new FloatMenu(options));
             }
 
-            Rect partsRect = new Rect(0, addPartsRect.yMax + 10f, inRect.width, inRect.height - addPartsRect.yMax - 10f - 45f);
-
+            // Mech parts
+            Rect partsRect = new Rect(0, addPartsRect.yMax + 10f, inRect.width, inRect.height - addPartsRect.yMax - 10f - 50f);
             DrawParts(partsRect);
 
             Rect bottomRect = inRect.BottomPartPixels(35f);
             
             // Draw total price
+            Rect priceAreaRect = bottomRect.LeftPart(0.33f).CenteredOnXIn(bottomRect);
             Text.Font = GameFont.Medium;
             Text.Anchor = TextAnchor.MiddleCenter;
-            Widgets.Label(bottomRect.LeftPart(0.33f).CenteredOnXIn(bottomRect),
+            Widgets.Label(priceAreaRect.TopPartPixels(30f),
                 ("$" + Mathf.RoundToInt(MechCluster.Price))
                 .Colorize(_playerSilver >= Mathf.RoundToInt(MechCluster.Price) ? ColoredText.CurrencyColor : ColoredText.RedReadable));
-            Text.Anchor = TextAnchor.UpperLeft;
             Text.Font = GameFont.Small;
-            
+            Text.Anchor = TextAnchor.UpperLeft;
+
             // Draw buttons
             if (Widgets.ButtonText(bottomRect.RightPart(0.33f), "Send Mech Cluster"))
                 SendMechCluster();
@@ -79,7 +95,9 @@ namespace PlayerTrade.Mechanoids.Designer
 
         public void AddPart(MechPart part)
         {
-            MechCluster.Parts.Add(part.CreateConfig());
+            var config = part.CreateConfig();
+            config.DiscountPercent = MechanoidDiscount;
+            MechCluster.Parts.Add(config);
         }
 
         private void DrawParts(Rect rect)
