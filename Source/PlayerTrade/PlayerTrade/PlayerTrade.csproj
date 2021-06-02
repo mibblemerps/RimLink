@@ -120,6 +120,7 @@
     <Compile Include="Missions\MissionWorkers\ResearchMissionWorker.cs" />
     <Compile Include="Missions\Packets\PacketResearch.cs" />
     <Compile Include="Missions\Packets\PacketLentColonistUpdate.cs" />
+    <Compile Include="Missions\Patch_WorldPawns_PassToWorld.cs" />
     <Compile Include="Missions\PlayerMissionDef.cs" />
     <Compile Include="Missions\Quest\QuestNode_CleanupRemainingPawns.cs" />
     <Compile Include="Missions\Quest\QuestNode_DelayCanEndEarly.cs" />

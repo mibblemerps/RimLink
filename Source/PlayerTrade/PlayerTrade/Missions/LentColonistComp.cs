@@ -15,11 +15,28 @@ namespace PlayerTrade.Missions
 
         public MissionOffer MissionOffer;
 
+        /// <summary>
+        /// Is pawn is leaving the map after not being sent home.
+        /// </summary>
         public bool Leaving;
+        /// <summary>
+        /// Is the pawn arrested at the moment?
+        /// </summary>
         public bool Arrested;
+        /// <summary>
+        /// The tick at which the colonist will "escape", that is, return home and pick a random escape def.
+        /// </summary>
         public int TryEscapeHomeTick;
 
+        /// <summary>
+        /// Is the pawn currently doing joint research? This controls whether their research efforts are sent back to the home faction.
+        /// </summary>
         public bool DoingJointResearch;
+
+        /// <summary>
+        /// Has the colonist gone back to their home faction?
+        /// </summary>
+        public bool GoneHome;
 
         public override void PostDestroy(DestroyMode mode, Map previousMap)
         {

@@ -188,6 +188,10 @@ namespace PlayerTrade.Missions
             var netPawns = new List<NetHuman>();
             foreach (Pawn pawn in pawns)
                 netPawns.Add(pawn.ToNetHuman());
+            
+            // Mark pawn as "gone home"
+            foreach (Pawn pawn in pawns)
+                pawn.TryGetComp<LentColonistComp>().GoneHome = true;
 
             var packet = new PacketReturnLentColonists
             {
