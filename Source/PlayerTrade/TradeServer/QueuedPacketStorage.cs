@@ -10,7 +10,7 @@ namespace TradeServer
 {
     public class QueuedPacketStorage
     {
-        public const int FormatVersion = 2;
+        public static int FormatVersion => RimLinkMod.ProtocolVersion;
         public const int MaxPacketsStoredPerPlayer = 1000;
 
         public string SaveFileName = "queued_packets.dat";
