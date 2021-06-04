@@ -13,6 +13,7 @@ namespace PlayerTrade.Net
         public string SourceDefName;
         public int AgeTicks;
         public float Severity;
+        public int ImplantLevel;
 
         public List<NetHediffComp> Comps = new List<NetHediffComp>();
 
@@ -23,6 +24,7 @@ namespace PlayerTrade.Net
             buffer.WriteString(SourceDefName, true);
             buffer.WriteInt(AgeTicks);
             buffer.WriteDouble(Severity);
+            buffer.WriteInt(ImplantLevel);
 
             buffer.WriteInt(Comps.Count);
             foreach (var comp in Comps)
@@ -39,6 +41,7 @@ namespace PlayerTrade.Net
             SourceDefName = buffer.ReadString(true);
             AgeTicks = buffer.ReadInt();
             Severity = (float) buffer.ReadDouble();
+            ImplantLevel = buffer.ReadInt();
 
             int compsCount = buffer.ReadInt();
             Comps = new List<NetHediffComp>(compsCount);

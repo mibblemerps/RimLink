@@ -24,6 +24,7 @@ namespace PlayerTrade.Net
         public Gender Gender;
         public List<NetSkill> Skills;
         public List<NetTrait> Traits;
+        public List<string> Abilities;
 
         public List<NetThing> Equipment;
         public List<NetThing> Apparel;
@@ -97,6 +98,14 @@ namespace PlayerTrade.Net
                 group.WriteInt(Traits.Count);
                 foreach (NetTrait trait in Traits)
                     group.WritePacketable(trait);
+            });
+            
+            // Abilities
+            buffer.WriteGroup("Abilities", group =>
+            {
+                group.WriteInt(Abilities.Count);
+                foreach (string abilityDef in Abilities)
+                    group.WriteString(abilityDef);
             });
 
             // Equipment
@@ -256,6 +265,15 @@ namespace PlayerTrade.Net
                 for (int i = 0; i < traitsCount; i++)
                     Traits.Add(group.ReadPacketable<NetTrait>());                
             }, () => Traits = null);
+            
+            // Abilities
+            buffer.ReadGroup("Abilities", group =>
+            {
+                int abilityCount = group.ReadInt();
+                Abilities = new List<string>(abilityCount);
+                for (int i = 0; i < abilityCount; i++)
+                    Abilities.Add(group.ReadString());
+            });
 
             // Equipment
             buffer.ReadGroup("Equipment", group =>

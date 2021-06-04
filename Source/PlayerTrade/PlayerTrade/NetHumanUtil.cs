@@ -29,6 +29,10 @@ namespace PlayerTrade
 
         private static FieldInfo Need_CurLevel = typeof(Need).GetField("curLevelInt", BindingFlags.NonPublic | BindingFlags.Instance);
 
+        private static FieldInfo PsychicEntropyTracker_LastMeditationTick = typeof(Pawn_PsychicEntropyTracker).GetField("lastMeditationTick",  BindingFlags.NonPublic | BindingFlags.Instance);
+        private static FieldInfo PsychicEntropyTracker_CurrentEntropy = typeof(Pawn_PsychicEntropyTracker).GetField("currentEntropy",  BindingFlags.NonPublic | BindingFlags.Instance);
+        private static FieldInfo PsychicEntropyTracker_CurrentPsyfocus = typeof(Pawn_PsychicEntropyTracker).GetField("currentPsyfocus",  BindingFlags.NonPublic | BindingFlags.Instance);
+
         public static NetHuman ToNetHuman(this Pawn pawn, bool simplified = false)
         {
             if (!pawn.RaceProps.Humanlike)
@@ -167,6 +171,10 @@ namespace PlayerTrade
                     }
                 }
 
+                // Save implant level (psylinks)
+                if (hediff is Hediff_ImplantWithLevel implantWithLevel)
+                    netHediff.ImplantLevel = implantWithLevel.level;
+
                 human.Hediffs.Add(netHediff);
             }
 
@@ -240,6 +248,11 @@ namespace PlayerTrade
             // Remove any sent memories so they aren't duplicated when the colonist is returned
             foreach (Thought_Memory memory in memoriesToRemove)
                 pawn.needs.mood.thoughts.memories.RemoveMemory(memory);
+            
+            // Abilities
+            human.Abilities = new List<string>();
+            foreach (Ability ability in pawn.abilities.abilities)
+                human.Abilities.Add(ability.def.defName);
 
             // Royalty
             if (ModLister.RoyaltyInstalled && pawn.royalty != null)
@@ -247,7 +260,6 @@ namespace PlayerTrade
                 var royalty = new NetRoyalty();
                 human.Royalty = royalty;
                 royalty.Favor = pawn.royalty.GetFavor(Faction.Empire);
-                Log.Message("Favor: " + human.Royalty.Favor);
                 royalty.PermitPoints = pawn.royalty.GetPermitPoints(Faction.Empire);
                 royalty.LastDecreeTicksAgo = Find.TickManager.TicksGame - pawn.royalty.lastDecreeTicks;
                 royalty.AllowApparelRequirements = pawn.royalty.allowApparelRequirements;
@@ -283,6 +295,17 @@ namespace PlayerTrade
                     // Create a simplified version of the heir. This heir will (hopefully) never been seen or spawned, other than their name in the UI.
                     royalty.DummyHeir = ToNetHuman(heir);
                     royalty.DummyHeir.Royalty = null; // Remove any royalty stuffs from heir (to prevent any loops and it's uneccesary data)
+                }
+                
+                // Psychic
+                royalty.HasPsylink = pawn.psychicEntropy != null;
+                if (royalty.HasPsylink)
+                {
+                    royalty.CurrentEntropy = pawn.psychicEntropy.EntropyValue;
+                    royalty.CurrentPsyfocus = pawn.psychicEntropy.CurrentPsyfocus;
+                    royalty.TargetPsyfocus = pawn.psychicEntropy.TargetPsyfocus;
+                    //royalty.LastMeditationTick = (int) PsychicEntropyTracker_LastMeditationTick.GetValue(pawn.psychicEntropy);
+                    royalty.LimitEntropyAmount = pawn.psychicEntropy.limitEntropyAmount;
                 }
             }
 
@@ -378,13 +401,20 @@ namespace PlayerTrade
                 if (netHediff.BodypartIndex >= 0)
                     bodyPartRecord = pawn.RaceProps.body.GetPartAtIndex(netHediff.BodypartIndex);
 
-                Hediff hediff = pawn.health.AddHediff(def, bodyPartRecord);
+                Hediff hediff = HediffMaker.MakeHediff(def, pawn, bodyPartRecord);
+                
+                // Don't send letter that the pawn got a psylink when generating the pawn.
+                if (hediff is Hediff_Psylink psylink)
+                    psylink.suppressPostAddLetter = true;
+
                 if (!string.IsNullOrWhiteSpace(netHediff.SourceDefName))
                     hediff.source = ThingDef.Named(netHediff.SourceDefName);
                 hediff.Severity = netHediff.Severity;
                 hediff.ageTicks = netHediff.AgeTicks;
-                if (netHediff.SourceDefName != null)
-                    hediff.source = ThingDef.Named(netHediff.SourceDefName);
+
+                // Apply implant level (psylinks)
+                if (hediff is Hediff_ImplantWithLevel implantWithLevel)
+                    implantWithLevel.level = netHediff.ImplantLevel;
 
                 foreach (NetHediff.NetHediffComp netComp in netHediff.Comps)
                 {
@@ -430,6 +460,9 @@ namespace PlayerTrade
                         Log.Error($"Exception applying net hediff comp (Type = {netComp.GetType().FullName})", e);
                     }
                 }
+                
+                // Add hediff to pawn
+                pawn.health.AddHediff(hediff, bodyPartRecord);
             }
 
             // Work priorities
@@ -498,6 +531,13 @@ namespace PlayerTrade
                 
                 pawn.needs.mood.thoughts.memories.TryGainMemory(thought);
             }
+            
+            // Abilities
+            if (human.Abilities != null)
+            {
+                foreach (string abilityDef in human.Abilities)
+                    pawn.abilities.GainAbility(DefDatabase<AbilityDef>.GetNamed(abilityDef));
+            }
 
             // Royalty
             if (ModLister.RoyaltyInstalled && human.Royalty != null)
@@ -536,6 +576,19 @@ namespace PlayerTrade
                     var permit = pawn.royalty.GetPermit(permitDef, Faction.Empire);
                     typeof(FactionPermit).GetField("lastUsedTick", BindingFlags.NonPublic | BindingFlags.Instance)
                         .SetValue(permit, Find.TickManager.TicksGame - netPermit.UsedTicksAgo);
+                }
+                
+                // Psychic
+                if (human.Royalty.HasPsylink)
+                {
+                    if (pawn.psychicEntropy == null)
+                        pawn.psychicEntropy = new Pawn_PsychicEntropyTracker(pawn);
+                    
+                    PsychicEntropyTracker_CurrentEntropy.SetValue(pawn.psychicEntropy, human.Royalty.CurrentEntropy);
+                    PsychicEntropyTracker_CurrentPsyfocus.SetValue(pawn.psychicEntropy, human.Royalty.CurrentPsyfocus);
+                    pawn.psychicEntropy.SetPsyfocusTarget(human.Royalty.TargetPsyfocus);
+                    //PsychicEntropyTracker_LastMeditationTick.SetValue(pawn.psychicEntropy, human.Royalty.LastMeditationTick);
+                    pawn.psychicEntropy.limitEntropyAmount = human.Royalty.LimitEntropyAmount;
                 }
             }
 

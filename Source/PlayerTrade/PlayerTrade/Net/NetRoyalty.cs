@@ -13,6 +13,13 @@ namespace PlayerTrade.Net
         public bool AllowRoomRequirements;
         public bool AllowApparelRequirements;
 
+        public bool HasPsylink;
+        public float CurrentEntropy;
+        public float CurrentPsyfocus;
+        public float TargetPsyfocus;
+        public float LastMeditationTick;
+        public bool LimitEntropyAmount;
+
         /// <summary>
         /// A basic dummy pawn heir
         /// </summary>
@@ -27,6 +34,16 @@ namespace PlayerTrade.Net
             buffer.WriteInt(LastDecreeTicksAgo);
             buffer.WriteBoolean(AllowRoomRequirements);
             buffer.WriteBoolean(AllowApparelRequirements);
+            
+            buffer.WriteBoolean(HasPsylink);
+            if (HasPsylink)
+            {
+                buffer.WriteFloat(CurrentEntropy);
+                buffer.WriteFloat(CurrentPsyfocus);
+                buffer.WriteFloat(TargetPsyfocus);
+                buffer.WriteFloat(LastMeditationTick);
+                buffer.WriteBoolean(LimitEntropyAmount);
+            }
 
             buffer.WritePacketable(DummyHeir, true);
         }
@@ -40,6 +57,16 @@ namespace PlayerTrade.Net
             LastDecreeTicksAgo = buffer.ReadInt();
             AllowRoomRequirements = buffer.ReadBoolean();
             AllowApparelRequirements = buffer.ReadBoolean();
+
+            HasPsylink = buffer.ReadBoolean();
+            if (HasPsylink)
+            {
+                CurrentEntropy = buffer.ReadFloat();
+                CurrentPsyfocus = buffer.ReadFloat();
+                TargetPsyfocus = buffer.ReadFloat();
+                LastMeditationTick = buffer.ReadFloat();
+                LimitEntropyAmount = buffer.ReadBoolean();
+            }
 
             DummyHeir = buffer.ReadPacketable<NetHuman>(true);
         }
