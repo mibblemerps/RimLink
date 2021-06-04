@@ -192,6 +192,16 @@ namespace PlayerTrade.Net
                 {
                     CompGeneratedNames_Name.SetValue(thing.TryGetComp<CompGeneratedNames>(), netNameComp.Name);
                 }
+                else if (comp is NetThingComp_Ingredients netIngredients)
+                {
+                    var ingredients = thing.TryGetComp<CompIngredients>();
+                    foreach (string ingredient in netIngredients.Ingredients)
+                        ingredients.ingredients.Add(Verse.ThingDef.Named(ingredient));
+                }
+                else if (comp is NetThingComp_Rottable netRottable)
+                {
+                    thing.TryGetComp<CompRottable>().RotProgress = netRottable.RotProgress;
+                }
             }
 
             return thing;
@@ -243,6 +253,23 @@ namespace PlayerTrade.Net
                     Name = generatedNames.Name
                 });
             }
+            
+            // Ingredients
+            var ingredients = thing.TryGetComp<CompIngredients>();
+            if (ingredients != null)
+            {
+                var ingredientsNet = new NetThingComp_Ingredients {Ingredients = new List<string>()};
+                foreach (ThingDef ingredient in ingredients.ingredients)
+                    ingredientsNet.Ingredients.Add(ingredient.defName);
+                netThing.Comps.Add(ingredientsNet);
+            }
+            
+            // Rottable
+            var rottable = thing.TryGetComp<CompRottable>();
+            if (rottable != null)
+            {
+                netThing.Comps.Add(new NetThingComp_Rottable {RotProgress = rottable.RotProgress});
+            }
 
             return netThing;
         }
@@ -252,6 +279,41 @@ namespace PlayerTrade.Net
             public abstract void Write(PacketBuffer buffer);
 
             public abstract void Read(PacketBuffer buffer);
+        }
+
+        public class NetThingComp_Rottable : NetThingComp
+        {
+            public float RotProgress;
+
+            public override void Write(PacketBuffer buffer)
+            {
+                buffer.WriteFloat(RotProgress);
+            }
+
+            public override void Read(PacketBuffer buffer)
+            {
+                RotProgress = buffer.ReadFloat();
+            }
+        }
+        
+        public class NetThingComp_Ingredients : NetThingComp
+        {
+            public List<string> Ingredients = new List<string>();
+            
+            public override void Write(PacketBuffer buffer)
+            {
+                buffer.WriteInt(Ingredients.Count);
+                foreach (string ingredient in Ingredients)
+                    buffer.WriteString(ingredient);
+            }
+
+            public override void Read(PacketBuffer buffer)
+            {
+                int count = buffer.ReadInt();
+                Ingredients = new List<string>(count);
+                for (int i = 0; i < count; i++)
+                    Ingredients.Add(buffer.ReadString());
+            }
         }
 
         public class NetThingComp_BladelinkWeapon : NetThingComp
