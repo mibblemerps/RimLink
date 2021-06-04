@@ -245,9 +245,6 @@ namespace PlayerTrade
                 
                 memoriesToRemove.Add(memory);
             }
-            // Remove any sent memories so they aren't duplicated when the colonist is returned
-            foreach (Thought_Memory memory in memoriesToRemove)
-                pawn.needs.mood.thoughts.memories.RemoveMemory(memory);
             
             // Abilities
             human.Abilities = new List<string>();
