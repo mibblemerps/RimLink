@@ -33,6 +33,8 @@ namespace PlayerTrade
         private static FieldInfo PsychicEntropyTracker_CurrentEntropy = typeof(Pawn_PsychicEntropyTracker).GetField("currentEntropy",  BindingFlags.NonPublic | BindingFlags.Instance);
         private static FieldInfo PsychicEntropyTracker_CurrentPsyfocus = typeof(Pawn_PsychicEntropyTracker).GetField("currentPsyfocus",  BindingFlags.NonPublic | BindingFlags.Instance);
 
+        private static FieldInfo HediffComp_KillAfterDays_AddedTick = typeof(HediffComp_KillAfterDays).GetField("addedTick", BindingFlags.Instance | BindingFlags.NonPublic);
+        
         public static NetHuman ToNetHuman(this Pawn pawn, bool simplified = false)
         {
             if (!pawn.RaceProps.Humanlike)
@@ -167,6 +169,15 @@ namespace PlayerTrade
                             TendQuality = tendDuration.tendQuality,
                             TendTicksLeft = tendDuration.tendTicksLeft,
                             TotalTendQuality = (float) HediffComp_TendDuration_TotalTendQuality.GetValue(tendDuration)
+                        });
+                    }
+
+                    var killAfterDays = hediffWithComps.TryGetComp<HediffComp_KillAfterDays>();
+                    if (killAfterDays != null)
+                    {
+                        netHediff.Comps.Add(new NetHediff.NetHediffComp_KillAfterDays
+                        {
+                            TicksAgo = Find.TickManager.TicksGame - (int) HediffComp_KillAfterDays_AddedTick.GetValue(killAfterDays)
                         });
                     }
                 }
@@ -446,6 +457,11 @@ namespace PlayerTrade
                             tendDuration.tendQuality = netTendDuration.TendQuality;
                             tendDuration.tendTicksLeft = netTendDuration.TendTicksLeft;
                             HediffComp_TendDuration_TotalTendQuality.SetValue(tendDuration, netTendDuration.TotalTendQuality);
+                        }
+                        else if (netComp is NetHediff.NetHediffComp_KillAfterDays netKillAfterDays)
+                        {
+                            var killAfterDays = hediff.TryGetComp<HediffComp_KillAfterDays>();
+                            HediffComp_KillAfterDays_AddedTick.SetValue(killAfterDays, Find.TickManager.TicksGame - netKillAfterDays.TicksAgo);
                         }
                         else
                         {

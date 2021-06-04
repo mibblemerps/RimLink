@@ -135,5 +135,20 @@ namespace PlayerTrade.Net
                 TotalTendQuality = buffer.ReadFloat();
             }
         }
+
+        public class NetHediffComp_KillAfterDays : NetHediffComp
+        {
+            public int TicksAgo;
+            
+            public override void Write(PacketBuffer buffer)
+            {
+                buffer.WriteInt(TicksAgo);
+            }
+
+            public override void Read(PacketBuffer buffer)
+            {
+                TicksAgo = buffer.ReadInt();
+            }
+        }
     }
 }
