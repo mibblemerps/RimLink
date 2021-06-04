@@ -1,4 +1,6 @@
-﻿using Verse;
+﻿using System.Linq;
+using RimWorld;
+using Verse;
 
 namespace PlayerTrade
 {
@@ -13,6 +15,13 @@ namespace PlayerTrade
         {
             base.PostExposeData();
             Scribe_Values.Look(ref Guid, "rimlinkGuid", Guid, true);
+        }
+
+        public static Pawn FindByGuid(string guid)
+        {
+            if (string.IsNullOrEmpty(guid)) return null;
+            
+            return PawnsFinder.AllMaps.FirstOrDefault(pawn => pawn.TryGetComp<PawnGuidThingComp>()?.Guid == guid);
         }
     }
 }

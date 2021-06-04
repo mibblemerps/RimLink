@@ -376,28 +376,38 @@ namespace PlayerTrade
             }
             pawn.workSettings.EnableAndInitialize();
 
-            // Apparel
-            foreach (NetThing netThing in human.Apparel)
+            if (human.Apparel != null)
             {
-                Thing thing = netThing.ToThing();
-                if (!(thing is Apparel))
+                // Apparel
+                pawn.apparel.DestroyAll();
+                foreach (NetThing netThing in human.Apparel)
                 {
-                    Log.Warn("Non apparel thing in received pawn's apparel: " + thing.LabelCap);
-                    continue;
-                }
+                    Thing thing = netThing.ToThing();
+                    if (!(thing is Apparel))
+                    {
+                        Log.Warn("Non apparel thing in received pawn's apparel: " + thing.LabelCap);
+                        continue;
+                    }
 
-                pawn.apparel.Wear((Apparel) thing, false); // todo: restore forced wearing
+                    pawn.apparel.Wear((Apparel) thing, false); // todo: restore forced wearing
+                }
             }
 
-            // Equipment
-            foreach (NetThing netThing in human.Equipment)
-                pawn.equipment.AddEquipment((ThingWithComps) netThing.ToThing());
+            if (human.Equipment != null)
+            {
+                // Equipment
+                pawn.equipment.DestroyAllEquipment();
+                foreach (NetThing netThing in human.Equipment)
+                    pawn.equipment.AddEquipment((ThingWithComps) netThing.ToThing());
+            }
 
-            // Inventory
-            if (usingBasePawn)
+            if (human.Inventory != null)
+            {
+                // Inventory
                 pawn.inventory.innerContainer.ClearAndDestroyContents();
-            foreach (NetThing thing in human.Inventory)
-                pawn.inventory.innerContainer.TryAdd(thing.ToThing());
+                foreach (NetThing thing in human.Inventory)
+                    pawn.inventory.innerContainer.TryAdd(thing.ToThing());
+            }
 
             // Hediffs
             if (usingBasePawn)

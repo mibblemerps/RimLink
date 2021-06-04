@@ -52,7 +52,11 @@ namespace PlayerTrade
 
             Patch_TradeUtility_EverPlayerSellable.ForceEnable = true;
             foreach (Thing thing in TradeUtility.AllLaunchableThingsForTrade(map))
+            {
+                if (thing.TryGetComp<CompBladelinkWeapon>()?.bondedPawn != null) continue; // Don't allow bonded bladelink weapons to be traded
+
                 Things.Add(NetThing.FromThing(thing));
+            }
             Patch_TradeUtility_EverPlayerSellable.ForceEnable = false;
 
             foreach (Pawn pawn in TradeUtility.AllSellableColonyPawns(map).Where(p => p.RaceProps.Humanlike))
