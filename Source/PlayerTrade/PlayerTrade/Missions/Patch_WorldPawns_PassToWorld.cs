@@ -9,7 +9,8 @@ namespace PlayerTrade.Missions
     {
         private static bool Prefix(Pawn pawn)
         {
-            if (pawn.TryGetComp<LentColonistComp>().GoneHome)
+            var comp = pawn.TryGetComp<LentColonistComp>();
+            if (comp != null && comp.GoneHome)
             {
                 Log.Message($"Prevented {pawn} from becoming a world pawn (they've gone home)");
                 return false;
