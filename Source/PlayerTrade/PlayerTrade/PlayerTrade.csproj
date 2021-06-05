@@ -176,7 +176,6 @@
     <Compile Include="Raids\RaidSystem.cs" />
     <Compile Include="Trade\ChoiceLetter_TradeOffer.cs" />
     <Compile Include="Missions\ChoiceLetter_LaborOffer.cs" />
-    <Compile Include="Missions\Dialog_LendColonist.cs" />
     <Compile Include="Missions\MissionOffer.cs" />
     <Compile Include="Missions\MissionUtil.cs" />
     <Compile Include="Missions\MissionSystem.cs" />
