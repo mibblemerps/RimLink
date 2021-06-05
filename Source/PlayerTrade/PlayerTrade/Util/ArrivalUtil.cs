@@ -7,7 +7,8 @@ namespace PlayerTrade.Util
     public class ArrivalUtil
     {
         /// <summary>
-        /// Have pawns "arrive" on the map.
+        /// <p>Have pawns "arrive" on the map.</p>
+        /// <p><b>Note:</b> If shuttle is chosen, but royalty isn't installed, this method will automatically fallback to drop pods</p>
         /// </summary>
         /// <param name="map">Map to arrive onto</param>
         /// <param name="method">Arrival method to use</param>
@@ -56,7 +57,7 @@ namespace PlayerTrade.Util
         /// Make a drop off shuttle for a pawn. Doesn't error if they're a world pawn unlike the vanilla method (<see cref="SkyfallerUtility.MakeDropoffShuttle"/>).
         /// The pawn does however need to be despawned.
         /// </summary>
-        public static void MakeDropoffShuttle(Map map, params Pawn[] pawns)
+        private static void MakeDropoffShuttle(Map map, params Pawn[] pawns)
         {
             if (pawns.Any(pawn => pawn.Spawned))
             {

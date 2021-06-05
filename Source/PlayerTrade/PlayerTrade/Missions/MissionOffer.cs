@@ -240,26 +240,16 @@ namespace PlayerTrade.Missions
                 // Remove original pawn from mission original colonists. We no longer need to deep save them since they've been respawned.
                 OriginalColonists.Remove(originalPawn);
 
-                // If they escaped, the escape util will handle returning them in whatever state it decides to, otherwise we just drop them back
+                // If they escaped, pass off to the esacpe util to do that
                 if (packet.Escaped)
-                {
                     EscapeUtil.Escaped(pawn);
-                }
-                else
-                {
-                    Log.Message($"Returning {pawn.Name.ToStringFull}...");
-                    if (ModLister.RoyaltyInstalled)
-                    {
-                        // Shuttle them home
-                        EscapeUtil.MakeDropoffShuttle(Find.AnyPlayerHomeMap, pawn);
-                    }
-                    else
-                    {
-                        // Drop pods
-                        IntVec3 pos = DropCellFinder.TradeDropSpot(Find.CurrentMap);
-                        TradeUtility.SpawnDropPod(pos, Find.CurrentMap, pawn);
-                    }
-                }
+            }
+
+            if (!packet.Escaped)
+            {
+                // Drop-off returned colonists
+                // todo: could be problematic since this is based on the current map only
+                ArrivalUtil.Arrive(Find.CurrentMap, ArrivalUtil.Method.Shuttle, pawns.ToArray());
             }
 
             bool moreLeft = Colonists.Any(pawn => !ReturnedColonists.Contains(pawn));
