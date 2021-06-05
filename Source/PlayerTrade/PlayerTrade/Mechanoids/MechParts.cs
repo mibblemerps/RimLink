@@ -34,10 +34,10 @@ namespace PlayerTrade.Mechanoids
             new MechPart(MechPart.PartType.Building, "ClimateAdjuster", true, 600),
 
             // Creatures
-            new MechPart(MechPart.PartType.Pawn, "Mech_Centipede", true),
-            new MechPart(MechPart.PartType.Pawn, "Mech_Lancer", true),
-            new MechPart(MechPart.PartType.Pawn, "Mech_Scyther", true),
-            new MechPart(MechPart.PartType.Pawn, "Mech_Pikeman", true),
+            new MechPart(MechPart.PartType.Pawn, "Mech_Centipede", false),
+            new MechPart(MechPart.PartType.Pawn, "Mech_Lancer", false),
+            new MechPart(MechPart.PartType.Pawn, "Mech_Scyther", false),
+            new MechPart(MechPart.PartType.Pawn, "Mech_Pikeman", false),
         };
     }
 }

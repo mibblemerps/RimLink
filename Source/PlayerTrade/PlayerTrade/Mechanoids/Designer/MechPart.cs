@@ -35,7 +35,7 @@ namespace PlayerTrade.Mechanoids.Designer
             }
         }
 
-        public bool IsThreat;
+        public bool IsBuildingThreat;
 
         public Texture2D Icon
         {
@@ -55,11 +55,11 @@ namespace PlayerTrade.Mechanoids.Designer
         private ThingDef _cachedThingDef;
         private PawnKindDef _cachedPawnKindDef;
 
-        public MechPart(PartType type, string defName, bool isThreat, float? basePrice = null, Type configType = null)
+        public MechPart(PartType type, string defName, bool isBuildingThreat, float? basePrice = null, Type configType = null)
         {
             Type = type;
             DefName = defName;
-            IsThreat = isThreat;
+            IsBuildingThreat = isBuildingThreat;
             ConfigType = configType;
             
             BasePrice = basePrice ?? CalculateCombatPowerPrice();

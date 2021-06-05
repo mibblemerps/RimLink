@@ -133,8 +133,8 @@ namespace PlayerTrade.Mechanoids.Designer
             if (MechCluster.Parts.Count == 0)
                 error = "You must add at least 1 part to the mechanoid cluster.";
 
-            if (!MechCluster.Parts.Any(part => part.MechPart.IsThreat))
-                error = "Your mechanoid cluster must contain at least 1 threat.";
+            if (!MechCluster.Parts.Any(part => part.MechPart.IsBuildingThreat))
+                error = "Your mechanoid cluster must contain at least 1 building that is a threat.";
 
             if (MechCluster.Parts.Count > 50)
                 error = "Your mechanoid cluster has too many parts.";

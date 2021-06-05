@@ -62,6 +62,30 @@ namespace PlayerTrade.Patches
                     mechs.Add(new MechClusterSketch.Mech(part.MechPart.PawnKindDef));
                 }
 
+                // Position mechs
+                List<IntVec3> usedSpots = new List<IntVec3>();
+                for (int i = 0; i < mechs.Count; i++)
+                {
+                    MechClusterSketch.Mech pawn = mechs[i];
+                    
+                    IntVec3 result;
+                    // Try and find unused spot with no buildings
+                    if (!buildingSketch.OccupiedRect.Where(c => !buildingSketch.ThingsAt(c).Any() && !usedSpots.Contains(c)).TryRandomElement(out result))
+                    {
+                        // Try and find nearby free cell
+                        CellRect source = buildingSketch.OccupiedRect;
+                        do
+                        {
+                            source = source.ExpandedBy(1);
+                        }
+                        while (!source.Where(x => !buildingSketch.WouldCollide(pawn.kindDef.race, x, Rot4.North)
+                                                  && !usedSpots.Contains(x)).TryRandomElement(out result));
+                    }
+                    usedSpots.Add(result);
+                    pawn.position = result;
+                    mechs[i] = pawn;
+                }
+                
                 // Done
                 __result = new MechClusterSketch(buildingSketch, mechs, Cluster.StartDormant);
                 
