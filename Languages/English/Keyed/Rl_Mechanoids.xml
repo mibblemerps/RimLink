@@ -1,0 +1,9 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+    <Rl_MechClusterMustContain1Threat>Your mechanoid cluster must contain at least 1 building that is a threat.</Rl_MechClusterMustContain1Threat>
+    <Rl_MechClusterMustHave1Part>You must add at least 1 part to the mechanoid cluster.</Rl_MechClusterMustHave1Part>
+    <Rl_MechClusterHasTooManyParts>Your mech cluster has too many parts.</Rl_MechClusterHasTooManyParts>
+    <Rl_MechClusterNotEnoughSilver>You don't have enough silver. Ensure your silver is located near a powered trade beacon.</Rl_MechClusterNotEnoughSilver>
+    
+    <Rl_DialogMechClusterHasNoActivators>This mechanoid cluster doesn't have any activators.\nThe mechanoids will only wake when directly attacked.\n\nContinue with no activators?</Rl_DialogMechClusterHasNoActivators>
+</LanguageData>

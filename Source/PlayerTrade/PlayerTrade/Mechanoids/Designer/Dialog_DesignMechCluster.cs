@@ -131,16 +131,16 @@ namespace PlayerTrade.Mechanoids.Designer
             // Sanity check
             string error = null;
             if (MechCluster.Parts.Count == 0)
-                error = "You must add at least 1 part to the mechanoid cluster.";
+                error = "Rl_MechClusterMustHave1Part".Translate();
 
             if (!MechCluster.Parts.Any(part => part.MechPart.IsBuildingThreat))
-                error = "Your mechanoid cluster must contain at least 1 building that is a threat.";
+                error = "Rl_MechClusterMustContain1Threat".Translate();
 
             if (MechCluster.Parts.Count > 50)
-                error = "Your mechanoid cluster has too many parts.";
+                error = "Rl_MechClusterHasTooManyParts".Translate();
 
             if (!TradeUtility.ColonyHasEnoughSilver(Find.CurrentMap, Mathf.RoundToInt(MechCluster.Price)))
-                error = "You don't have enough silver. Ensure your silver is located near a powered trade beacon.";
+                error = "Rl_MechClusterNotEnoughSilver".Translate();
 
             if (error != null)
             {
@@ -153,9 +153,7 @@ namespace PlayerTrade.Mechanoids.Designer
                                                                             config.MechPart.ThingDef.building.buildingTags.Contains("MechClusterActivator")))
             {
                 Find.WindowStack.Add(new Dialog_MessageBox(
-                    "This mechanoid cluster doesn't have any activators.\n" +
-                    "The mechanoids will only wake when directly attacked.\n\n" +
-                    "Continue with no activators?",
+                    "Rl_DialogMechClusterHasNoActivators".Translate(),
                     "Continue", () => {SendMechCluster(true);},
                     "Cancel", () => {}));
                 return;
