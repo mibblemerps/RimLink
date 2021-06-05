@@ -187,11 +187,15 @@ namespace PlayerTrade.Missions
 
             var netPawns = new List<NetHuman>();
             foreach (Pawn pawn in pawns)
+            {
                 netPawns.Add(pawn.ToNetHuman());
-            
-            // Mark pawn as "gone home"
-            foreach (Pawn pawn in pawns)
+
+                // Mark pawn as "gone home"
                 pawn.TryGetComp<LentColonistComp>().GoneHome = true;
+                
+                // Remove pawn from colonists list - we no longer can save them since they're gonna be gone
+                Colonists.Remove(pawn);
+            }
 
             var packet = new PacketReturnLentColonists
             {
@@ -225,13 +229,16 @@ namespace PlayerTrade.Missions
             {
                 // Find the locally stored original pawn we sent - we use this as the basis for receiving the pawn from the network
                 Pawn originalPawn =
-                    Colonists.FirstOrDefault(p => p.TryGetComp<PawnGuidThingComp>().Guid == colonist.RimLinkGuid);
+                    OriginalColonists.FirstOrDefault(p => p.TryGetComp<PawnGuidThingComp>().Guid == colonist.RimLinkGuid);
                 if (originalPawn == null)
                     Log.Warn($"RimLink pawn GUID not found on returned pawn. The original pawn cannot be found, so the pawn may not be reproduced perfectly.");
 
                 Pawn pawn = colonist.ToPawn(originalPawn);
                 pawns.Add(pawn);
                 ReturnedColonists.Add(pawn);
+
+                // Remove original pawn from mission original colonists. We no longer need to deep save them since they've been respawned.
+                OriginalColonists.Remove(originalPawn);
 
                 // If they escaped, the escape util will handle returning them in whatever state it decides to, otherwise we just drop them back
                 if (packet.Escaped)

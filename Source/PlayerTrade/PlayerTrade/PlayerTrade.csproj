@@ -106,6 +106,7 @@
     <Compile Include="MainTab\TabTrades.cs" />
     <Compile Include="Mechanoids\MechParts.cs" />
     <Compile Include="Missions\ChoiceLetter_MissionOffer.cs" />
+    <Compile Include="Missions\ColonistState.cs" />
     <Compile Include="Missions\Dialog_AddPawnsToMission.cs" />
     <Compile Include="Missions\Dialog_MissionSelect.cs" />
     <Compile Include="Missions\Escape\EscapeUtil.cs" />
