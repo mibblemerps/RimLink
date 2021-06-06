@@ -149,6 +149,7 @@
     <Compile Include="Patches\Patch_MainTabWindow_Research_DrawUnlockableHyperlinks.cs" />
     <Compile Include="Patches\Patch_MechClusterGenerator.cs" />
     <Compile Include="Patches\Patch_MechClusterUtility.cs" />
+    <Compile Include="Patches\Patch_Page_SelectStorytellerInGame.cs" />
     <Compile Include="Patches\Patch_Pawn_GetDisabledWorkTypes.cs" />
     <Compile Include="Patches\Patch_PrefsData_Apply.cs" />
     <Compile Include="Patches\Patch_ResearchManager_ResearchPerformed.cs" />

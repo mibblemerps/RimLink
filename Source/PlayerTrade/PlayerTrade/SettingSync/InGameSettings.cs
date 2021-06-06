@@ -28,12 +28,19 @@ namespace PlayerTrade.SettingSync
 
         public void Apply()
         {
-            // Apply storyteller settings
-            if (Storyteller != null && Find.Storyteller.def != Storyteller)
+            ApplyStorytellerSettings();
+        }
+
+        public void ApplyStorytellerSettings()
+        {
+            if (EnforceStoryteller)
             {
-                Find.Storyteller.def = Storyteller;
-                Find.Storyteller.Notify_DefChanged();
-                
+                if (Find.Storyteller.def != Storyteller)
+                {
+                    Find.Storyteller.def = Storyteller;
+                    Find.Storyteller.Notify_DefChanged();
+                }
+
                 Find.Storyteller.difficulty = Difficulty;
                 Find.Storyteller.difficultyValues = CustomDifficulty;
             }
