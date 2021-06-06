@@ -10,6 +10,8 @@
     
     <Rl_StorytellerSettingsLocked>Storyteller settings are set by the RimLink server!</Rl_StorytellerSettingsLocked>
     
+    <Rl_FailedToImportPawn>Failed to import pawn!\n\n{0}</Rl_FailedToImportPawn>
+    
     <Rl_Mail>{0} ({1})</Rl_Mail>
     
     <Rl_MechanoidCluster>Mechanoid cluster ({0})</Rl_MechanoidCluster>

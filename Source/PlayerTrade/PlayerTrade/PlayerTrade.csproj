@@ -176,6 +176,10 @@
     <Compile Include="Net\Packets\PacketRequestBugReport.cs" />
     <Compile Include="Patches\Patch_CameraDriver_Update.cs" />
     <Compile Include="Patches\Patch_CompUsable.cs" />
+    <Compile Include="PawnStrings\Dialog_ExportPawn.cs" />
+    <Compile Include="PawnStrings\Dialog_ImportPawn.cs" />
+    <Compile Include="PawnStrings\Patch_Page_ConfigureStartingPawns.cs" />
+    <Compile Include="PawnStrings\PawnStringifyer.cs" />
     <Compile Include="PlayerFactions.cs" />
     <Compile Include="Raids\RaidSystem.cs" />
     <Compile Include="SettingSync\Dialog_SelectServerStoryteller.cs" />

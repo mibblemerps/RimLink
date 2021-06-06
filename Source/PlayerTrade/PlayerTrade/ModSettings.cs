@@ -9,6 +9,7 @@ namespace PlayerTrade
         public bool LoggingEnabled = false;
         public bool MainMenuWidgetEnabled = true;
         public bool ChatNotificationsEnabled = true;
+        public bool ImportExportPawn = true;
 
         public override void ExposeData()
         {
@@ -17,6 +18,7 @@ namespace PlayerTrade
             Scribe_Values.Look(ref LoggingEnabled, "logging_enabled");
             Scribe_Values.Look(ref MainMenuWidgetEnabled, "main_menu_widget_enabled");
             Scribe_Values.Look(ref ChatNotificationsEnabled, "chat_notifications");
+            Scribe_Values.Look(ref ImportExportPawn, "import_export_pawn");
             base.ExposeData();
         }
     }

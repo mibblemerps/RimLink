@@ -82,6 +82,8 @@ namespace PlayerTrade
             listing.CheckboxLabeled("Enable Main Menu Widget", ref Settings.MainMenuWidgetEnabled);
             
             listing.CheckboxLabeled("Enable Chat Notifications", ref Settings.ChatNotificationsEnabled);
+            
+            listing.CheckboxLabeled("Enable Pawn Import/Export Tool", ref Settings.ImportExportPawn);
 
             listing.End();
             base.DoSettingsWindowContents(inRect);

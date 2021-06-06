@@ -35,7 +35,7 @@ namespace PlayerTrade
 
         private static FieldInfo HediffComp_KillAfterDays_AddedTick = typeof(HediffComp_KillAfterDays).GetField("addedTick", BindingFlags.Instance | BindingFlags.NonPublic);
         
-        public static NetHuman ToNetHuman(this Pawn pawn, bool simplified = false)
+        public static NetHuman ToNetHuman(this Pawn pawn, Mode mode = Mode.Full)
         {
             if (!pawn.RaceProps.Humanlike)
                 throw new ArgumentException("Attempt to convert non-human to NetHuman", nameof(pawn));
@@ -97,13 +97,14 @@ namespace PlayerTrade
                 });
             }
 
-            if (simplified)
+            if (mode == Mode.Simplified)
                 return human; // All we need for simplified
 
             // Equipment
             human.Equipment = new List<NetThing>();
-            foreach (ThingWithComps thing in pawn.equipment.AllEquipmentListForReading)
-                human.Equipment.Add(NetThing.FromThing(thing));
+            if (mode == Mode.Full)
+                foreach (ThingWithComps thing in pawn.equipment.AllEquipmentListForReading)
+                    human.Equipment.Add(NetThing.FromThing(thing));
 
             // Apparel
             human.Apparel = new List<NetThing>();
@@ -112,8 +113,9 @@ namespace PlayerTrade
 
             // Inventory
             human.Inventory = new List<NetThing>();
-            foreach (Thing thing in pawn.inventory.innerContainer.InnerListForReading)
-                human.Inventory.Add(NetThing.FromThing(thing));
+            if (mode == Mode.Full)
+                foreach (Thing thing in pawn.inventory.innerContainer.InnerListForReading)
+                    human.Inventory.Add(NetThing.FromThing(thing));
 
             // Hediffs
             human.Hediffs = new List<NetHediff>();
@@ -193,7 +195,7 @@ namespace PlayerTrade
 
             // Work priorities
             human.WorkPriorities = new Dictionary<string, int>();
-            if (pawn.workSettings.EverWork)
+            if (mode == Mode.Full && pawn.workSettings.EverWork)
             {
                 foreach (var workDef in DefDatabase<WorkTypeDef>.AllDefs)
                     human.WorkPriorities.Add(workDef.defName, pawn.workSettings.GetPriority(workDef));
@@ -201,8 +203,9 @@ namespace PlayerTrade
 
             // Records
             human.Records = new Dictionary<string, float>();
-            foreach (var recordDef in DefDatabase<RecordDef>.AllDefs)
-                human.Records.Add(recordDef.defName, pawn.records.GetValue(recordDef));
+            if (mode == Mode.Full)
+                foreach (var recordDef in DefDatabase<RecordDef>.AllDefs)
+                    human.Records.Add(recordDef.defName, pawn.records.GetValue(recordDef));
 
             // Inspiration
             if (pawn.mindState.inspirationHandler.Inspired)
@@ -228,42 +231,45 @@ namespace PlayerTrade
 
             // Needs
             human.Needs = new List<NetHuman.NetNeed>();
-            foreach (Need need in pawn.needs.AllNeeds)
+            if (mode == Mode.Full)
             {
-                human.Needs.Add(new NetHuman.NetNeed
+                foreach (Need need in pawn.needs.AllNeeds)
                 {
-                    NeedDefName = need.def.defName,
-                    Level = (float) Need_CurLevel.GetValue(need)
-                });
+                    human.Needs.Add(new NetHuman.NetNeed
+                    {
+                        NeedDefName = need.def.defName,
+                        Level = (float) Need_CurLevel.GetValue(need)
+                    });
+                }
             }
 
             // Memories
             human.Memories = new List<NetHuman.NetMemory>();
-            List<Thought_Memory> memoriesToRemove = new List<Thought_Memory>();
-            foreach (Thought_Memory memory in pawn.needs.mood.thoughts.memories.Memories)
+            if (mode == Mode.Full)
             {
-                if (memory.otherPawn != null) continue; // Ignore memories that involve another pawn
-
-                if (NonNetworkedThoughtDefNames.Contains(memory.def.defName)) continue; // Not networked thought
-                
-                human.Memories.Add(new NetHuman.NetMemory
+                foreach (Thought_Memory memory in pawn.needs.mood.thoughts.memories.Memories)
                 {
-                    ThoughtDefName = memory.def.defName,
-                    Age = memory.age,
-                    MoodPowerFactor = memory.moodPowerFactor,
-                    Stage = memory.CurStageIndex
-                });
-                
-                memoriesToRemove.Add(memory);
+                    if (memory.otherPawn != null) continue; // Ignore memories that involve another pawn
+
+                    if (NonNetworkedThoughtDefNames.Contains(memory.def.defName)) continue; // Not networked thought
+
+                    human.Memories.Add(new NetHuman.NetMemory
+                    {
+                        ThoughtDefName = memory.def.defName,
+                        Age = memory.age,
+                        MoodPowerFactor = memory.moodPowerFactor,
+                        Stage = memory.CurStageIndex
+                    });
+                }
             }
-            
+
             // Abilities
             human.Abilities = new List<string>();
             foreach (Ability ability in pawn.abilities.abilities)
                 human.Abilities.Add(ability.def.defName);
 
             // Royalty
-            if (ModLister.RoyaltyInstalled && pawn.royalty != null)
+            if (mode == Mode.Full && ModLister.RoyaltyInstalled && pawn.royalty != null)
             {
                 var royalty = new NetRoyalty();
                 human.Royalty = royalty;
@@ -625,6 +631,13 @@ namespace PlayerTrade
             pawn.Destroy();
 
             TradeUtility.SpawnDropPod(UI.MouseCell(), Find.CurrentMap, human.ToPawn());
+        }
+
+        public enum Mode
+        {
+            Full,
+            Simplified,
+            StartingColonist
         }
     }
 }
