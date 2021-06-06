@@ -10,6 +10,8 @@ namespace PlayerTrade.SettingSync
         
         private Listing_Standard _selectedStorytellerInfoListing = new Listing_Standard();
 
+        public override string PageTitle => base.PageTitle + " (Server)";
+
         public Dialog_SelectServerStoryteller()
         {
             doCloseButton = false;
