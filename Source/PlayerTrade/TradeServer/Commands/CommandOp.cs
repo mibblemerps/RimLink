@@ -22,6 +22,8 @@ namespace TradeServer.Commands
                 Type = PacketAnnouncement.MessageType.Dialog
             };
 
+            Packet adminPacket = new PacketAdmin { IsAdmin = true };
+
             foreach (var client in CommandUtility.GetClientsFromInput(args[0]))
             {
                 client.PlayerInfo.Permission = PermissionLevel.Admin;
@@ -29,6 +31,7 @@ namespace TradeServer.Commands
                 caller.Output($"{client.Player.Name} is now an admin.");
 
                 client.SendPacket(announcePacket);
+                client.SendPacket(adminPacket);
             }
         }
     }

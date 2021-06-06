@@ -28,7 +28,7 @@ namespace PlayerTrade.Net.Packets
         /// <summary>
         /// Current game settings.
         /// </summary>
-        public GameSettings Settings;
+        public LegacySettings Settings;
 
         public override void Write(PacketBuffer buffer)
         {
@@ -56,7 +56,7 @@ namespace PlayerTrade.Net.Packets
             ConnectedPlayers = buffer.ReadList<Player>(b => b.ReadPacketable<Player>());
 
             if (buffer.ReadBoolean())
-                Settings = buffer.Read<GameSettings>();
+                Settings = buffer.Read<LegacySettings>();
         }
     }
 }

@@ -98,11 +98,12 @@
     <Compile Include="Colony.cs" />
     <Compile Include="Dialog_ConnectingToServer.cs" />
     <Compile Include="Dialog_SetServerIp.cs" />
-    <Compile Include="GameSettings.cs" />
+    <Compile Include="LegacySettings.cs" />
     <Compile Include="ISystem.cs" />
     <Compile Include="MainTab\ITab.cs" />
     <Compile Include="MainTab\MainTabWindow_Server.cs" />
     <Compile Include="MainTab\TabChat.cs" />
+    <Compile Include="MainTab\TabAdmin.cs" />
     <Compile Include="MainTab\TabTrades.cs" />
     <Compile Include="Mechanoids\MechParts.cs" />
     <Compile Include="Missions\ChoiceLetter_MissionOffer.cs" />
@@ -139,9 +140,11 @@
     <Compile Include="Net\PacketAttribute.cs" />
     <Compile Include="Net\Packets\PacketDisconnect.cs" />
     <Compile Include="Net\Packets\PacketHeartbeat.cs" />
+    <Compile Include="Net\Packets\PacketAdmin.cs" />
     <Compile Include="Net\Packets\PacketPing.cs" />
     <Compile Include="Net\Packets\PacketPingResponse.cs" />
     <Compile Include="Net\Packets\PingClient.cs" />
+    <Compile Include="Net\SerializedScribe.cs" />
     <Compile Include="Patches\Patch_MainMenuDrawer.cs" />
     <Compile Include="Patches\Patch_MainTabWindow_Research_DrawUnlockableHyperlinks.cs" />
     <Compile Include="Patches\Patch_MechClusterGenerator.cs" />
@@ -174,6 +177,10 @@
     <Compile Include="Patches\Patch_CompUsable.cs" />
     <Compile Include="PlayerFactions.cs" />
     <Compile Include="Raids\RaidSystem.cs" />
+    <Compile Include="SettingSync\Dialog_SelectServerStoryteller.cs" />
+    <Compile Include="SettingSync\InGameSettings.cs" />
+    <Compile Include="SettingSync\Packets\PacketSyncSettings.cs" />
+    <Compile Include="SettingSync\SettingSyncSystem.cs" />
     <Compile Include="Trade\ChoiceLetter_TradeOffer.cs" />
     <Compile Include="Missions\ChoiceLetter_LaborOffer.cs" />
     <Compile Include="Missions\MissionOffer.cs" />
@@ -211,7 +218,6 @@
     <Compile Include="Net\Packets\PacketBuffer.cs" />
     <Compile Include="Net\Client.cs" />
     <Compile Include="Trade\Dialog_PlayerTrade.cs" />
-    <Compile Include="Net\PacketBufferExtensions.cs" />
     <Compile Include="Trade\Packets\PacketColonyResources.cs" />
     <Compile Include="Net\Packets\PacketColonyInfo.cs" />
     <Compile Include="Net\Packets\PacketConnect.cs" />

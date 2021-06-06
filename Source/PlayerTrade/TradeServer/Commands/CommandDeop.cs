@@ -21,6 +21,8 @@ namespace TradeServer.Commands
                 Message = "You are no longer an admin.",
                 Type = PacketAnnouncement.MessageType.Message
             };
+            
+            Packet adminPacket = new PacketAdmin { IsAdmin = false };
 
             foreach (var client in CommandUtility.GetClientsFromInput(args[0]))
             {
@@ -35,6 +37,7 @@ namespace TradeServer.Commands
                 caller.Output($"{client.Player.Name} is no longer an admin.");
 
                 client.SendPacket(announcePacket);
+                client.SendPacket(adminPacket);
             }
         }
     }

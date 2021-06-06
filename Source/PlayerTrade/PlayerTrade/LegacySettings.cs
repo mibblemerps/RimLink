@@ -3,8 +3,9 @@ using PlayerTrade.Raids;
 
 namespace PlayerTrade
 {
+    [Obsolete]
     [Serializable]
-    public class GameSettings
+    public class LegacySettings
     {
         public string ServerName = "RimLink Server";
 

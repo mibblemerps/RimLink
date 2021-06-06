@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using PlayerTrade;
 using PlayerTrade.Chat;
 using PlayerTrade.Net;
 using PlayerTrade.Net.Packets;
+using PlayerTrade.SettingSync.Packets;
 using PlayerTrade.Trade.Packets;
 using TradeServer.Commands;
 
@@ -52,6 +54,14 @@ namespace TradeServer
                 if (packet is PacketPing)
                     await HandlePingPacket();
             }
+
+            // Send settings
+            if (Program.Server.SettingsPacket != null)
+                SendPacket(Program.Server.SettingsPacket);
+
+            // Send admin status
+            if (PlayerInfo.Permission == PermissionLevel.Admin)
+                SendPacket(new PacketAdmin {IsAdmin = true});
 
             // Player now authenticated
             Authenticated?.Invoke(this, new ClientEventArgs(this));
@@ -174,6 +184,15 @@ namespace TradeServer
                         
                         case PacketDisconnect _:
                             Disconnect(DisconnectReason.User, "User disconnect");
+                            break;
+                        
+                        case PacketSyncSettings settingsPacket:
+                            if (!CommandCaller.IsAdmin)
+                            {
+                                SendPacket(new PacketAnnouncement {Message = "Administrator privileges required to change settings!", Type = PacketAnnouncement.MessageType.Dialog});
+                                return;
+                            }
+                            Program.Server.Notify_SettingsChanged(settingsPacket);
                             break;
 
                         case PacketColonyInfo colonyInfoPacket:
@@ -393,7 +412,7 @@ namespace TradeServer
             {
                 Success = true,
                 ConnectedPlayers = players,
-                Settings = Program.Server.GameSettings
+                Settings = Program.Server.LegacySettings
             });
         }
 

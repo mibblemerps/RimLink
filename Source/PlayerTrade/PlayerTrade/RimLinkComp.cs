@@ -8,6 +8,7 @@ using PlayerTrade.Mechanoids;
 using PlayerTrade.Missions;
 using PlayerTrade.Net;
 using PlayerTrade.Raids;
+using PlayerTrade.SettingSync;
 using PlayerTrade.Trade;
 using RimWorld;
 using UnityEngine;
@@ -36,6 +37,13 @@ namespace PlayerTrade
         /// </summary>
         public bool Anticheat;
 
+        /// <summary>
+        /// Are we an admin?
+        /// </summary>
+        public bool IsAdmin;
+
+        public InGameSettings InGameSettings => Get<SettingSyncSystem>().Settings;
+
         public List<Player> RememberedPlayers;
 
         /// <summary>
@@ -63,6 +71,7 @@ namespace PlayerTrade
         {
             RimLinkMod.Init(); // this will init the main mod if needed
             
+            AddSystem(new SettingSyncSystem());
             AddSystem(new TradeSystem());
             AddSystem(new RaidSystem());
             AddSystem(new MissionSystem());
@@ -172,7 +181,7 @@ namespace PlayerTrade
             Messages.Message($"Connected to server", MessageTypeDefOf.NeutralEvent, false);
 
             // Prompt to user to enable anticheat
-            if (!Anticheat && Client.GameSettings.Anticheat)
+            if (!Anticheat && Client.LegacySettings.Anticheat)
                 AnticheatUtil.ShowEnableAnticheatDialog();
 
             // Inform mod systems that we're connected

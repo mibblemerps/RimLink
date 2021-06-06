@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using PlayerTrade.Chat;
+using PlayerTrade.SettingSync;
 using RimWorld;
 using UnityEngine;
 using Verse;
@@ -140,6 +141,15 @@ namespace PlayerTrade.MainTab
             if (_chatBoxContent.Equals("/tcpclose", StringComparison.InvariantCultureIgnoreCase))
             {
                 RimLinkComp.Instance.Client.Tcp.Close();
+                _chatBoxContent = "";
+                return;
+            }
+            if (_chatBoxContent.Equals("/pushsettings", StringComparison.InvariantCultureIgnoreCase))
+            {
+                var settingSyncSystem = RimLinkComp.Instance.Get<SettingSyncSystem>();
+                if (settingSyncSystem == null) Log.Error("SettingSyncSystem null");
+                if (settingSyncSystem?.Settings == null) Log.Error("Settings null");
+                RimLinkComp.Instance.Get<SettingSyncSystem>().Settings.Push();
                 _chatBoxContent = "";
                 return;
             }

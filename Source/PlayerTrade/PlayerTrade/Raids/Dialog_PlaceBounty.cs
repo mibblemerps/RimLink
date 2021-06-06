@@ -145,7 +145,7 @@ namespace PlayerTrade.Raids
             }
 
             Rect strengthSliderRect = new Rect(0, stratRect.yMax + 10f, inRect.width, 35f);
-            _strength = Widgets.HorizontalSlider(strengthSliderRect, _strength, 20, RimLinkComp.Instance.Client.GameSettings.RaidMaxStrengthPercent, true, $"Raid Strength ({Mathf.RoundToInt(_strength)}%)", roundTo: 1f);
+            _strength = Widgets.HorizontalSlider(strengthSliderRect, _strength, 20, RimLinkComp.Instance.Client.LegacySettings.RaidMaxStrengthPercent, true, $"Raid Strength ({Mathf.RoundToInt(_strength)}%)", roundTo: 1f);
 
             Rect dropdownsRect = new Rect(0, strengthSliderRect.yMax + 10f, inRect.width, 35f);
             // Arrival mode
@@ -284,7 +284,7 @@ namespace PlayerTrade.Raids
 
         private int CalculateCost()
         {
-            float cost = (_strength / 100f) * RimLinkComp.Instance.Client.GameSettings.RaidBasePrice;
+            float cost = (_strength / 100f) * RimLinkComp.Instance.Client.LegacySettings.RaidBasePrice;
             float multiplier = 1f;
             multiplier += _strategy.Cost;
             multiplier += _arrivalMode.Cost;

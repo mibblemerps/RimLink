@@ -9,25 +9,33 @@ using Newtonsoft.Json;
 using PlayerTrade;
 using PlayerTrade.Net;
 using PlayerTrade.Net.Packets;
+using PlayerTrade.SettingSync;
+using PlayerTrade.SettingSync.Packets;
 
 namespace TradeServer
 {
     public class Server
     {
         public const string ServerSettingsFile = "server-settings.json";
+        public const string InGameSettingsFile = "settings.xml";
 
         public List<Client> AuthenticatedClients = new List<Client>();
 
         public ServerSettings ServerSettings;
-        public GameSettings GameSettings => ServerSettings.GameSettings;
+        public LegacySettings LegacySettings => ServerSettings.GameSettings;
         public QueuedPacketStorage QueuedPacketStorage = new QueuedPacketStorage();
+
+        /// <summary>
+        /// Settings packet ready to be sent with up-to-date settings.
+        /// </summary>
+        public PacketSyncSettings SettingsPacket;
 
         protected TcpListener Listener;
 
         public Server()
         {
-            LoadSettings();
-            SaveSettings();
+            LoadServerSettings();
+            SaveServerSettings();
         }
 
         public async Task Run(int port = 35562)
@@ -116,7 +124,29 @@ namespace TradeServer
             }
         }
 
-        public void LoadSettings()
+        public void Notify_SettingsChanged(PacketSyncSettings packetSettings)
+        {
+            Log.Message("In-game settings changed.");
+            
+            // Either read or save settings (depending on whether we're being given a new settings packet, or just being expected to read it from disk)
+            byte[] data;
+            if (packetSettings == null)
+            {
+                data = File.ReadAllBytes(InGameSettingsFile);
+            }
+            else
+            {
+                File.WriteAllBytes(InGameSettingsFile, packetSettings.Settings.Bytes);
+                data = packetSettings.Settings.Bytes;
+            }
+
+            // Broadcast new settings
+            SettingsPacket = new PacketSyncSettings {Settings = new SerializedScribe<InGameSettings>(data)};
+            foreach (Client client in AuthenticatedClients)
+                client.SendPacket(SettingsPacket);
+        }
+
+        public void LoadServerSettings()
         {
             try
             {
@@ -137,7 +167,7 @@ namespace TradeServer
             }
         }
 
-        public void SaveSettings()
+        public void SaveServerSettings()
         {
             try
             {

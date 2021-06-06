@@ -29,7 +29,7 @@ namespace PlayerTrade.Net
         public Player Player { get; private set; }
         public string Guid => RimLinkComp.Guid; // Unique user ID
 
-        public GameSettings GameSettings;
+        public LegacySettings LegacySettings;
 
         public Dictionary<string, Player> OnlinePlayers = new Dictionary<string, Player>();
 
@@ -73,7 +73,7 @@ namespace PlayerTrade.Net
             if (!response.Success)
                 throw new ConnectionFailedException("Server refused connection: " + response.FailReason, response.AllowReconnect);
 
-            GameSettings = response.Settings;
+            LegacySettings = response.Settings;
             
             // Connected
             Log.Message("Connected!");
@@ -279,6 +279,12 @@ namespace PlayerTrade.Net
                     {
                         LastHeartbeat = Time.realtimeSinceStartup;
                         SendPacket(new PacketHeartbeat());
+                        break;
+                    }
+
+                    case PacketAdmin adminPacket:
+                    {
+                        RimLinkComp.Instance.IsAdmin = adminPacket.IsAdmin;
                         break;
                     }
 

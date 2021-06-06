@@ -11,10 +11,12 @@ namespace PlayerTrade.MainTab
         public override MainTabWindowAnchor Anchor => MainTabWindowAnchor.Right;
 
         private List<TabRecord> _tabs;
+        private List<TabRecord> _adminTabs;
         private ITab _selectedTab;
         private TabChat _chat;
         private TabTrades _trades;
-        
+        private TabAdmin _admin;
+
         public MainTabWindow_RimLink()
         {
             closeOnAccept = false;
@@ -24,9 +26,13 @@ namespace PlayerTrade.MainTab
                 new TabRecord("Chat", () => { _selectedTab = _chat; }, () => _selectedTab == _chat),
                 new TabRecord("Trades", () => { _selectedTab = _trades; }, () => _selectedTab == _trades),
             };
+
+            _adminTabs = new List<TabRecord>(_tabs);
+            _adminTabs.Add(new TabRecord("Admin", () => { _selectedTab = _admin; }, () => _selectedTab == _admin));
             
             _chat = new TabChat();
             _trades = new TabTrades();
+            _admin = new TabAdmin();
 
             // Default tab
             _selectedTab = _chat;
@@ -68,7 +74,10 @@ namespace PlayerTrade.MainTab
 
             _selectedTab?.Draw(mainRect);
 
-            TabDrawer.DrawTabs(mainRect, _tabs);
+            if (!RimLinkComp.Instance.IsAdmin && _selectedTab == _admin)
+                _selectedTab = _chat; // Reset selected tab if it was admin but we're no longer admin
+
+            TabDrawer.DrawTabs(mainRect, RimLinkComp.Instance.IsAdmin ? _adminTabs : _tabs);
         }
 
         private void DrawDisconnectedFromServer(Rect rect)
