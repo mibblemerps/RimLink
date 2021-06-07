@@ -6,10 +6,10 @@ using Verse;
 namespace PlayerTrade.Patches
 {
     /// <summary>
-    /// Prevents the ability to change storyteller settings when the storyteller is set by the server.
+    /// Show message that storyteller settings are locked by server.
     /// </summary>
     [HarmonyPatch(typeof(Page_SelectStorytellerInGame), "DoWindowContents")]
-    public static class Patch_Page_SelectStorytellerInGame
+    public static class Patch_Page_SelectStorytellerInGame_DoWindowContents
     {
         private static void Postfix(Page_SelectStorytellerInGame __instance, Rect rect)
         {
@@ -21,9 +21,6 @@ namespace PlayerTrade.Patches
             Text.Anchor = TextAnchor.MiddleRight;
             Widgets.Label(labelRect, "Rl_StorytellerSettingsLocked".Translate().ToString().Colorize(ColoredText.RedReadable));
             Text.Anchor = TextAnchor.UpperLeft;
-
-            // Reapply settings
-            RimLinkComp.Instance.InGameSettings.ApplyStorytellerSettings();
         }
     }
 }

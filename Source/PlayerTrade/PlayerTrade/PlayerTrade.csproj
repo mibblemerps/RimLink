@@ -153,6 +153,7 @@
     <Compile Include="Patches\Patch_Pawn_GetDisabledWorkTypes.cs" />
     <Compile Include="Patches\Patch_PrefsData_Apply.cs" />
     <Compile Include="Patches\Patch_ResearchManager_ResearchPerformed.cs" />
+    <Compile Include="Patches\Patch_StorytellerUI.cs" />
     <Compile Include="Patches\Patch_TradeUtility_EverPlayerSellable.cs" />
     <Compile Include="PawnGuidThingComp.cs" />
     <Compile Include="Mail\Dialog_SendLetter.cs" />
