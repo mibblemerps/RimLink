@@ -138,6 +138,7 @@
     <Compile Include="Net\DisconnectReason.cs" />
     <Compile Include="Net\NetRoyalty.cs" />
     <Compile Include="Net\PacketAttribute.cs" />
+    <Compile Include="Net\Packets\PacketDevMode.cs" />
     <Compile Include="Net\Packets\PacketDisconnect.cs" />
     <Compile Include="Net\Packets\PacketHeartbeat.cs" />
     <Compile Include="Net\Packets\PacketAdmin.cs" />

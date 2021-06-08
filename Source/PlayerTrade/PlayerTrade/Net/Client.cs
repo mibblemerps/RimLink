@@ -287,6 +287,10 @@ namespace PlayerTrade.Net
                         RimLinkComp.Instance.IsAdmin = adminPacket.IsAdmin;
                         break;
                     }
+                    
+                    case PacketDevMode devModePacket:
+                        Prefs.DevMode = devModePacket.Enable;
+                        break;
 
                     case PacketKick kickPacket:
                     {

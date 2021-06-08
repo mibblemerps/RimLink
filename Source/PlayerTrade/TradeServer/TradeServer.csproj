@@ -58,6 +58,7 @@
     <Compile Include="Commands\CommandBan.cs" />
     <Compile Include="Commands\CommandBugReport.cs" />
     <Compile Include="Commands\CommandDeop.cs" />
+    <Compile Include="Commands\CommandDevMode.cs" />
     <Compile Include="Commands\CommandException.cs" />
     <Compile Include="Commands\CommandGiveThing.cs" />
     <Compile Include="Commands\CommandHelp.cs" />

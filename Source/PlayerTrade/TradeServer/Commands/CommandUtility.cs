@@ -107,6 +107,19 @@ namespace TradeServer.Commands
                 throw new CommandException("No players found with selector: " + input);
         }
 
+        public static string GetClientsStringFromInput(string input)
+        {
+            var list = new List<Client>(GetClientsFromInput(input));
+            
+            if (list.Count == 0)
+                return "no-one";
+            
+            if (list.Count == 1)
+                return list.First().Player.ToString();
+
+            return $"{list.Count} players";
+        }
+
         public static void AdminRequired(Caller caller)
         {
             if (!caller.IsAdmin)
@@ -151,6 +164,15 @@ namespace TradeServer.Commands
 
             timeSpan = TimeSpan.Zero;
             return false;
+        }
+
+        public static bool ParseBoolean(string str)
+        {
+            return str.Equals("true", StringComparison.InvariantCultureIgnoreCase) ||
+                   str.Equals("yes", StringComparison.InvariantCultureIgnoreCase) ||
+                   str.Equals("on", StringComparison.InvariantCultureIgnoreCase) ||
+                   str.Equals("enable", StringComparison.InvariantCultureIgnoreCase) ||
+                   str.Equals("1", StringComparison.InvariantCultureIgnoreCase);
         }
     }
 }

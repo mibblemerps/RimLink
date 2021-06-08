@@ -126,6 +126,11 @@ namespace PlayerTrade
             Scribe_Collections.Look(ref LocalFactions, "local_factions");
         }
 
+        public override string ToString()
+        {
+            return $"{Name} ({Guid.Substring(0, Math.Min(8, Guid.Length))})";
+        }
+
         [Serializable]
         public class Faction : IExposable, IPacketable
         {

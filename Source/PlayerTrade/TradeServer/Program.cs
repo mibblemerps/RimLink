@@ -34,6 +34,7 @@ namespace TradeServer
             new CommandUnban(),
             new CommandPacketIds(),
             new CommandSendDelay(),
+            new CommandDevMode(),
         };
 
         private static Caller ServerCaller = new ServerCaller();
