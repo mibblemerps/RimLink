@@ -36,6 +36,8 @@ namespace TradeServer
         {
             LoadServerSettings();
             SaveServerSettings();
+
+            LoadInGameSettings();
         }
 
         public async Task Run(int port = 35562)
@@ -179,6 +181,24 @@ namespace TradeServer
             catch (Exception e)
             {
                 Log.Error($"Couldn't save server settings!", e);
+            }
+        }
+
+        public void LoadInGameSettings()
+        {
+            if (!File.Exists(InGameSettingsFile)) return;
+            
+            try
+            {
+                // Load in-game settings
+                SettingsPacket = new PacketSyncSettings
+                {
+                    Settings = new SerializedScribe<InGameSettings>(File.ReadAllBytes(InGameSettingsFile))
+                };
+            }
+            catch (Exception e)
+            {
+                Log.Error("Failed to load in-game settings!", e);
             }
         }
 
