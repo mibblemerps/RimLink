@@ -66,7 +66,8 @@ namespace PlayerTrade.MainTab
                 }
 
                 TooltipHandler.TipRegion(playerRect, () => $"Tradeable Now: {(player.TradeableNow ? "Yes" : "No")}\n" +
-                                                           $"Wealth: ${player.Wealth}", player.Guid.GetHashCode() * 93245);
+                                                           $"Wealth: ${player.Wealth}\n" +
+                                                           $"Day: {player.Day}", player.Guid.GetHashCode() * 93245);
             }
             Widgets.EndScrollView();
         }
