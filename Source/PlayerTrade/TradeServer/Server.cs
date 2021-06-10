@@ -40,7 +40,7 @@ namespace TradeServer
             LoadInGameSettings();
         }
 
-        public async Task Run(int port = 35562)
+        public async Task Run(int port = 35562, Action started = null)
         {
             QueuedPacketStorage.Load();
 
@@ -48,6 +48,8 @@ namespace TradeServer
             Listener.Server.SetSocketOption(SocketOptionLevel.IPv6, SocketOptionName.IPv6Only, false);
             Listener.Start();
 
+            started?.Invoke();
+            
             while (true)
             {
                 try

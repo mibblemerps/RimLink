@@ -37,8 +37,6 @@ namespace RimLink.Net
                     Packets.Add(id, type);
                 }
             }
-
-            Log.Message($"Registered {Packets.Count} packets.");
         }
 
         public static int GetUnusedPacketId(Type type = null)

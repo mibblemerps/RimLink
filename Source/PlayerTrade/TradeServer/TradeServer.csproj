@@ -74,6 +74,7 @@
     <Compile Include="Commands\CommandUsageException.cs" />
     <Compile Include="Commands\CommandUtility.cs" />
     <Compile Include="Commands\ServerCaller.cs" />
+    <Compile Include="GayText.cs" />
     <Compile Include="PermissionLevel.cs" />
     <Compile Include="PlayerInfo.cs" />
     <Compile Include="Program.cs" />

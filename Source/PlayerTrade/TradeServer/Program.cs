@@ -47,14 +47,27 @@ namespace TradeServer
             
             Stopwatch.Start();
 
+            Console.ForegroundColor = ConsoleColor.DarkGreen;
+            Console.WriteLine(
+@"______ _           _     _       _    
+| ___ (_)         | |   (_)     | |   
+| |_/ /_ _ __ ___ | |    _ _ __ | | __
+|    /| | '_ ` _ \| |   | | '_ \| |/ /
+| |\ \| | | | | | | |___| | | | |   < 
+\_| \_|_|_| |_| |_\_____/_|_| |_|_|\_\");
+            Console.WriteLine();
             Console.ForegroundColor = ConsoleColor.DarkCyan;
-            Console.WriteLine("=== RimWorld Trade Server ===\n");
+            Console.Write("RimLink Server by ");
+            GayText.WriteLine("Mibble!\n\n");
             Console.ResetColor();
 
             Server = new Server();
-            _serverTask = Server.Run(Server.ServerSettings.Port);
-            Console.WriteLine("    Port: " + Server.ServerSettings.Port);
-            Console.WriteLine();
+            _serverTask = Server.Run(Server.ServerSettings.Port, () =>
+            {
+                Log.Message($"Server started! Connect with port {Server.ServerSettings.Port}.");
+                
+                Log.Message("Anticheat is " + (Server.ServerSettings.GameSettings.Anticheat ? "enabled" : "disabled") + ".");
+            });
             _serverTask.ContinueWith((t) =>
             {
                 if (t.IsFaulted)
