@@ -7,10 +7,10 @@
             <value>
                 <comps>
                     <li>
-						<compClass>PlayerTrade.PawnGuidThingComp</compClass>
+						<compClass>RimLink.Core.PawnGuidComp</compClass>
 					</li>
 					<li>
-						<compClass>PlayerTrade.Missions.LentColonistComp</compClass>
+						<compClass>RimLink.Systems.Missions.LentColonistComp</compClass>
 					</li>
                 </comps>
             </value>
@@ -19,10 +19,10 @@
             <xpath>/Defs/ThingDef[defName="Human"]/comps</xpath>
             <value>
                 <li>
-					<compClass>PlayerTrade.PawnGuidThingComp</compClass>
+					<compClass>RimLink.Core.PawnGuidComp</compClass>
 				</li>
 				<li>
-					<compClass>PlayerTrade.Missions.LentColonistComp</compClass>
+					<compClass>RimLink.Systems.Missions.LentColonistComp</compClass>
 				</li>
             </value>
         </match>

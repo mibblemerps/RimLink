@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using PlayerTrade.Chat;
+using RimLink.Systems.Chat;
 using Verse;
 
 namespace TradeServer.Commands

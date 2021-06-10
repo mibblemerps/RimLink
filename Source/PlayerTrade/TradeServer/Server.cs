@@ -6,11 +6,11 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
-using PlayerTrade;
-using PlayerTrade.Net;
-using PlayerTrade.Net.Packets;
-using PlayerTrade.SettingSync;
-using PlayerTrade.SettingSync.Packets;
+using RimLink;
+using RimLink.Net;
+using RimLink.Net.Packets;
+using RimLink.Systems.SettingSync;
+using RimLink.Systems.SettingSync.Packets;
 
 namespace TradeServer
 {

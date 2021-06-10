@@ -67,7 +67,7 @@
                       <letterDef>NegativeEvent</letterDef>
                       <text>help.</text>
                     </li>
-                    <li Class="PlayerTrade.Missions.Quest.QuestNode_ReturnColonists">
+                    <li Class="RimLink.Systems.Missions.Quest.QuestNode_ReturnColonists">
                       <guid>$guid</guid>
                       <shuttle>$shuttle</shuttle>
                     </li>

@@ -23,7 +23,7 @@
                 </li>
 
                 <!-- Disable all work -->
-                <li Class="PlayerTrade.Missions.Quest.QuestNode_WorkTypeDefDisabled">
+                <li Class="RimLink.Systems.Missions.Quest.QuestNode_WorkTypeDefDisabled">
                     <pawns>$pawns</pawns>
                     <invert>true</invert>
                     <workTypeDefs>

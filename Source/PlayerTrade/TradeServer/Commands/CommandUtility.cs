@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using Verse;
-using Log = PlayerTrade.Log;
+using Log = RimLink.Log;
 
 namespace TradeServer.Commands
 {

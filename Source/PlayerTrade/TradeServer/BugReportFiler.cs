@@ -1,8 +1,9 @@
 ﻿using System;
 using System.IO;
 using System.Text;
-using PlayerTrade;
-using PlayerTrade.Net.Packets;
+using RimLink;
+using RimLink.Core;
+using RimLink.Net.Packets;
 using UnityEngine;
 
 namespace TradeServer

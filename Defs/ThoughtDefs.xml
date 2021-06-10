@@ -3,7 +3,7 @@
 
     <ThoughtDef>
         <defName>OnHoliday</defName>
-        <workerClass>PlayerTrade.Missions.ThoughtWorker_OnHoliday</workerClass>
+        <workerClass>RimLink.Systems.Missions.ThoughtWorker_OnHoliday</workerClass>
         <stages>
             <li>
                 <label>on holiday</label>

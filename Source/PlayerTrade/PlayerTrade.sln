@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30413.136
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlayerTrade", "PlayerTrade\PlayerTrade.csproj", "{080A4025-32F3-499E-B618-186821772F51}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RimLink", "RimLink\RimLink.csproj", "{080A4025-32F3-499E-B618-186821772F51}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TradeServer", "TradeServer\TradeServer.csproj", "{BEA52F26-27C3-4274-BCBF-4F664784C292}"
 EndProject

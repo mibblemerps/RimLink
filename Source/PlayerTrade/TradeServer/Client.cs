@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using PlayerTrade;
-using PlayerTrade.Chat;
-using PlayerTrade.Net;
-using PlayerTrade.Net.Packets;
-using PlayerTrade.SettingSync.Packets;
-using PlayerTrade.Trade.Packets;
+using RimLink;
+using RimLink.Core;
+using RimLink.Net;
+using RimLink.Net.Packets;
+using RimLink.Systems.Chat;
+using RimLink.Systems.SettingSync.Packets;
+using RimLink.Systems.Trade.Packets;
 using TradeServer.Commands;
 
 namespace TradeServer
@@ -101,7 +102,7 @@ namespace TradeServer
         {
             while (IsConnected)
             {
-                if (LastHeartbeat > 0f && Program.Stopwatch.Elapsed.TotalSeconds - LastHeartbeat > PlayerTrade.Net.Client.TimeoutThresholdSeconds)
+                if (LastHeartbeat > 0f && Program.Stopwatch.Elapsed.TotalSeconds - LastHeartbeat > RimLink.Net.Client.TimeoutThresholdSeconds)
                 {
                     // Timed out
                     Log.Message($"Connection with {this} timed out.");

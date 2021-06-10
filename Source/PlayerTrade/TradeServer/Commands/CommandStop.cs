@@ -2,8 +2,8 @@
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
-using PlayerTrade.Net;
-using PlayerTrade.Net.Packets;
+using RimLink.Net;
+using RimLink.Net.Packets;
 using UnityEngine;
 
 namespace TradeServer.Commands

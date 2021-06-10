@@ -89,9 +89,9 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\PlayerTrade\PlayerTrade.csproj">
+    <ProjectReference Include="..\RimLink\RimLink.csproj">
       <Project>{080a4025-32f3-499e-b618-186821772f51}</Project>
-      <Name>PlayerTrade</Name>
+      <Name>RimLink</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup />

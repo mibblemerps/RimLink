@@ -2,38 +2,38 @@
 <Defs>
 
   <!-- The basic lend colonist mission -->
-  <PlayerTrade.Missions.PlayerMissionDef>
+  <RimLink.Systems.Missions.PlayerMissionDef>
     <defName>Labor</defName>
     <label>Paid Labor</label>
-    <workerClass>PlayerTrade.Missions.MissionWorkers.LaborMissionWorker</workerClass>
+    <workerClass>RimLink.Systems.Missions.MissionWorkers.LaborMissionWorker</workerClass>
     <questScriptDefName>PlayerMission_Labor</questScriptDefName>
-    <configDialogClass>PlayerTrade.Missions.ConfigDialogs.LaborConfigDialog</configDialogClass>
+    <configDialogClass>RimLink.Systems.Missions.ConfigDialogs.LaborConfigDialog</configDialogClass>
     <colonists>1~9999</colonists>
     <colonistsNounSingular>laborer</colonistsNounSingular>
     <colonistsNounPlural>laborers</colonistsNounPlural>
-  </PlayerTrade.Missions.PlayerMissionDef>
+  </RimLink.Systems.Missions.PlayerMissionDef>
 
-  <PlayerTrade.Missions.PlayerMissionDef>
+  <RimLink.Systems.Missions.PlayerMissionDef>
     <defName>Research</defName>
     <label>Research Program</label>
-    <workerClass>PlayerTrade.Missions.MissionWorkers.ResearchMissionWorker</workerClass>
+    <workerClass>RimLink.Systems.Missions.MissionWorkers.ResearchMissionWorker</workerClass>
     <questScriptDefName>PlayerMission_Research</questScriptDefName>
     <days>4~4</days>
     <colonistsNounSingular>researcher</colonistsNounSingular>
     <colonistsNounPlural>researchers</colonistsNounPlural>
-  </PlayerTrade.Missions.PlayerMissionDef>
+  </RimLink.Systems.Missions.PlayerMissionDef>
 
-  <PlayerTrade.Missions.PlayerMissionDef>
+  <RimLink.Systems.Missions.PlayerMissionDef>
     <defName>Holiday</defName>
     <label>Holiday</label>
-    <workerClass>PlayerTrade.Missions.MissionWorkers.HolidayMissionWorker</workerClass>
+    <workerClass>RimLink.Systems.Missions.MissionWorkers.HolidayMissionWorker</workerClass>
     <questScriptDefName>PlayerMission_Holiday</questScriptDefName>
     <days>5~5</days>
     <colonists>1~9999</colonists>
-  </PlayerTrade.Missions.PlayerMissionDef>
+  </RimLink.Systems.Missions.PlayerMissionDef>
   
   <!--
-  <PlayerTrade.Missions.PlayerMissionDef>
+  <RimLink.Systems.Missions.PlayerMissionDef>
     <defName>DiplomaticMission</defName>
     <label>Diplomatic Mission</label>
     <workerClass>PlayerTrade.Missions.MissionWorkers.DiplomaticMissionWorker</workerClass>
@@ -43,16 +43,16 @@
     <arrivalMethod>Shuttle</arrivalMethod>
     <colonistsNounSingular>diplomat</colonistsNounSingular>
     <colonistsNounPlural>diplomats</colonistsNounPlural>
-  </PlayerTrade.Missions.PlayerMissionDef>
+  </RimLink.Systems.Missions.PlayerMissionDef>
   -->
 
   <!--
-  <PlayerTrade.Missions.PlayerMissionDef>
+  <RimLink.Systems.Missions.PlayerMissionDef>
     <defName>WorkExperience</defName>
     <label>Work Experience</label>
     <days>2~7</days>
     <colonists>1~9999</colonists>
-  </PlayerTrade.Missions.PlayerMissionDef>
+  </RimLink.Systems.Missions.PlayerMissionDef>
   -->
   
 </Defs>

@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
-using PlayerTrade;
-using PlayerTrade.Net.Packets;
+using RimLink;
+using RimLink.Net.Packets;
 
 namespace TradeServer.Commands
 {

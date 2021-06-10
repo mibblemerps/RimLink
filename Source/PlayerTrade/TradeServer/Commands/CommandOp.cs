@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
-using PlayerTrade.Net;
-using PlayerTrade.Net.Packets;
+using RimLink.Net;
+using RimLink.Net.Packets;
 
 namespace TradeServer.Commands
 {

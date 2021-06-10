@@ -22,7 +22,7 @@
         </li>
 
         <!-- Shuttle arrival delay -->
-        <li Class="PlayerTrade.Missions.Quest.QuestNode_DelayCanEndEarly">
+        <li Class="RimLink.Systems.Missions.Quest.QuestNode_DelayCanEndEarly">
           <delayTicks>$shuttle_arrival_ticks</delayTicks>
           <inSignalEnd>ShuttleArriveNow</inSignalEnd>
           <node Class="QuestNode_Sequence">
@@ -72,7 +72,7 @@
                 <inSignalDisable>Leaving</inSignalDisable>
                 <node Class="QuestNode_Sequence">
                   <nodes>
-                    <li Class="PlayerTrade.Missions.Quest.QuestNode_ReturnColonists">
+                    <li Class="RimLink.Systems.Missions.Quest.QuestNode_ReturnColonists">
                       <guid>$guid</guid>
                       <shuttle>$shuttle</shuttle>
                     </li>
@@ -95,7 +95,7 @@
                 <inSignal>shuttle.SentUnsatisfied</inSignal>
                 <node Class="QuestNode_Sequence">
                   <nodes>
-                    <li Class="PlayerTrade.Missions.Quest.QuestNode_ReturnColonists">
+                    <li Class="RimLink.Systems.Missions.Quest.QuestNode_ReturnColonists">
                       <guid>$guid</guid>
                       <shuttle>$shuttle</shuttle>
                     </li>
@@ -118,7 +118,7 @@
         </li>
 
         <!-- Cleanup any left behind pawns -->
-        <li Class="PlayerTrade.Missions.Quest.QuestNode_CleanupRemainingPawns">
+        <li Class="RimLink.Systems.Missions.Quest.QuestNode_CleanupRemainingPawns">
           <guid>$guid</guid>
           <pawns>$pawns</pawns>
         </li>

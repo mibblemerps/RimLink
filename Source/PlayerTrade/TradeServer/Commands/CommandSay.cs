@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using PlayerTrade;
-using PlayerTrade.Chat;
+using RimLink;
+using RimLink.Systems.Chat;
 
 namespace TradeServer.Commands
 {

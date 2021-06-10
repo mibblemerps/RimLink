@@ -1,0 +1,266 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{080A4025-32F3-499E-B618-186821772F51}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>RimLink</RootNamespace>
+    <AssemblyName>RimLink</AssemblyName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>portable</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="0Harmony">
+      <HintPath>.\0Harmony.dll</HintPath>
+    </Reference>
+    <Reference Include="Assembly-CSharp">
+      <HintPath>..\..\..\..\..\RimWorldWin64_Data\Managed\Assembly-CSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+    <Reference Include="UnityEngine">
+      <HintPath>..\..\..\..\..\RimWorldWin64_Data\Managed\UnityEngine.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null" />
+    <Reference Include="UnityEngine.IMGUIModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\RimWorldWin64_Data\Managed\UnityEngine.IMGUIModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.InputLegacyModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\RimWorldWin64_Data\Managed\UnityEngine.InputLegacyModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.InputModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\RimWorldWin64_Data\Managed\UnityEngine.InputModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.TextCoreModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\RimWorldWin64_Data\Managed\UnityEngine.TextCoreModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.TextRenderingModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\RimWorldWin64_Data\Managed\UnityEngine.TextRenderingModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UI, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\RimWorldWin64_Data\Managed\UnityEngine.UI.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UIElementsModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\RimWorldWin64_Data\Managed\UnityEngine.UIElementsModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UIModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\RimWorldWin64_Data\Managed\UnityEngine.UIModule.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Anticheat\AnticheatUtil.cs" />
+    <Compile Include="Anticheat\Patch_LetterStack_ReceiveLetter.cs" />
+    <Compile Include="Anticheat\Patch_Root_Shutdown.cs" />
+    <Compile Include="BugReport.cs" />
+    <Compile Include="Core\Colony.cs" />
+    <Compile Include="Core\PawnGuidComp.cs" />
+    <Compile Include="Core\Player.cs" />
+    <Compile Include="Core\PlayerComms.cs" />
+    <Compile Include="Core\PlayerFactions.cs" />
+    <Compile Include="Core\Resources.cs" />
+    <Compile Include="Dialog_ConnectingToServer.cs" />
+    <Compile Include="Dialog_SetServerIp.cs" />
+    <Compile Include="LegacySettings.cs" />
+    <Compile Include="MainTab\ITab.cs" />
+    <Compile Include="MainTab\MainTabWindow_Server.cs" />
+    <Compile Include="MainTab\TabChat.cs" />
+    <Compile Include="MainTab\TabAdmin.cs" />
+    <Compile Include="MainTab\TabTrades.cs" />
+    <Compile Include="MainMenuWidget.cs" />
+    <Compile Include="Net\DisconnectedEventArgs.cs" />
+    <Compile Include="Net\DisconnectReason.cs" />
+    <Compile Include="Net\NetRoyalty.cs" />
+    <Compile Include="Net\PacketAttribute.cs" />
+    <Compile Include="Net\PacketBuffer.cs" />
+    <Compile Include="Net\Packets\PacketDevMode.cs" />
+    <Compile Include="Net\Packets\PacketDisconnect.cs" />
+    <Compile Include="Net\Packets\PacketHeartbeat.cs" />
+    <Compile Include="Net\Packets\PacketAdmin.cs" />
+    <Compile Include="Net\Packets\PacketPing.cs" />
+    <Compile Include="Net\Packets\PacketPingResponse.cs" />
+    <Compile Include="Net\PingClient.cs" />
+    <Compile Include="Net\SerializedScribe.cs" />
+    <Compile Include="Patches\Patch_MainMenuDrawer.cs" />
+    <Compile Include="Patches\Patch_MainTabWindow_Research_DrawUnlockableHyperlinks.cs" />
+    <Compile Include="Patches\Patch_Pawn_GetDisabledWorkTypes.cs" />
+    <Compile Include="Patches\Patch_PrefsData_Apply.cs" />
+    <Compile Include="Patches\Patch_ResearchManager_ResearchPerformed.cs" />
+    <Compile Include="Net\ConnectionFailedException.cs" />
+    <Compile Include="Net\Packets\PacketAcknowledgement.cs" />
+    <Compile Include="Net\Packets\PacketAnnouncement.cs" />
+    <Compile Include="Net\Packets\PacketBugReport.cs" />
+    <Compile Include="Net\Packets\PacketGiveItem.cs" />
+    <Compile Include="Net\Packets\PacketKick.cs" />
+    <Compile Include="Net\Packets\PacketRequestBugReport.cs" />
+    <Compile Include="Patches\Patch_CameraDriver_Update.cs" />
+    <Compile Include="PawnStrings\Dialog_ExportPawn.cs" />
+    <Compile Include="PawnStrings\Dialog_ImportPawn.cs" />
+    <Compile Include="PawnStrings\Patch_Page_ConfigureStartingPawns.cs" />
+    <Compile Include="PawnStrings\PawnStringifyer.cs" />
+    <Compile Include="Systems\Artifacts\ArtifactsSystem.cs" />
+    <Compile Include="Systems\Artifacts\ArtifactType.cs" />
+    <Compile Include="Systems\Artifacts\PacketArtifact.cs" />
+    <Compile Include="Systems\Chat\ChatMessage.cs" />
+    <Compile Include="Systems\Chat\ChatSystem.cs" />
+    <Compile Include="Systems\Chat\PacketReceiveChatMessage.cs" />
+    <Compile Include="Systems\Chat\PacketSendChatMessage.cs" />
+    <Compile Include="Systems\ISystem.cs" />
+    <Compile Include="Systems\Mail\Dialog_SendLetter.cs" />
+    <Compile Include="Systems\Mail\MailSystem.cs" />
+    <Compile Include="Systems\Mail\PacketMail.cs" />
+    <Compile Include="Systems\Mechanoids\Designer\Dialog_DesignMechCluster.cs" />
+    <Compile Include="Systems\Mechanoids\Designer\MechCluster.cs" />
+    <Compile Include="Systems\Mechanoids\Designer\MechPart.cs" />
+    <Compile Include="Systems\Mechanoids\Designer\MechPartConfig.cs" />
+    <Compile Include="Systems\Mechanoids\Designer\MechPartConfigCountdownActivator.cs" />
+    <Compile Include="Systems\Mechanoids\Designer\MechPartConfigProximityActivator.cs" />
+    <Compile Include="Systems\Mechanoids\Designer\MechPartConfigQuantity.cs" />
+    <Compile Include="Systems\Mechanoids\MechanoidSystem.cs" />
+    <Compile Include="Systems\Mechanoids\MechParts.cs" />
+    <Compile Include="Systems\Mechanoids\PacketMechanoidCluster.cs" />
+    <Compile Include="Systems\Mechanoids\Patches\Patch_MechClusterGenerator.cs" />
+    <Compile Include="Systems\Mechanoids\Patches\Patch_MechClusterUtility.cs" />
+    <Compile Include="Systems\Missions\ChoiceLetter_LaborOffer.cs" />
+    <Compile Include="Systems\Missions\ChoiceLetter_MissionOffer.cs" />
+    <Compile Include="Systems\Missions\ColonistState.cs" />
+    <Compile Include="Systems\Missions\ConfigDialogs\BasicConfigDialog.cs" />
+    <Compile Include="Systems\Missions\ConfigDialogs\LaborConfigDialog.cs" />
+    <Compile Include="Systems\Missions\Dialog_AddPawnsToMission.cs" />
+    <Compile Include="Systems\Missions\Dialog_MissionSelect.cs" />
+    <Compile Include="Systems\Missions\Escape\EscapeUtil.cs" />
+    <Compile Include="Systems\Missions\Escape\LentColonistEscapeDef.cs" />
+    <Compile Include="Systems\Missions\LentColonistComp.cs" />
+    <Compile Include="Systems\Missions\MissionOffer.cs" />
+    <Compile Include="Systems\Missions\MissionSystem.cs" />
+    <Compile Include="Systems\Missions\MissionUtil.cs" />
+    <Compile Include="Systems\Missions\MissionWorkers\DiplomaticMissionWorker.cs" />
+    <Compile Include="Systems\Missions\MissionWorkers\HolidayMissionWorker.cs" />
+    <Compile Include="Systems\Missions\MissionWorkers\LaborMissionWorker.cs" />
+    <Compile Include="Systems\Missions\MissionWorkers\MissionWorker.cs" />
+    <Compile Include="Systems\Missions\MissionWorkers\ResearchMissionWorker.cs" />
+    <Compile Include="Systems\Missions\Packets\PacketAcceptMissionOffer.cs" />
+    <Compile Include="Systems\Missions\Packets\PacketConfirmMissionOffer.cs" />
+    <Compile Include="Systems\Missions\Packets\PacketLentColonistUpdate.cs" />
+    <Compile Include="Systems\Missions\Packets\PacketMissionOffer.cs" />
+    <Compile Include="Systems\Missions\Packets\PacketResearch.cs" />
+    <Compile Include="Systems\Missions\Packets\PacketReturnLentColonists.cs" />
+    <Compile Include="Systems\Missions\Patch_WorldPawns_PassToWorld.cs" />
+    <Compile Include="Systems\Missions\PlayerMissionDef.cs" />
+    <Compile Include="Systems\Missions\Quest\QuestNode_CleanupRemainingPawns.cs" />
+    <Compile Include="Systems\Missions\Quest\QuestNode_DelayCanEndEarly.cs" />
+    <Compile Include="Systems\Missions\Quest\QuestNode_ResearchSpeedModifier.cs" />
+    <Compile Include="Systems\Missions\Quest\QuestNode_ReturnColonists.cs" />
+    <Compile Include="Systems\Missions\Quest\QuestNode_WorkTypeDefDisabled.cs" />
+    <Compile Include="Systems\Missions\Quest\QuestPart_CleanupRemainingPawns.cs" />
+    <Compile Include="Systems\Missions\Quest\QuestPart_DelayCanEndEarly.cs" />
+    <Compile Include="Systems\Missions\Quest\QuestPart_ResearchSpeedModifier.cs" />
+    <Compile Include="Systems\Missions\Quest\QuestPart_ReturnColonists.cs" />
+    <Compile Include="Systems\Missions\Quest\QuestPart_WorkTypeDefDisabled.cs" />
+    <Compile Include="Systems\Missions\ThoughtWorker_OnHoliday.cs" />
+    <Compile Include="Systems\Raids\BountyRaid.cs" />
+    <Compile Include="Systems\Raids\Dialog_PlaceBounty.cs" />
+    <Compile Include="Systems\Raids\Packets\PacketTriggerRaid.cs" />
+    <Compile Include="Systems\Raids\RaidSystem.cs" />
+    <Compile Include="Systems\SettingSync\Dialog_SelectServerStoryteller.cs" />
+    <Compile Include="Systems\SettingSync\InGameSettings.cs" />
+    <Compile Include="Systems\SettingSync\Packets\PacketSyncSettings.cs" />
+    <Compile Include="Systems\SettingSync\Patches\Patch_Page_SelectStorytellerInGame.cs" />
+    <Compile Include="Systems\SettingSync\Patches\Patch_StorytellerUI.cs" />
+    <Compile Include="Systems\SettingSync\SettingSyncSystem.cs" />
+    <Compile Include="Systems\Trade\ChoiceLetter_TradeOffer.cs" />
+    <Compile Include="Systems\Trade\Dialog_ConfirmTrade.cs" />
+    <Compile Include="Systems\Trade\Dialog_LoadingTradeWindow.cs" />
+    <Compile Include="Systems\Trade\Dialog_PlayerTrade.cs" />
+    <Compile Include="Systems\Trade\Dialog_TradeIntermission.cs" />
+    <Compile Include="Systems\Trade\Dialog_TradeOffer.cs" />
+    <Compile Include="Systems\Trade\Packets\PacketAcceptTrade.cs" />
+    <Compile Include="Systems\Trade\Packets\PacketColonyResources.cs" />
+    <Compile Include="Systems\Trade\Packets\PacketInitiateTrade.cs" />
+    <Compile Include="Systems\Trade\Packets\PacketRequestColonyResources.cs" />
+    <Compile Include="Systems\Trade\Packets\PacketRetractTrade.cs" />
+    <Compile Include="Systems\Trade\Packets\PacketTradeConfirm.cs" />
+    <Compile Include="Systems\Trade\Packets\PacketTradeOffer.cs" />
+    <Compile Include="Net\NetHediff.cs" />
+    <Compile Include="Net\NetHuman.cs" />
+    <Compile Include="Net\Packets\PacketConnectResponse.cs" />
+    <Compile Include="Net\Packets\PacketForPlayer.cs" />
+    <Compile Include="Net\Packets\PacketPlayerDisconnected.cs" />
+    <Compile Include="Patches\Patch_Current_Game.cs" />
+    <Compile Include="Dialog_PlayerComms.cs" />
+    <Compile Include="Systems\Trade\Patches\Patch_Tradeable_Interactive.cs" />
+    <Compile Include="Systems\Trade\Patches\Patch_TradeUtility_EverPlayerSellable.cs" />
+    <Compile Include="Systems\Trade\PlayerTrader.cs" />
+    <Compile Include="Systems\Trade\StockGenerator_PlayerBuys.cs" />
+    <Compile Include="Systems\Trade\TradeOffer.cs" />
+    <Compile Include="Systems\Trade\TradeOfferUI.cs" />
+    <Compile Include="Systems\Trade\TradeSystem.cs" />
+    <Compile Include="Systems\Trade\TradeUtil.cs" />
+    <Compile Include="Log.cs" />
+    <Compile Include="ModSettings.cs" />
+    <Compile Include="Net\Connection.cs" />
+    <Compile Include="Net\IPacketable.cs" />
+    <Compile Include="Net\NetThing.cs" />
+    <Compile Include="Net\NetTradeThing.cs" />
+    <Compile Include="Net\Packet.cs" />
+    <Compile Include="Net\Client.cs" />
+    <Compile Include="Net\Packets\PacketColonyInfo.cs" />
+    <Compile Include="Net\Packets\PacketConnect.cs" />
+    <Compile Include="Net\Packets\PacketReceivedEventArgs.cs" />
+    <Compile Include="Patches\Patch_CommsConsole_GetCommTargets.cs" />
+    <Compile Include="RimLinkMod.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RimLink.cs" />
+    <Compile Include="Util\AnnouncementUtil.cs" />
+    <Compile Include="Util\ArrivalUtil.cs" />
+    <Compile Include="Util\HashUtil.cs" />
+    <Compile Include="Util\LaunchUtil.cs" />
+    <Compile Include="Util\ListUtil.cs" />
+    <Compile Include="Util\MathExtensions.cs" />
+    <Compile Include="Util\NetHumanUtil.cs" />
+    <Compile Include="Util\PlayerUtil.cs" />
+    <Compile Include="Util\ResearchUtil.cs" />
+    <Compile Include="Util\Scriber.cs" />
+    <Compile Include="Util\StringUtil.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>copy "$(TargetDir)\$(TargetFileName)" "$(SolutionDir)\..\..\Assemblies\RimLink.dll"
+
+copy "$(TargetDir)\RimLink.pdb" "$(SolutionDir)\..\..\Assemblies\RimLink.pdb"</PostBuildEvent>
+  </PropertyGroup>
+</Project>

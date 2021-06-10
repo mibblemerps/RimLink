@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using PlayerTrade;
-using PlayerTrade.Net;
-using PlayerTrade.Net.Packets;
+using RimLink;
+using RimLink.Net;
+using RimLink.Net.Packets;
 
 namespace TradeServer
 {

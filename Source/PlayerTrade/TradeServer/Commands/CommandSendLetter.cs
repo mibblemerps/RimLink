@@ -1,6 +1,6 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
-using PlayerTrade.Mail;
+using RimLink.Systems.Mail;
 
 namespace TradeServer.Commands
 {
