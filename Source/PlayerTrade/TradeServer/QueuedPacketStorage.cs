@@ -95,8 +95,10 @@ namespace TradeServer
                 {
                     // Mismatched format version (or possibly corrupt)! Load blank storage.
                     Log.Error("Mismatched queued packet storage format! All queued packets lost. A backup of the old file has been made.");
+                    stream.Close();
                     File.Copy(SaveFileName, SaveFileName + ".backup", true);
                     Storage = new Dictionary<string, List<Packet>>();
+                    Save();
                     return;
                 }
 
