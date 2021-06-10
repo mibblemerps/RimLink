@@ -91,15 +91,15 @@ namespace RimLink.MainTab
             Text.Font = GameFont.Small;
 
             Rect reconnectingLabelRect = new Rect(0, mainLabelRect.yMax + 20f, rect.width, 25f);
-            if (RimLink.Instance.Connecting)
+            if (RimLink.Instance.ConnectionManager.Connecting)
                 Widgets.Label(reconnectingLabelRect, $"Reconnecting now...");
-            else if (!float.IsNaN(RimLink.Instance.TimeUntilReconnect))
-                Widgets.Label(reconnectingLabelRect, $"Reconnecting in {Mathf.CeilToInt(Mathf.Max(0f, RimLink.Instance.TimeUntilReconnect))} seconds...");
+            else if (!float.IsNaN(RimLink.Instance.ConnectionManager.TimeUntilReconnect))
+                Widgets.Label(reconnectingLabelRect, $"Reconnecting in {Mathf.CeilToInt(Mathf.Max(0f, RimLink.Instance.ConnectionManager.TimeUntilReconnect))} seconds...");
             Text.Anchor = TextAnchor.UpperLeft;
 
             Rect buttonRect = new Rect((rect.width / 2f - 75f), reconnectingLabelRect.yMax + 20f, 150f, 35f);
-            if (!RimLink.Instance.Connecting && Widgets.ButtonText(buttonRect, "Reconnect"))
-                RimLink.Instance.QueueConnect();
+            if (!RimLink.Instance.ConnectionManager.Connecting && Widgets.ButtonText(buttonRect, "Reconnect"))
+                RimLink.Instance.ConnectionManager.QueueConnect();
 
             GUI.EndGroup();
         }

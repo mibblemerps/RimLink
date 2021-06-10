@@ -20,28 +20,20 @@ namespace RimLink
 {
     public class RimLink : GameComponent
     {
-        private const int MaxReconnectTime = 30;
         public const float UpdateInterval = 2f;
 
         public static RimLink Instance;
 
-        /// <summary>
-        /// Uniquely identifies this player on the server(s) it plays on.
-        /// </summary>
+        /// <summary>Uniquely identifies this player on the server(s) it plays on.</summary>
         public string Guid = System.Guid.NewGuid().ToString("N");
-        /// <summary>
-        /// A secret to prevent other people from impersonating our GUID.
-        /// </summary>
+        
+        /// <summary>A secret to prevent other people from impersonating our GUID.</summary>
         public string Secret;
 
-        /// <summary>
-        /// Is anticheat applied to this save?
-        /// </summary>
+        /// <summary>Is anticheat applied to this save?</summary>
         public bool Anticheat;
 
-        /// <summary>
-        /// Are we an admin?
-        /// </summary>
+        /// <summary>Are we an admin?</summary>
         public bool IsAdmin;
 
         public InGameSettings InGameSettings => Get<SettingSyncSystem>().Settings;
@@ -53,25 +45,23 @@ namespace RimLink
         /// </summary>
         public Dictionary<string, Faction> PlayerFactions = new Dictionary<string, Faction>();
 
-        private List<string> _tmpPlayerFactionGuids;
-        private List<Faction> _tmpPlayerFactions;
+        private List<string> _tmpPlayerFactionGuids; // for Scribe
+        private List<Faction> _tmpPlayerFactions; // for Scribe
 
+        /// <summary>Current client instance. When reconnecting a new client is created.</summary>
         public Client Client;
+        /// <summary>Handles connecting, reconnecting and disconnects.</summary>
+        public readonly ClientConnectionManager ConnectionManager;
 
         public readonly Dictionary<Type, ISystem> Systems = new Dictionary<Type, ISystem>();
 
-        public float TimeUntilReconnect => Mathf.Max(0, _reconnectIn);
-        public bool Connecting => _connecting;
-
         private float _lastUpdateSent = 0f;
-
-        private bool _connecting;
-        private float _reconnectIn = float.NaN;
-        private int _failedAttempts;
 
         public RimLink(Game game)
         {
             RimLinkMod.Init(); // this will init the main mod if needed
+
+            ConnectionManager = new ClientConnectionManager(this);
             
             AddSystem(new SettingSyncSystem());
             AddSystem(new TradeSystem());
@@ -88,37 +78,12 @@ namespace RimLink
 
             Instance = this;
 
-            Log.Message("RimLink comp init");
+            Log.Message("RimLink GameComponent FinalizeInit");
 
             Init();
             RemoveExpiredOfferLetters();
         }
-
-        public async Task Connect()
-        {
-            if (_connecting)
-            {
-                Log.Warn("Attempt to connect while we're already trying to connect!");
-                return;
-            }
-
-            _connecting = true;
-            Client = new Client(this);
-            Client.Connected += OnClientConnected;
-            Client.PlayerConnected += OnPlayerConnected;
-            Client.PlayerUpdated += OnPlayerUpdated;
-            try
-            {
-                await Client.Connect(RimLinkMod.Instance.Settings.ServerIp, RimLinkMod.Instance.Settings.ServerPort);
-                // _connecting is set back to false in OnClientConnected
-            }
-            catch (ConnectionFailedException e)
-            {
-                _connecting = false;
-                throw;
-            }
-        }
-
+        
         public void Init()
         {
             // Initialize lists
@@ -135,16 +100,8 @@ namespace RimLink
             if (Anticheat)
                 AnticheatUtil.ApplyAnticheat();
 
-            // Get IP
-            string ip = RimLinkMod.Instance.Settings.ServerIp;
-            if (string.IsNullOrWhiteSpace(ip))
-            {
-                Log.Message("Not connecting to trade server: No IP set");
-                return;
-            }
-
             // Connect
-            QueueConnect();
+            ConnectionManager.QueueConnect();
         }
 
         /// <summary>
@@ -161,25 +118,8 @@ namespace RimLink
             Systems.Add(system.GetType(), system);
         }
 
-        public void QueueConnect(float seconds = 0f) // todo: can we move this out of here?
-        {
-            if (Client?.Tcp != null && Client.Tcp.Connected)
-            {
-                Log.Warn("Tried to queue connect while we're already connected.");
-                return;
-            }
-
-            _reconnectIn = seconds;
-        }
-
         public void OnClientConnected(object sender, EventArgs args)
         {
-            _connecting = false;
-            _failedAttempts = 0; // reset failed attempts
-
-            Client.Disconnected += ClientOnDisconnected;
-
-            Log.Message("Connected to server. GUID: " + Guid);
             Messages.Message($"Connected to server", MessageTypeDefOf.NeutralEvent, false);
 
             // Prompt to user to enable anticheat
@@ -193,10 +133,8 @@ namespace RimLink
             Client.MarkDirty();
         }
 
-        private void ClientOnDisconnected(object sender, DisconnectedEventArgs e)
+        public void ClientOnDisconnected(object sender, DisconnectedEventArgs e)
         {
-            Log.Message($"Disconnect: {e.Reason}.{(e.ReasonMessage == null ? "" : $" Reason: {e.ReasonMessage}")}");
-            
             string key = "Rl_MessageDisconnected";
             switch (e.Reason)
             {
@@ -216,53 +154,6 @@ namespace RimLink
                 message += $" ({e.ReasonMessage})";
             
             Messages.Message(message, MessageTypeDefOf.NeutralEvent, false);
-            if (Client.AllowReconnect)
-                QueueConnect();
-        }
-
-        private void ReconnectUpdate()
-        {
-            if (!float.IsNaN(_reconnectIn) && !_connecting)
-            {
-                _reconnectIn -= Time.deltaTime;
-
-                if (_reconnectIn <= 0f)
-                {
-                    // Reconnect now
-                    _reconnectIn = float.NaN;
-
-                    _ = Connect().ContinueWith(t =>
-                    {
-                        if (t.IsFaulted && t.Exception?.InnerException != null &&
-                            t.Exception.InnerException is ConnectionFailedException connectionException)
-                        {
-                            if (!connectionException.AllowReconnect)
-                            {
-                                // Cannot auto reconnect. Abort reconnecting and show connection failed dialog.
-                                _reconnectIn = float.NaN;
-                                ShowConnectionFailedDialog(connectionException);
-                                return;
-                            }
-                        }
-                        
-                        if (t.IsFaulted)
-                        {
-                            // Queue next attempt. Reconnect time doubles each failed attempt, up to a defined maximum
-                            _reconnectIn = Mathf.Min(Mathf.Pow(2, ++_failedAttempts), MaxReconnectTime);
-                            Log.Message($"Reconnect attempt in {_reconnectIn} seconds ({_failedAttempts} failed attempts)");
-                        }
-                    });
-                }
-            }
-        }
-
-        public void ShowConnectionFailedDialog(ConnectionFailedException exception)
-        {
-            var connectionFailedMsgBox = new Dialog_MessageBox(exception.Message, title: "Server Connection Failed",
-                buttonAText: "Quit to Main Menu", buttonAAction: GenScene.GoToMainMenu,
-                buttonBText: "Close");
-            connectionFailedMsgBox.forcePause = true;
-            Verse.Find.WindowStack.Add(connectionFailedMsgBox);
         }
 
         public override void GameComponentUpdate()
@@ -275,7 +166,7 @@ namespace RimLink
             foreach (ISystem system in Systems.Values)
                 system.Update();
 
-            ReconnectUpdate();
+            ConnectionManager.Update();
 
             // Send update every x seconds
             if (Time.realtimeSinceStartup - _lastUpdateSent >= UpdateInterval && RimLinkMod.Active)
@@ -285,7 +176,7 @@ namespace RimLink
             }
         }
 
-        private void OnPlayerConnected(object sender, Player e)
+        public void OnPlayerConnected(object sender, Player e)
         {
             // Remove and re-add player to remembered players list
             RememberedPlayers.RemoveAll(player => player.Guid == e.Guid);
@@ -302,7 +193,7 @@ namespace RimLink
             }
         }
 
-        private void OnPlayerUpdated(object sender, Client.PlayerUpdateEventArgs e)
+        public void OnPlayerUpdated(object sender, Client.PlayerUpdateEventArgs e)
         {
             // Update player faction name
             PlayerFactions[e.Player.Guid].Name = e.Player.Name;
@@ -324,16 +215,6 @@ namespace RimLink
                 kv.Value.ExposeData();
                 Scribe.ExitNode();
             }
-        }
-
-        /// <summary>
-        /// Find (get or create) the RimLink game component.
-        /// </summary>
-        /// <returns></returns>
-        [Obsolete("Use Instance instead")]
-        public static RimLink Find()
-        {
-            return Instance;
         }
 
         /// <summary>

@@ -79,7 +79,7 @@ namespace RimLink.Systems.Raids
         public void InformTargetBountyPlaced()
         {
             var sb = new StringBuilder();
-            sb.AppendLine($"{RimLink.Find().Client.GetName(From).Colorize(ColoredText.FactionColor_Neutral)} has placed a bounty on you with {FactionName}!\n");
+            sb.AppendLine($"{RimLink.Instance.Client.GetName(From).Colorize(ColoredText.FactionColor_Neutral)} has placed a bounty on you with {FactionName}!\n");
 
             if (Strength > 1.35f)
                 sb.AppendLine("Apparently they've paid a significant sum, so the attack will be quite large.");
@@ -102,7 +102,7 @@ namespace RimLink.Systems.Raids
             else
                 sb.AppendLine($"They will arrive in {Mathf.FloorToInt(ArrivesInTicks / 60000f)} days");
 
-            Find.LetterStack.ReceiveLetter($"Bounty Placed ({RimLink.Find().Client.GetName(From)})", sb.ToString(), LetterDefOf.ThreatBig, $"Id = {Id}");
+            Find.LetterStack.ReceiveLetter($"Bounty Placed ({RimLink.Instance.Client.GetName(From)})", sb.ToString(), LetterDefOf.ThreatBig, $"Id = {Id}");
         }
 
         public void ExposeData()

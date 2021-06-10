@@ -30,7 +30,7 @@ namespace RimLink.Systems.Trade
 
         public TaskCompletionSource<bool> TradeAccepted = new TaskCompletionSource<bool>();
 
-        public bool IsForUs => For == RimLink.Find().Client.Guid;
+        public bool IsForUs => For == RimLink.Instance.Guid;
 
         public float OfferedMarketValue
         {
@@ -60,7 +60,7 @@ namespace RimLink.Systems.Trade
             hyperlinks = new List<ThingDef>();
 
             var builder = new StringBuilder();
-            builder.AppendLine($"{RimLink.Find().Client.GetName(From)} has presented a trade offer. They are offering...");
+            builder.AppendLine($"{RimLink.Instance.Client.GetName(From)} has presented a trade offer. They are offering...");
 
             int offerCount = 0;
             foreach (TradeThing thing in Things)
@@ -206,7 +206,7 @@ namespace RimLink.Systems.Trade
 
             if (dropPodLocations.Count == 0)
             {
-                Find.LetterStack.ReceiveLetter($"Trade Success ({RimLink.Find().Client.GetName(IsForUs ? From : For)})", "Trade accepted.", LetterDefOf.PositiveEvent);
+                Find.LetterStack.ReceiveLetter($"Trade Success ({RimLink.Instance.Client.GetName(IsForUs ? From : For)})", "Trade accepted.", LetterDefOf.PositiveEvent);
             }
             else
             {
@@ -214,7 +214,7 @@ namespace RimLink.Systems.Trade
                 foreach (IntVec3 pos in dropPodLocations)
                     averagePos += pos;
                 averagePos = new IntVec3(averagePos.x / dropPodLocations.Count, averagePos.y / dropPodLocations.Count, averagePos.z / dropPodLocations.Count);
-                Find.LetterStack.ReceiveLetter($"Trade Success ({RimLink.Find().Client.GetName(IsForUs ? From : For)})", "Trade accepted. Your items will arrive in pods momentarily.", LetterDefOf.PositiveEvent, new TargetInfo(averagePos, Find.CurrentMap));
+                Find.LetterStack.ReceiveLetter($"Trade Success ({RimLink.Instance.Client.GetName(IsForUs ? From : For)})", "Trade accepted. Your items will arrive in pods momentarily.", LetterDefOf.PositiveEvent, new TargetInfo(averagePos, Find.CurrentMap));
             }
         }
 

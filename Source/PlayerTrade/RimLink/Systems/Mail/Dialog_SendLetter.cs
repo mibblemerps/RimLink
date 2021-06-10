@@ -98,7 +98,7 @@ namespace RimLink.Systems.Mail
         {
             PacketMail mail = new PacketMail
             {
-                From = RimLink.Find().Guid,
+                From = RimLink.Instance.Guid,
                 For = Player.Guid,
                 Title = _title,
                 Body = _body

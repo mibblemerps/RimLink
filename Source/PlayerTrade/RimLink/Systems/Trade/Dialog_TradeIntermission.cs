@@ -53,7 +53,7 @@ namespace RimLink.Systems.Trade
             Rect pos1 = inRect.TopPart(0.75f);
             Widgets.Label(pos1, text1);
 
-            string text2 = RimLink.Find().Client.GetName(Offer.IsForUs ? Offer.From : Offer.For);
+            string text2 = RimLink.Instance.Client.GetName(Offer.IsForUs ? Offer.From : Offer.For);
             Rect pos2 = inRect.BottomPart(0.25f);
             Text.Font = GameFont.Tiny;
             Widgets.Label(pos2, text2);

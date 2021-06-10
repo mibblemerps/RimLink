@@ -62,7 +62,7 @@ namespace RimLink
             RimLinkMod.Instance.Settings.ServerPort = port;
             RimLinkMod.Instance.WriteSettings();
             if (Current.ProgramState == ProgramState.Playing && RimLink.Instance != null)
-                RimLink.Instance.QueueConnect();
+                RimLink.Instance.ConnectionManager.QueueConnect();
             Close();
         }
     }
