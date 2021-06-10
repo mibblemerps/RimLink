@@ -8,6 +8,7 @@ using Verse;
 
 namespace RimLink.MainTab
 {
+    [StaticConstructorOnStartup]
     public class TabTrades : ITab
     {
         private static Texture2D SendIcon = ContentFinder<Texture2D>.Get("UI/Send");
