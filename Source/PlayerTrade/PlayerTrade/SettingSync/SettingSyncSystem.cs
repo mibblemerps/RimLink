@@ -20,9 +20,11 @@ namespace PlayerTrade.SettingSync
         public void ExposeData()
         {
             Scribe_Deep.Look(ref Settings, "settings");
-            if (Scribe.mode == LoadSaveMode.LoadingVars && Settings == null)
+
+            if (Scribe.mode == LoadSaveMode.PostLoadInit)
             {
-                Settings = new InGameSettings();
+                if (Settings == null)
+                    Settings = new InGameSettings();
                 Settings.Apply();
             }
         }
