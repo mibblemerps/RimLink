@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using RimLink.Net;
 using RimLink.Net.Packets;
 using UnityEngine;
+#pragma warning disable 1998
 
 namespace TradeServer.Commands
 {

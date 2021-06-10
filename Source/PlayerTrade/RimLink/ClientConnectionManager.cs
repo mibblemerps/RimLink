@@ -51,14 +51,14 @@ namespace RimLink
                 await Client.Connect(RimLinkMod.Instance.Settings.ServerIp, RimLinkMod.Instance.Settings.ServerPort);
                 // _connecting is set back to false in OnClientConnected
             }
-            catch (ConnectionFailedException e)
+            catch (ConnectionFailedException)
             {
                 _connecting = false;
                 throw;
             }
         }
         
-        public void QueueConnect(float seconds = 0f) // todo: can we move this out of here?
+        public void QueueConnect(float seconds = 0f)
         {
             if (Client?.Tcp != null && Client.Tcp.Connected)
             {

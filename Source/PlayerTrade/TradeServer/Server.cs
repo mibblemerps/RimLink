@@ -202,7 +202,7 @@ namespace TradeServer
             }
         }
 
-        private async void ClientOnAuthenticated(object sender, Client.ClientEventArgs e)
+        private void ClientOnAuthenticated(object sender, Client.ClientEventArgs e)
         {
             Log.Message($"{e.Client.Player.Name} connected");
             AuthenticatedClients.Add(e.Client);

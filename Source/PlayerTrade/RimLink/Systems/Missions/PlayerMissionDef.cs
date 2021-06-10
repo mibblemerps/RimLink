@@ -10,7 +10,7 @@ namespace RimLink.Systems.Missions
 {
     public class PlayerMissionDef : Def
     {
-        public TaggedString LabelCap
+        public new TaggedString LabelCap
         {
             get
             {
@@ -22,7 +22,6 @@ namespace RimLink.Systems.Missions
             }
         }
 
-        public string label;
         public string workerClass = "PlayerTrade.Missions.MissionWorkers.MissionWorker";
         public string questScriptDefName;
         public string configDialogClass = "PlayerTrade.Missions.ConfigDialogs.BasicConfigDialog";

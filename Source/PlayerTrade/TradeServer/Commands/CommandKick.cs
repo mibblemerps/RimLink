@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using RimLink.Net;
 using RimLink.Net.Packets;
+#pragma warning disable 1998
 
 namespace TradeServer.Commands
 {

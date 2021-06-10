@@ -13,13 +13,8 @@ namespace RimLink.Systems.Trade
     [StaticConstructorOnStartup]
     public class Dialog_PlayerTrade : Window
     {
-        private bool giftsOnly;
-        private TransferableSorterDef sorter1;
-        private TransferableSorterDef sorter2;
-        private Vector2 scrollPosition = Vector2.zero;
-        public static float lastCurrencyFlashTime = -100f;
-        private List<Tradeable> cachedTradeables;
-        private Tradeable cachedCurrencyTradeable;
+        public static float LastCurrencyFlashTime = -100f;
+        
         private const float TitleAreaHeight = 45f;
         private const float TopAreaHeight = 58f;
         private const float ColumnWidth = 120f;
@@ -29,6 +24,13 @@ namespace RimLink.Systems.Trade
         private const float ShowSellableItemsIconSize = 32f;
         private const float GiftModeIconSize = 32f;
         private const float TradeModeIconSize = 32f;
+        
+        private bool _giftsOnly;
+        private TransferableSorterDef _sorter1;
+        private TransferableSorterDef _sorter2;
+        private Vector2 _scrollPosition = Vector2.zero;
+        private List<Tradeable> _cachedTradeables;
+        private Tradeable _cachedCurrencyTradeable;
         protected static readonly Vector2 AcceptButtonSize = new Vector2(160f, 40f);
         protected static readonly Vector2 OtherBottomButtonSize = new Vector2(160f, 40f);
         private static readonly Texture2D ShowSellableItemsIcon = ContentFinder<Texture2D>.Get("UI/Commands/SellableItems");
@@ -47,8 +49,8 @@ namespace RimLink.Systems.Trade
             soundClose = SoundDefOf.CommsWindow_Close;
             soundAmbient = SoundDefOf.RadioComms_Ambience;
 
-            sorter1 = TransferableSorterDefOf.Category;
-            sorter2 = TransferableSorterDefOf.MarketValue;
+            _sorter1 = TransferableSorterDefOf.Category;
+            _sorter2 = TransferableSorterDefOf.MarketValue;
         }
 
         public override void PostOpen()
@@ -61,13 +63,13 @@ namespace RimLink.Systems.Trade
         {
             GUI.BeginGroup(inRect);
             inRect = inRect.AtZero();
-            TransferableUIUtility.DoTransferableSorters(sorter1, sorter2, (x =>
+            TransferableUIUtility.DoTransferableSorters(_sorter1, _sorter2, (x =>
             {
-                sorter1 = x;
+                _sorter1 = x;
                 CacheTradeables();
             }), x =>
             {
-                sorter2 = x;
+                _sorter2 = x;
                 CacheTradeables();
             });
             Text.Font = GameFont.Small;
@@ -107,10 +109,10 @@ namespace RimLink.Systems.Trade
             }
             GUI.EndGroup();
             float num1 = 0.0f;
-            if (cachedCurrencyTradeable != null)
+            if (_cachedCurrencyTradeable != null)
             {
                 float num2 = inRect.width - 16f;
-                TradeUI.DrawTradeableRow(new Rect(0.0f, 58f, num2, 30f), this.cachedCurrencyTradeable, 1);
+                TradeUI.DrawTradeableRow(new Rect(0.0f, 58f, num2, 30f), this._cachedCurrencyTradeable, 1);
                 GUI.color = Color.gray;
                 Widgets.DrawLineHorizontal(0.0f, 87f, num2);
                 GUI.color = Color.white;
@@ -140,7 +142,7 @@ namespace RimLink.Systems.Trade
                 Find.WindowStack.Add((Window)new Dialog_SellableItems(TradeSession.trader));
             TooltipHandler.TipRegionByKey(rect5, "CommandShowSellableItemsDesc");
             Faction faction = TradeSession.trader.Faction;
-            if (faction != null && !this.giftsOnly && !faction.def.permanentEnemy)
+            if (faction != null && !this._giftsOnly && !faction.def.permanentEnemy)
             {
                 Rect rect3 = new Rect((float)((double)rect5.x - (double)y - 4.0), rect4.y, y, y);
                 if (TradeSession.giftMode)
@@ -174,20 +176,20 @@ namespace RimLink.Systems.Trade
         private void FillMainRect(Rect mainRect)
         {
             Text.Font = GameFont.Small;
-            float height = (float)(6.0 + cachedTradeables.Count * 30.0);
+            float height = (float)(6.0 + _cachedTradeables.Count * 30.0);
             Rect viewRect = new Rect(0.0f, 0.0f, mainRect.width - 16f, height);
-            Widgets.BeginScrollView(mainRect, ref scrollPosition, viewRect);
+            Widgets.BeginScrollView(mainRect, ref _scrollPosition, viewRect);
             float y = 6f;
-            float num1 = scrollPosition.y - 30f;
-            float num2 = scrollPosition.y + mainRect.height;
+            float num1 = _scrollPosition.y - 30f;
+            float num2 = _scrollPosition.y + mainRect.height;
             int num3 = 0;
-            for (int index1 = 0; index1 < cachedTradeables.Count; ++index1)
+            for (int index1 = 0; index1 < _cachedTradeables.Count; ++index1)
             {
                 if ((double)y > num1 && (double)y < num2)
                 {
                     Rect rect = new Rect(0.0f, y, viewRect.width, 30f);
-                    int countToTransfer = cachedTradeables[index1].CountToTransfer;
-                    Tradeable cachedTradeable = cachedTradeables[index1];
+                    int countToTransfer = _cachedTradeables[index1].CountToTransfer;
+                    Tradeable cachedTradeable = _cachedTradeables[index1];
                     int index2 = num3;
                     try
                     {
@@ -198,7 +200,7 @@ namespace RimLink.Systems.Trade
                         Log.Error("Exception drawing tradeable row (why??)", e);
                     }
 
-                    if (countToTransfer != cachedTradeables[index1].CountToTransfer)
+                    if (countToTransfer != _cachedTradeables[index1].CountToTransfer)
                         CountToTransferChanged();
                 }
                 y += 30f;
@@ -211,15 +213,15 @@ namespace RimLink.Systems.Trade
         {
             Patch_TradeUtility_EverPlayerSellable.ForceEnable = true;
             QualityCategory qc;
-            cachedTradeables = TradeSession.deal.AllTradeables.Where(tr =>
+            _cachedTradeables = TradeSession.deal.AllTradeables.Where(tr =>
             {
                 // if (tr.IsCurrency)
                 //     return false;
                 //return tr.TraderWillTrade || !TradeSession.trader.TraderKind.hideThingsNotWillingToTrade;
                 return true;
             }).OrderByDescending(tr => !tr.TraderWillTrade ? -1 : 0)
-                .ThenBy(tr => tr, sorter1.Comparer)
-                .ThenBy((tr => tr), sorter2.Comparer)
+                .ThenBy(tr => tr, _sorter1.Comparer)
+                .ThenBy((tr => tr), _sorter2.Comparer)
                 .ThenBy(tr => TransferableUIUtility.DefaultListOrderPriority(tr))
                 .ThenBy(tr => tr.ThingDef.label)
                 .ThenBy(tr => tr.AnyThing.TryGetQuality(out qc) ? (int)qc : -1)

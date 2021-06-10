@@ -6,6 +6,7 @@ using RimLink.Systems.Raids.Packets;
 using RimWorld;
 using UnityEngine;
 using Verse;
+#pragma warning disable 1998
 
 namespace RimLink.Systems.Raids
 {

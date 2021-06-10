@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using RimLink;
 using RimLink.Systems.Chat;
+#pragma warning disable 1998
 
 namespace TradeServer.Commands
 {

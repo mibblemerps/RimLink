@@ -74,10 +74,8 @@ namespace RimLink.Systems.Mail
             if (Widgets.ButtonText(inRect.BottomPartPixels(35f).RightPart(0.25f), "Send Letter"))
             {
                 Close();
-                SendLetter().ContinueWith((t) =>
-                {
-                    Messages.Message($"Letter \"{_title}\" sent to {Player.Name.Colorize(ColoredText.FactionColor_Neutral)}", MessageTypeDefOf.PositiveEvent);
-                });
+                SendLetter();
+                Messages.Message($"Letter \"{_title}\" sent to {Player.Name.Colorize(ColoredText.FactionColor_Neutral)}", MessageTypeDefOf.PositiveEvent);
             }
 
             Text.Anchor = TextAnchor.UpperLeft;
@@ -94,7 +92,7 @@ namespace RimLink.Systems.Mail
             yield return new Sound(SoundDef.Named("TornadoSiren"), "Tornado Siren");
         }
 
-        private async Task SendLetter()
+        private void SendLetter()
         {
             PacketMail mail = new PacketMail
             {

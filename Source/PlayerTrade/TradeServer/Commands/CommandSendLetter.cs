@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
 using RimLink.Systems.Mail;
+#pragma warning disable 1998
 
 namespace TradeServer.Commands
 {

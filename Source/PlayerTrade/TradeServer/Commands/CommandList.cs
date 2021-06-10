@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Text;
 using System.Threading.Tasks;
+#pragma warning disable 1998
 
 namespace TradeServer.Commands
 {
