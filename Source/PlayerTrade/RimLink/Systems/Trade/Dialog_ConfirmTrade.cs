@@ -1,4 +1,5 @@
 ﻿using RimWorld;
+using RimWorld.Planet;
 using UnityEngine;
 using Verse;
 using Verse.Sound;
@@ -14,7 +15,7 @@ namespace RimLink.Systems.Trade
 
         public override Vector2 InitialSize => new Vector2(780, 540);
 
-        public Dialog_ConfirmTrade(TradeOffer offer, Dialog_PlayerTrade dialog)
+        public Dialog_ConfirmTrade(Pawn negotiator, TradeOffer offer, Dialog_PlayerTrade dialog)
         {
             Offer = offer;
             TradeDialog = dialog;
@@ -22,6 +23,10 @@ namespace RimLink.Systems.Trade
             forcePause = true;
             absorbInputAroundWindow = true;
             closeOnClickedOutside = false;
+
+            Caravan caravan = negotiator.GetCaravan();
+            if (caravan != null)
+                offer.Caravan = caravan;
         }
 
         public override void DoWindowContents(Rect inRect)

@@ -3,6 +3,8 @@
   <component name="UserContentModel">
     <attachedFolders>
       <Path>../../../PlayerTrade</Path>
+      <Path>../../Defs</Path>
+      <Path>../../Languages</Path>
     </attachedFolders>
     <explicitIncludes />
     <explicitExcludes />

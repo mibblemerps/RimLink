@@ -23,7 +23,7 @@ namespace RimLink.Systems.Raids
 
         private int _playerSilver;
 
-        private Player.Faction _selectedFaction;
+        private Player.LocalFaction _selectedFaction;
         private float _strength = 100f;
         private Strategy _strategy = _strategies[1];
         private ArrivalMethod _arrivalMode = _arrivalMethods[0];
@@ -94,7 +94,7 @@ namespace RimLink.Systems.Raids
             if (Widgets.ButtonText(new Rect(rect2.xMax + 10f, rect2.yMin, 220, 35), _selectedFaction == null ? "Select Faction" : _selectedFaction.Name))
             {
                 var options = new List<FloatMenuOption>();
-                foreach (Player.Faction faction in Player.LocalFactions)
+                foreach (Player.LocalFaction faction in Player.LocalFactions)
                 {
                     FactionDef factionDef = faction.FindDef();
 

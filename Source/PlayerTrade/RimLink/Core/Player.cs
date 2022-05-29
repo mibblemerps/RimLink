@@ -12,7 +12,7 @@ using Verse;
 namespace RimLink.Core
 {
     [Serializable]
-    public class Player : IExposable, IPacketable
+    public class Player : IExposable, IPacketable, ILoadReferenceable
     {
         public string Guid;
         public string Name;
@@ -26,10 +26,12 @@ namespace RimLink.Core
         public int Temperature = int.MinValue;
         public bool TradeableNow;
 
-        public List<Faction> LocalFactions;
+        public List<LocalFaction> LocalFactions;
 
         public bool IsUs => Guid == RimLink.Instance.Guid;
         public bool IsOnline => RimLink.Instance.Client.OnlinePlayers.ContainsKey(Guid);
+
+        public Faction Faction => RimLink.Instance.PlayerFactions[Guid];
 
         public Player(string guid)
         {
@@ -69,14 +71,14 @@ namespace RimLink.Core
                 }
             }
 
-            // Populate factions
-            player.LocalFactions = new List<Faction>();
+            // Populate local factions
+            player.LocalFactions = new List<LocalFaction>();
             foreach (var faction in Find.FactionManager.AllFactionsVisibleInViewOrder)
             {
                 if (faction.Hidden || faction.defeated || faction.IsPlayer)
                     continue;
 
-                player.LocalFactions.Add(new Faction
+                player.LocalFactions.Add(new LocalFaction
                 {
                     Name = faction.Name,
                     Goodwill = faction.PlayerGoodwill,
@@ -100,6 +102,15 @@ namespace RimLink.Core
             buffer.WriteBoolean(TradeableNow);
 
             buffer.WriteList(LocalFactions, (b, i) => b.WritePacketable(i));
+            if (Colonies == null)
+            {
+                buffer.WriteBoolean(false);
+            }
+            else
+            {
+                buffer.WriteBoolean(true);
+                buffer.WriteList(Colonies, (b, i) => b.WritePacketable(i));
+            }
         }
 
         public void Read(PacketBuffer buffer)
@@ -113,8 +124,10 @@ namespace RimLink.Core
             Temperature = buffer.ReadInt();
             TradeableNow = buffer.ReadBoolean();
 
-            LocalFactions = new List<Faction>();
-            LocalFactions = buffer.ReadList<Faction>(b => b.ReadPacketable<Faction>());
+            LocalFactions = buffer.ReadList<LocalFaction>(b => b.ReadPacketable<LocalFaction>());
+            
+            if (buffer.ReadBoolean())
+                Colonies = buffer.ReadList<Colony>(b => buffer.ReadPacketable<Colony>());
         }
 
         public void ExposeData()
@@ -126,6 +139,8 @@ namespace RimLink.Core
             Scribe_Values.Look(ref Color[2], "color_b");
             Scribe_Collections.Look(ref LocalFactions, "local_factions");
         }
+        
+        public string GetUniqueLoadID() => Guid;
 
         public override string ToString()
         {
@@ -133,7 +148,7 @@ namespace RimLink.Core
         }
 
         [Serializable]
-        public class Faction : IExposable, IPacketable
+        public class LocalFaction : IExposable, IPacketable
         {
             public string Name;
             public int Goodwill;

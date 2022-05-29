@@ -6,6 +6,7 @@ using RimLink.Net;
 using RimLink.Patches;
 using RimLink.Systems.Trade.Patches;
 using RimWorld;
+using RimWorld.Planet;
 using Verse;
 
 namespace RimLink.Systems.Trade
@@ -50,10 +51,19 @@ namespace RimLink.Systems.Trade
             if (!wasOn)
                 Patch_TradeUtility_EverPlayerSellable.ForceEnable = true;
 
-            foreach (Thing thing in TradeUtility.AllLaunchableThingsForTrade(playerNegotiator.Map, this))
-                yield return thing;
-            foreach (Pawn pawn in TradeUtility.AllSellableColonyPawns(playerNegotiator.Map).Where(p => p.RaceProps.Humanlike))
-                yield return pawn;
+            if (playerNegotiator.IsCaravanMember())
+            {
+                Caravan caravan = playerNegotiator.GetCaravan();
+                foreach (Thing thing in caravan.AllThings)
+                    yield return thing;
+            }
+            else
+            {
+                foreach (Thing thing in TradeUtility.AllLaunchableThingsForTrade(playerNegotiator.Map, this))
+                    yield return thing;
+                foreach (Pawn pawn in TradeUtility.AllSellableColonyPawns(playerNegotiator.Map).Where(p => p.RaceProps.Humanlike))
+                    yield return pawn;
+            }
 
             if (!wasOn)
                 Patch_TradeUtility_EverPlayerSellable.ForceEnable = false;

@@ -5,6 +5,7 @@ using RimLink.Core;
 using RimLink.Net.Packets;
 using RimLink.Systems.Trade.Packets;
 using RimWorld;
+using RimWorld.Planet;
 using Verse;
 
 namespace RimLink.Systems.Trade

@@ -22,9 +22,9 @@ namespace RimLink.Systems.Missions
             }
         }
 
-        public string workerClass = "PlayerTrade.Missions.MissionWorkers.MissionWorker";
+        public string workerClass = "RimLink.Systems.Missions.MissionWorkers.MissionWorker";
         public string questScriptDefName;
-        public string configDialogClass = "PlayerTrade.Missions.ConfigDialogs.BasicConfigDialog";
+        public string configDialogClass = "RimLink.Systems.Missions.ConfigDialogs.BasicConfigDialog";
 
         public FloatRange days = new FloatRange(0.1f, 9999f); // 4 years
         public IntRange colonists = new IntRange(1, 1);

@@ -18,7 +18,7 @@ namespace RimLink.Systems.SettingSync.Patches
             ref Difficulty difficultyValues,
             Listing_Standard infoListing)
         {
-            if (!RimLink.Instance.InGameSettings.EnforceStoryteller || Find.WindowStack.IsOpen<Dialog_SelectServerStoryteller>()) return;
+            if (!RimLinkMod.Active || RimLink.Instance.InGameSettings == null || !RimLink.Instance.InGameSettings.EnforceStoryteller || Find.WindowStack.IsOpen<Dialog_SelectServerStoryteller>()) return;
             
             if (Widgets.ButtonInvisible(rect.LeftPartPixels(rect.width - 16), false))
                 Messages.Message("Rl_StorytellerSettingsLocked".Translate(), MessageTypeDefOf.RejectInput);
@@ -33,14 +33,14 @@ namespace RimLink.Systems.SettingSync.Patches
     {
         private static void Prefix()
         {
-            if (!RimLink.Instance.InGameSettings.EnforceStoryteller || Find.WindowStack.IsOpen<Dialog_SelectServerStoryteller>()) return;
+            if (!RimLinkMod.Active || RimLink.Instance.InGameSettings == null || !RimLink.Instance.InGameSettings.EnforceStoryteller || Find.WindowStack.IsOpen<Dialog_SelectServerStoryteller>()) return;
             
             GUI.enabled = false;
         }
 
         private static void Postfix()
         {
-            if (!RimLink.Instance.InGameSettings.EnforceStoryteller || Find.WindowStack.IsOpen<Dialog_SelectServerStoryteller>()) return;
+            if (!RimLinkMod.Active || RimLink.Instance.InGameSettings == null || !RimLink.Instance.InGameSettings.EnforceStoryteller || Find.WindowStack.IsOpen<Dialog_SelectServerStoryteller>()) return;
             
             GUI.enabled = true;
         }

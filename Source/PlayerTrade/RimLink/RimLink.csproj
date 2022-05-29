@@ -246,6 +246,8 @@
     <Compile Include="Patches\Patch_CommsConsole_GetCommTargets.cs" />
     <Compile Include="RimLinkMod.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Systems\World\PlayerColonyWorldObject.cs" />
+    <Compile Include="Systems\World\WorldSystem.cs" />
     <Compile Include="Util\AnnouncementUtil.cs" />
     <Compile Include="Util\ArrivalUtil.cs" />
     <Compile Include="Util\HashUtil.cs" />

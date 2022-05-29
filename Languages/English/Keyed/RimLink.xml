@@ -16,4 +16,6 @@
     
     <Rl_MechanoidCluster>Mechanoid cluster ({0})</Rl_MechanoidCluster>
     <Rl_MechanoidClusterDesc>{0} has paid the mechanoid faction to establish a mech cluster at your colony.</Rl_MechanoidClusterDesc>
+    
+    <Rl_PlayerColonyDescription>Another player's colony.\n\n{0}</Rl_PlayerColonyDescription>
 </LanguageData>

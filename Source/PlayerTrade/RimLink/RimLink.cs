@@ -12,6 +12,7 @@ using RimLink.Systems.Missions;
 using RimLink.Systems.Raids;
 using RimLink.Systems.SettingSync;
 using RimLink.Systems.Trade;
+using RimLink.Systems.World;
 using RimWorld;
 using UnityEngine;
 using Verse;
@@ -70,6 +71,7 @@ namespace RimLink
             AddSystem(new MailSystem());
             AddSystem(new ChatSystem());
             AddSystem(new MechanoidSystem());
+            AddSystem(new WorldSystem());
         }
 
         public override void FinalizeInit()

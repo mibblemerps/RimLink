@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+
+    <WorldObjectDef>
+        <defName>RimLinkColony</defName>
+        <label>player colony</label>
+        <worldObjectClass>RimLink.Systems.World.PlayerColonyWorldObject</worldObjectClass>
+        <expandingIcon>true</expandingIcon>
+        <expandingIconPriority>80</expandingIconPriority>
+        <comps/>
+    </WorldObjectDef>
+    
+</Defs>

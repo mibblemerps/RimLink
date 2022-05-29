@@ -9,6 +9,7 @@ using RimLink.Net;
 using RimLink.Systems.Trade.Packets;
 using RimLink.Util;
 using RimWorld;
+using RimWorld.Planet;
 using UnityEngine;
 using Verse;
 using Resources = RimLink.Core.Resources;
@@ -27,6 +28,11 @@ namespace RimLink.Systems.Trade
         /// Is a fresh trade offer? This will lose it's value when saved/loaded from disk, allowing trade offers to be invalidated when that happens.
         /// </summary>
         public bool Fresh;
+
+        /// <summary>
+        /// Optionally: Caravan this trade offer was sent from. Saved locally on the sender's side.
+        /// </summary>
+        public Caravan Caravan;
 
         public TaskCompletionSource<bool> TradeAccepted = new TaskCompletionSource<bool>();
 
@@ -133,6 +139,11 @@ namespace RimLink.Systems.Trade
             Log.Message("Fulfill trade. asReceiver = " + asReceiver);
             
             var toGive = new List<Thing>();
+            
+            Pawn caravanNegotiator = null;
+            if (Caravan != null)
+                caravanNegotiator =
+                    BestCaravanPawnUtility.FindPawnWithBestStat(Caravan, StatDefOf.TradePriceImprovement);
 
             // Give/receive things
             foreach (TradeThing trade in Things)
@@ -180,7 +191,16 @@ namespace RimLink.Systems.Trade
                         int taken = 0;
                         foreach (Thing thing in (asReceiver ? trade.RequestedThings : trade.OfferedThings))
                         {
-                            taken += LaunchUtil.LaunchThing(Find.CurrentMap, thing, Mathf.Min(thing.stackCount, countToTake - taken));
+                            if (Caravan == null)
+                            {
+                                taken += LaunchUtil.LaunchThing(Find.CurrentMap, thing, Mathf.Min(thing.stackCount, countToTake - taken));
+                            }
+                            else
+                            {
+                                thing.SplitOff(countToTake);
+                                taken += Mathf.Min(countToTake, thing.stackCount);
+                            }
+
                             if (taken >= countToTake)
                                 break; // taken enough
                         }
@@ -198,10 +218,16 @@ namespace RimLink.Systems.Trade
             var dropPodLocations = new List<IntVec3>();
             foreach (Thing thing in toGive)
             {
-                //Log.Message($"Give thing {thing.Label}");
-                IntVec3 pos = DropCellFinder.TradeDropSpot(Find.CurrentMap);
-                dropPodLocations.Add(pos);
-                TradeUtility.SpawnDropPod(pos, Find.CurrentMap, thing);
+                if (Caravan == null)
+                {
+                    IntVec3 pos = DropCellFinder.TradeDropSpot(Find.CurrentMap);
+                    dropPodLocations.Add(pos);
+                    TradeUtility.SpawnDropPod(pos, Find.CurrentMap, thing);
+                }
+                else
+                {
+                    Caravan.GiveSoldThingToPlayer(thing, thing.stackCount, caravanNegotiator);
+                }
             }
 
             if (dropPodLocations.Count == 0)
@@ -220,6 +246,9 @@ namespace RimLink.Systems.Trade
 
         public bool CanFulfill(bool asReceiver)
         {
+            // Caravan trades can always be fulfilled because we force-pause immediately after they are sent.
+            if (Caravan != null) return true;
+            
             foreach (TradeThing trade in Things)
             {
                 if (trade.IsPawn)
@@ -312,6 +341,7 @@ namespace RimLink.Systems.Trade
             Scribe_Values.Look(ref From, "from");
             Scribe_Values.Look(ref For, "for");
             Scribe_Collections.Look(ref Things, "things");
+            Scribe_Values.Look(ref Caravan, "caravan");
         }
 
         public class TradeThing : IExposable

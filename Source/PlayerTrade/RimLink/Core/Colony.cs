@@ -1,5 +1,10 @@
 ﻿using RimLink.Net;
 using RimLink.Net.Packets;
+using RimLink.Systems.World;
+using RimLink.Util;
+using RimWorld;
+using RimWorld.Planet;
+using Verse;
 
 namespace RimLink.Core
 {
@@ -24,6 +29,18 @@ namespace RimLink.Core
         public int Tile;
 
         private Player _cachedPlayer;
+
+        public PlayerColonyWorldObject MakeWorldObject()
+        {
+            var worldObject = (PlayerColonyWorldObject) WorldObjectMaker.MakeWorldObject(DefDatabase<WorldObjectDef>.GetNamed("RimLinkColony"));
+            worldObject.Name = Name;
+            worldObject.Player = Player;
+            worldObject.Tile = Tile;
+            worldObject.SetFaction(Player.Faction);
+            Find.World.worldObjects.Add(worldObject);
+
+            return worldObject;
+        }
 
         public void Write(PacketBuffer buffer)
         {

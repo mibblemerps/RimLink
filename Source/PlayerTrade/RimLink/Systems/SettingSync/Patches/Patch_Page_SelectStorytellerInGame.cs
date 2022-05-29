@@ -13,7 +13,7 @@ namespace RimLink.Systems.SettingSync.Patches
     {
         private static void Postfix(Page_SelectStorytellerInGame __instance, Rect rect)
         {
-            if (!RimLink.Instance.InGameSettings.EnforceStoryteller)
+            if (!RimLinkMod.Active || RimLink.Instance.InGameSettings == null || !RimLink.Instance.InGameSettings.EnforceStoryteller)
                 return; // Skip patch
 
             Rect labelRect = rect.TopPartPixels(35).RightHalf();

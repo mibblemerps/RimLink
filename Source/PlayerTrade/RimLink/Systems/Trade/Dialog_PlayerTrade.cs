@@ -122,7 +122,7 @@ namespace RimLink.Systems.Trade
             Rect rect4 = new Rect((float)((double)inRect.width / 2.0 - (double)AcceptButtonSize.x / 2.0), inRect.height - 55f, AcceptButtonSize.x, AcceptButtonSize.y);
             if (Widgets.ButtonText(rect4, (TradeSession.giftMode ? "OfferGifts".Translate() : "AcceptButton".Translate())))
             {
-                Find.WindowStack.Add(new Dialog_ConfirmTrade(TradeUtil.FormTradeOffer(), this));
+                Find.WindowStack.Add(new Dialog_ConfirmTrade(TradeSession.playerNegotiator, TradeUtil.FormTradeOffer(), this));
             }
             if (Widgets.ButtonText(new Rect(rect4.x - 10f - OtherBottomButtonSize.x, rect4.y, OtherBottomButtonSize.x, OtherBottomButtonSize.y), (string)"ResetButton".Translate()))
             {
