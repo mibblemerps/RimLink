@@ -28,23 +28,30 @@
           <node Class="QuestNode_Sequence">
             <nodes>
               <!-- Generate shuttle -->
-              <li Class="QuestNode_GenerateShuttle">
-                <storeAs>shuttle</storeAs>
-                <requiredPawns>$pawns</requiredPawns>
-                <!--<hideControls>false</hideControls>-->
+              <li Class="QuestNode_SubScript">
+                <def>Util_TransportShip_Pickup</def>
+                <parms>
+                  <leaveDelayTicks>$($shuttle_leave_ticks - $shuttle_arrival_ticks)</leaveDelayTicks>
+                  <leaveImmediatelyWhenSatisfied>true</leaveImmediatelyWhenSatisfied>
+                  <acceptColonists>true</acceptColonists>
+                  <requiredPawns>$pawns</requiredPawns>
+                </parms>
               </li>
-              <li Class="QuestNode_SpawnSkyfaller">
-                <skyfallerDef>ShuttleIncoming</skyfallerDef>
-                <innerThings>$shuttle</innerThings>
-                <lookForSafeSpot>True</lookForSafeSpot>
-                <tryLandInShipLandingZone>True</tryLandInShipLandingZone>
+              <!-- Shuttle leave -->
+              <li Class="QuestNode_ShuttleLeaveDelay">
+                <delayTicks>$($shuttle_leave_ticks - $shuttle_arrival_ticks)</delayTicks>
+                <shuttle>$pickupShipThing</shuttle>
+                <node Class="QuestNode_SendShuttleAway">
+                  <shuttle>$pickupShipThing</shuttle>
+                </node>
               </li>
+
               <li Class="QuestNode_Letter">
                 <label>Shuttle Arrived ($from)</label>
                 <text>
                   The shuttle is here to return the $noun back to $from.\n\nIf the $noun aren't loaded onto the shuttle, they'll attempt to leave the map. If you capture them $from will be notified.
                 </text>
-                <lookTargets>$shuttle</lookTargets>
+                <lookTargets>$pickupShipThing</lookTargets>
               </li>
 
               <!-- Pawns -->
@@ -53,28 +60,16 @@
                 <inspectString TKey="InspectStringDepartShuttle">Should depart on shuttle</inspectString>
               </li>
 
-              <!-- Shuttle leave -->
-              <li Class="QuestNode_ShuttleLeaveDelay">
-                <delayTicks>$($shuttle_leave_ticks - $shuttle_arrival_ticks)</delayTicks>
-                <shuttle>$shuttle</shuttle>
-                <node Class="QuestNode_SendShuttleAway">
-                  <shuttle>$shuttle</shuttle>
-                </node>
-              </li>
-              <li Class="QuestNode_SendShuttleAwayOnCleanup">
-                <shuttle>$shuttle</shuttle>
-              </li>
-
               <!-- Shuttle sent -->
               <!-- Success -->
               <li Class="QuestNode_SignalActivable">
-                <inSignal>shuttle.SentSatisfied</inSignal>
+                <inSignal>pickupShipThing.SentSatisfied</inSignal>
                 <inSignalDisable>Leaving</inSignalDisable>
                 <node Class="QuestNode_Sequence">
                   <nodes>
                     <li Class="RimLink.Systems.Missions.Quest.QuestNode_ReturnColonists">
                       <guid>$guid</guid>
-                      <shuttle>$shuttle</shuttle>
+                      <shuttle>$pickupShipThing</shuttle>
                     </li>
                     <li Class="QuestNode_IsNull">
                       <value>$bond_things</value>
@@ -92,12 +87,12 @@
               </li>
               <!-- Failure -->
               <li Class="QuestNode_Signal">
-                <inSignal>shuttle.SentUnsatisfied</inSignal>
+                <inSignal>pickupShipThing.SentUnsatisfied</inSignal>
                 <node Class="QuestNode_Sequence">
                   <nodes>
                     <li Class="RimLink.Systems.Missions.Quest.QuestNode_ReturnColonists">
                       <guid>$guid</guid>
-                      <shuttle>$shuttle</shuttle>
+                      <shuttle>$pickupShipThing</shuttle>
                     </li>
                     <li Class="QuestNode_End">
                       <outcome>Fail</outcome>
@@ -108,7 +103,7 @@
 
               <!-- Shuttle destroyed -->
               <li Class="QuestNode_Signal">
-                <inSignal>shuttle.Destroyed</inSignal>
+                <inSignal>pickupShipThing.Destroyed</inSignal>
                 <node Class="QuestNode_End">
                   <outcome>Fail</outcome>
                 </node>
