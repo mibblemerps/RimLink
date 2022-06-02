@@ -9,7 +9,7 @@ namespace RimLink.Systems.SettingSync.Patches
     /// <summary>
     /// Place an invisible button to block input in the storyteller selection window. A little bit jank but works well.
     /// </summary>
-    [HarmonyPatch(typeof(StorytellerUI), "DrawStorytellerSelectionInterface_NewTemp")]
+    [HarmonyPatch(typeof(StorytellerUI), "DrawStorytellerSelectionInterface")]
     public static class Patch_StorytellerUI_DrawStorytellerSelectionInterface_NewTemp
     {
         private static void Prefix(Rect rect,

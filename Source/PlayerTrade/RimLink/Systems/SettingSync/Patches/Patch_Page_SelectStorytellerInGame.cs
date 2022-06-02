@@ -19,7 +19,7 @@ namespace RimLink.Systems.SettingSync.Patches
             Rect labelRect = rect.TopPartPixels(35).RightHalf();
             labelRect.x -= 10;
             Text.Anchor = TextAnchor.MiddleRight;
-            Widgets.Label(labelRect, "Rl_StorytellerSettingsLocked".Translate().ToString().Colorize(ColoredText.RedReadable));
+            Widgets.Label(labelRect, "Rl_StorytellerSettingsLocked".Translate().ToString().Colorize(ColoredText.WarningColor));
             Text.Anchor = TextAnchor.UpperLeft;
         }
     }

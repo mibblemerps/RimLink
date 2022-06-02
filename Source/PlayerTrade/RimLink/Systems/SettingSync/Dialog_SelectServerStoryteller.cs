@@ -24,8 +24,8 @@ namespace RimLink.Systems.SettingSync
             if (Settings.Storyteller == null)
             {
                 Settings.Storyteller = Find.Storyteller.def;
-                Settings.Difficulty = Find.Storyteller.difficulty;
-                Settings.CustomDifficulty = Find.Storyteller.difficultyValues;
+                Settings.Difficulty = Find.Storyteller.difficultyDef;
+                Settings.CustomDifficulty = Find.Storyteller.difficulty;
             }
         }
 
@@ -34,7 +34,7 @@ namespace RimLink.Systems.SettingSync
             DrawPageTitle(rect);
             Rect mainRect = GetMainRect(rect);
 
-            StorytellerUI.DrawStorytellerSelectionInterface_NewTemp(mainRect,
+            StorytellerUI.DrawStorytellerSelectionInterface(mainRect,
               ref Settings.Storyteller, ref Settings.Difficulty, ref Settings.CustomDifficulty, _selectedStorytellerInfoListing);
             
             Rect buttonsRect = rect.BottomPartPixels(38);

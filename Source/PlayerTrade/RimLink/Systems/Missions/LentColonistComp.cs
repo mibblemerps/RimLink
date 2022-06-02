@@ -123,7 +123,7 @@ namespace RimLink.Systems.Missions
             if (Pawn.IsPrisoner)
             {
                 Pawn.SetFaction(HomeFaction);
-                Pawn.guest.SetGuestStatus(Faction.OfPlayer, true);
+                Pawn.guest.SetGuestStatus(Faction.OfPlayer, GuestStatus.Guest);
             }
             else
             {

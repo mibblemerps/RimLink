@@ -82,7 +82,7 @@ namespace RimLink.Systems.Mechanoids.Designer
             Text.Anchor = TextAnchor.MiddleCenter;
             Widgets.Label(priceAreaRect.TopPartPixels(30f),
                 ("$" + Mathf.RoundToInt(MechCluster.Price))
-                .Colorize(_playerSilver >= Mathf.RoundToInt(MechCluster.Price) ? ColoredText.CurrencyColor : ColoredText.RedReadable));
+                .Colorize(_playerSilver >= Mathf.RoundToInt(MechCluster.Price) ? ColoredText.CurrencyColor : ColoredText.WarningColor));
             Text.Font = GameFont.Small;
             Text.Anchor = TextAnchor.UpperLeft;
 

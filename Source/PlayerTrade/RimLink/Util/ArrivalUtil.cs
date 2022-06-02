@@ -71,10 +71,11 @@ namespace RimLink.Util
                     Messages.Message("ShuttleBlocked".Translate("BlockedBy".Translate(blockingThing).CapitalizeFirst()), blockingThing, MessageTypeDefOf.NeutralEvent);
                 result = DropCellFinder.TryFindSafeLandingSpotCloseToColony(map, ThingDefOf.Shuttle.Size);
             }
+
             Thing thing = ThingMaker.MakeThing(ThingDefOf.Shuttle);
-            thing.TryGetComp<CompShuttle>().dropEverythingOnArrival = true;
-            thing.TryGetComp<CompTransporter>().innerContainer.TryAddRangeOrTransfer(pawns);
-            GenPlace.TryPlaceThing(SkyfallerMaker.MakeSkyfaller(ThingDefOf.ShuttleIncoming, Gen.YieldSingle(thing)), result, map, ThingPlaceMode.Near);
+            TransportShip transportShip = TransportShipMaker.MakeTransportShip(TransportShipDefOf.Ship_Shuttle, pawns, thing);
+            transportShip.ArriveAt(result, map.Parent);
+            transportShip.AddJobs(ShipJobDefOf.Unload, ShipJobDefOf.FlyAway);
         }
 
         public enum Method

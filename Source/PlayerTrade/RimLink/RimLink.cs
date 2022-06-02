@@ -187,7 +187,14 @@ namespace RimLink
             if (!PlayerFactions.ContainsKey(e.Guid))
             {
                 // Add faction
-                Faction playerFaction = FactionGenerator.NewGeneratedFaction(DefDatabase<FactionDef>.GetNamed("OtherPlayer"));
+                Faction playerFaction = FactionGenerator.NewGeneratedFaction(new FactionGeneratorParms
+                {
+                    factionDef = DefDatabase<FactionDef>.GetNamed("OtherPlayer"),
+                    ideoGenerationParms = new IdeoGenerationParms
+                    {
+                        classic = true
+                    }
+                });
                 PlayerFactions.Add(e.Guid, playerFaction);
                 Verse.Find.FactionManager.Add(playerFaction);
 

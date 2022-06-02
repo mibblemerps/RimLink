@@ -74,7 +74,7 @@ namespace RimLink.Systems.Missions
                 float x = checkboxRect.xMax;
 
                 // Portrait
-                Widgets.DrawTextureFitted(new Rect(x, 0, pawnRowHeight, pawnRowHeight), PortraitsCache.Get(pawn, new Vector2(45f, 45f)), 1f);
+                Widgets.DrawTextureFitted(new Rect(x, 0, pawnRowHeight, pawnRowHeight), PortraitsCache.Get(pawn, new Vector2(45f, 45f), Rot4.South), 1f);
                 x += pawnRowHeight + 5f;
 
                 // Pawn name

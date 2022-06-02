@@ -31,7 +31,7 @@
               <li Class="QuestNode_GenerateShuttle">
                 <storeAs>shuttle</storeAs>
                 <requiredPawns>$pawns</requiredPawns>
-                <hideControls>false</hideControls>
+                <!--<hideControls>false</hideControls>-->
               </li>
               <li Class="QuestNode_SpawnSkyfaller">
                 <skyfallerDef>ShuttleIncoming</skyfallerDef>

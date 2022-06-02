@@ -52,8 +52,6 @@ namespace RimLink.MainTab
 
         public override void DoWindowContents(Rect inRect)
         {
-            base.DoWindowContents(inRect);
-
             if (!RimLinkMod.Active)
             {
                 DrawDisconnectedFromServer(inRect);

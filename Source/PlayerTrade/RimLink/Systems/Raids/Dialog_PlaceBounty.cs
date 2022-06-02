@@ -191,7 +191,7 @@ namespace RimLink.Systems.Raids
             bool insufficientSilver = cost > _playerSilver;
             Rect costRect = new Rect(0, dropdownsRect.yMax + 10f, inRect.width, 35f);
             Text.Font = GameFont.Medium;
-            Widgets.Label(costRect, "Cost: " + ("$" + cost).Colorize(insufficientSilver ? ColoredText.RedReadable : ColoredText.CurrencyColor));
+            Widgets.Label(costRect, "Cost: " + ("$" + cost).Colorize(insufficientSilver ? ColoredText.WarningColor : ColoredText.CurrencyColor));
             
             Text.Font = GameFont.Tiny;
             Rect costExtraRect = new Rect(0, costRect.yMax + 5f, inRect.width, 30f);

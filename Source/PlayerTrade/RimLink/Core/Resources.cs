@@ -55,7 +55,7 @@ namespace RimLink.Core
             Patch_TradeUtility_EverPlayerSellable.ForceEnable = true;
             foreach (Thing thing in TradeUtility.AllLaunchableThingsForTrade(map))
             {
-                if (thing.TryGetComp<CompBladelinkWeapon>()?.bondedPawn != null) continue; // Don't allow bonded bladelink weapons to be traded
+                if (thing.TryGetComp<CompBladelinkWeapon>()?.Biocoded == true) continue; // Don't allow bonded bladelink weapons to be traded
 
                 Things.Add(NetThing.FromThing(thing));
             }

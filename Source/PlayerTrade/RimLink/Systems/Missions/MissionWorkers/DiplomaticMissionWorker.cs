@@ -14,7 +14,7 @@ namespace RimLink.Systems.Missions.MissionWorkers
             if (!ModLister.RoyaltyInstalled)
                 return false;
 
-            return base.IsColonistEligible(pawn) && pawn.royalty?.GetCurrentTitleInFaction(Faction.Empire)?.def?.seniority >= MinSeniority;
+            return base.IsColonistEligible(pawn) && pawn.royalty?.GetCurrentTitleInFaction(Faction.OfEmpire)?.def?.seniority >= MinSeniority;
         }
 
         public override void SetSlateVars(Slate slate)
@@ -23,7 +23,7 @@ namespace RimLink.Systems.Missions.MissionWorkers
             RoyalTitleDef highestTitle = null;
             foreach (Pawn pawn in Offer.Colonists)
             {
-                RoyalTitleDef title = pawn.royalty?.GetCurrentTitle(Faction.Empire);
+                RoyalTitleDef title = pawn.royalty?.GetCurrentTitle(Faction.OfEmpire);
                 if (title != null && (highestTitle == null || title.seniority > highestTitle.seniority))
                 {
                     highestTitle = title;

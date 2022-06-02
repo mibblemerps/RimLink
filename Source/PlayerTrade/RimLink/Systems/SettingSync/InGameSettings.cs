@@ -41,8 +41,8 @@ namespace RimLink.Systems.SettingSync
                     Find.Storyteller.Notify_DefChanged();
                 }
 
-                Find.Storyteller.difficulty = Difficulty;
-                Find.Storyteller.difficultyValues = CustomDifficulty;
+                Find.Storyteller.difficultyDef = Difficulty;
+                Find.Storyteller.difficulty = CustomDifficulty;
             }
         }
 

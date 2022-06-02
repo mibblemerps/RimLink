@@ -78,7 +78,7 @@ namespace RimLink.MainTab
 
                 Text.Anchor = TextAnchor.MiddleLeft;
                 Widgets.Label(new Rect(x, rect.y, rect.width - x, rect.height), isForUs
-                    ? "<b>" + "Received".Colorize(ColoredText.RedReadable) + "</b> from " + offer.From.GuidToName(true)
+                    ? "<b>" + "Received".Colorize(ColoredText.WarningColor) + "</b> from " + offer.From.GuidToName(true)
                     : "<b>" + "Sent".Colorize(new Color(0, 0.66f, 0)) + "</b> to " + offer.From.GuidToName(true));
                 Text.Anchor = TextAnchor.UpperLeft;
 

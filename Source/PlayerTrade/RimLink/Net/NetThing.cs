@@ -147,7 +147,7 @@ namespace RimLink.Net
 
             var colorComp = thing.TryGetComp<CompColorable>();
             if (colorComp != null && Color != null)
-                colorComp.Color = Color.ToColor();
+                colorComp.SetColor(Color.ToColor());
 
             if (thing is MinifiedThing minifiedThing)
                 minifiedThing.InnerThing = MinifiedInnerThing.ToThing();
@@ -235,12 +235,12 @@ namespace RimLink.Net
             {
                 var bladelinkNetComp = new NetThingComp_BladelinkWeapon
                 {
-                    Bonded = bladelinkComp.Bondable,
+                    Bonded = bladelinkComp.Biocoded,
                     LastKillTicksAgo = bladelinkComp.TicksSinceLastKill,
                     Traits = new List<string>()
                 };
                 if (bladelinkNetComp.Bonded)
-                    bladelinkNetComp.BondedPawnGuid = bladelinkComp.bondedPawn?.TryGetComp<PawnGuidComp>()?.Guid;
+                    bladelinkNetComp.BondedPawnGuid = bladelinkComp.CodedPawn?.TryGetComp<PawnGuidComp>()?.Guid;
                 foreach (WeaponTraitDef trait in bladelinkComp.TraitsListForReading)
                     bladelinkNetComp.Traits.Add(trait.defName);
                 netThing.Comps.Add(bladelinkNetComp);

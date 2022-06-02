@@ -186,8 +186,8 @@ namespace RimLink.Util
                 }
 
                 // Save implant level (psylinks)
-                if (hediff is Hediff_ImplantWithLevel implantWithLevel)
-                    netHediff.ImplantLevel = implantWithLevel.level;
+                if (hediff is Hediff_Level hediffWithLevel)
+                    netHediff.ImplantLevel = hediffWithLevel.level;
 
                 human.Hediffs.Add(netHediff);
             }
@@ -274,8 +274,8 @@ namespace RimLink.Util
             {
                 var royalty = new NetRoyalty();
                 human.Royalty = royalty;
-                royalty.Favor = pawn.royalty.GetFavor(Faction.Empire);
-                royalty.PermitPoints = pawn.royalty.GetPermitPoints(Faction.Empire);
+                royalty.Favor = pawn.royalty.GetFavor(Faction.OfEmpire);
+                royalty.PermitPoints = pawn.royalty.GetPermitPoints(Faction.OfEmpire);
                 royalty.LastDecreeTicksAgo = Find.TickManager.TicksGame - pawn.royalty.lastDecreeTicks;
                 royalty.AllowApparelRequirements = pawn.royalty.allowApparelRequirements;
                 royalty.AllowRoomRequirements = pawn.royalty.allowRoomRequirements;
@@ -293,7 +293,7 @@ namespace RimLink.Util
                 }
                 
                 // Permits
-                foreach (var permit in pawn.royalty.PermitsFromFaction(Faction.Empire))
+                foreach (var permit in pawn.royalty.PermitsFromFaction(Faction.OfEmpire))
                 {
                     royalty.Permits.Add(new NetRoyalty.NetPermit
                     {
@@ -304,7 +304,7 @@ namespace RimLink.Util
                 }
 
                 // Heir
-                Pawn heir = pawn.royalty.GetHeir(Faction.Empire);
+                Pawn heir = pawn.royalty.GetHeir(Faction.OfEmpire);
                 if (heir != null)
                 {
                     // Create a simplified version of the heir. This heir will (hopefully) never been seen or spawned, other than their name in the UI.
@@ -438,8 +438,8 @@ namespace RimLink.Util
                 hediff.ageTicks = netHediff.AgeTicks;
 
                 // Apply implant level (psylinks)
-                if (hediff is Hediff_ImplantWithLevel implantWithLevel)
-                    implantWithLevel.level = netHediff.ImplantLevel;
+                if (hediff is Hediff_Level hediffWithLevel)
+                    hediffWithLevel.level = netHediff.ImplantLevel;
 
                 foreach (NetHediff.NetHediffComp netComp in netHediff.Comps)
                 {
@@ -576,34 +576,35 @@ namespace RimLink.Util
                     pawn.royalty = new Pawn_RoyaltyTracker(pawn);
 
                 // Permit points
-                var permitPointsDict = (Dictionary<Faction, int>) typeof(Pawn_RoyaltyTracker).GetField("permitPoints", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(pawn.royalty);
-                permitPointsDict[Faction.Empire] = human.Royalty.PermitPoints;
+                // var permitPointsDict = (Dictionary<Faction, int>) typeof(Pawn_RoyaltyTracker).GetField("permitPoints", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(pawn.royalty);
+                // permitPointsDict[Faction.OfEmpire] = human.Royalty.PermitPoints;
+                // pawn.royalty.ResetPermitsAndPoints();
 
                 // Add title
                 NetRoyalty.NetTitle netTitle = human.Royalty.Titles.FirstOrDefault();
                 if (netTitle != null)
                 {
-                    pawn.royalty.SetTitle(Faction.Empire, DefDatabase<RoyalTitleDef>.GetNamed(netTitle.RoyalTitleDefName), false, false, false);
-                    var title = pawn.royalty.GetCurrentTitleInFaction(Faction.Empire);
+                    pawn.royalty.SetTitle(Faction.OfEmpire, DefDatabase<RoyalTitleDef>.GetNamed(netTitle.RoyalTitleDefName), false, false, false);
+                    var title = pawn.royalty.GetCurrentTitleInFaction(Faction.OfEmpire);
                     title.conceited = netTitle.Conceited;
                     title.receivedTick = Find.TickManager.TicksGame - netTitle.GotTicksAgo;
                     title.wasInherited = netTitle.WasInherited;
                 }
 
-                pawn.royalty.SetFavor_NewTemp(Faction.Empire, human.Royalty.Favor); // (important this happens after adding the title, otherwise it gets cleared)
+                pawn.royalty.SetFavor(Faction.OfEmpire, human.Royalty.Favor); // (important this happens after adding the title, otherwise it gets cleared)
                 pawn.royalty.lastDecreeTicks = Find.TickManager.TicksGame - human.Royalty.LastDecreeTicksAgo;
                 pawn.royalty.allowRoomRequirements = human.Royalty.AllowRoomRequirements;
                 pawn.royalty.allowApparelRequirements = human.Royalty.AllowApparelRequirements;
 
                 if (!usingBasePawn && human.Royalty.DummyHeir != null)
-                    pawn.royalty.SetHeir(human.Royalty.DummyHeir.ToPawn(), Faction.Empire);
+                    pawn.royalty.SetHeir(human.Royalty.DummyHeir.ToPawn(), Faction.OfEmpire);
 
                 // Add permits
                 foreach (var netPermit in human.Royalty.Permits)
                 {
                     var permitDef = DefDatabase<RoyalTitlePermitDef>.GetNamed(netPermit.PermitDefName);
-                    pawn.royalty.AddPermit(permitDef, Faction.Empire);
-                    var permit = pawn.royalty.GetPermit(permitDef, Faction.Empire);
+                    pawn.royalty.AddPermit(permitDef, Faction.OfEmpire);
+                    var permit = pawn.royalty.GetPermit(permitDef, Faction.OfEmpire);
                     typeof(FactionPermit).GetField("lastUsedTick", BindingFlags.NonPublic | BindingFlags.Instance)
                         .SetValue(permit, Find.TickManager.TicksGame - netPermit.UsedTicksAgo);
                 }

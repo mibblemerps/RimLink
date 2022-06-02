@@ -14,7 +14,7 @@ using Verse;
 
 namespace RimLink.Systems.Mechanoids.Patches
 {
-    [HarmonyPatch(typeof(MechClusterGenerator), "GenerateClusterSketch_NewTemp")]
+    [HarmonyPatch(typeof(MechClusterGenerator), "GenerateClusterSketch")]
     public static class Patch_MechClusterGenerator
     {
         public static Map Map;

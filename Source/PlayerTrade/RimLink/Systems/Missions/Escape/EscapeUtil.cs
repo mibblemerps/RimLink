@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using RimLink.Util;
 using RimWorld;
@@ -170,6 +171,7 @@ namespace RimLink.Systems.Missions.Escape
         /// Make a drop off shuttle for a pawn. Doesn't error if they're a world pawn unlike the vanilla method (<see cref="SkyfallerUtility.MakeDropoffShuttle"/>).
         /// The pawn does however need to be despawned.
         /// </summary>
+        [Obsolete("Use ArrivalUtil instead")]
         public static void MakeDropoffShuttle(Map map, Pawn pawn)
         {
             if (pawn.Spawned)
@@ -185,7 +187,7 @@ namespace RimLink.Systems.Missions.Escape
                 result = DropCellFinder.TryFindSafeLandingSpotCloseToColony(map, ThingDefOf.Shuttle.Size);
             }
             Thing thing = ThingMaker.MakeThing(ThingDefOf.Shuttle);
-            thing.TryGetComp<CompShuttle>().dropEverythingOnArrival = true;
+            thing.TryGetComp<CompShuttle>().shipParent.AddJobs(ShipJobDefOf.Unload, ShipJobDefOf.FlyAway);
             thing.TryGetComp<CompTransporter>().innerContainer.TryAddRangeOrTransfer(new []{pawn});
             GenPlace.TryPlaceThing(SkyfallerMaker.MakeSkyfaller(ThingDefOf.ShuttleIncoming, Gen.YieldSingle(thing)), result, map, ThingPlaceMode.Near);
         }

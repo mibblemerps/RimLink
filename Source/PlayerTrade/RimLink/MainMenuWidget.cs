@@ -151,7 +151,7 @@ namespace RimLink
             Text.Anchor = TextAnchor.UpperCenter;
             Rect textRect = rect.TopPartPixels(35f);
             textRect.y += 10f;
-            Widgets.Label(rect.TopPartPixels(150f), "<b>RimLink Server Error</b>\n\n".Colorize(ColoredText.RedReadable) + LastPingError?.Message);
+            Widgets.Label(rect.TopPartPixels(150f), "<b>RimLink Server Error</b>\n\n".Colorize(ColoredText.WarningColor) + LastPingError?.Message);
             Text.Anchor = TextAnchor.UpperLeft;
 
             Rect buttonRect = rect.BottomPartPixels(35f);

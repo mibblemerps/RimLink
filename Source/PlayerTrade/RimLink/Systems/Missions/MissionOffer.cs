@@ -154,7 +154,7 @@ namespace RimLink.Systems.Missions
                 pawn.TryGetComp<LentColonistComp>().MissionOffer = this;
 
                 // Store heir
-                Pawn heir = pawn.royalty?.GetHeir(Faction.Empire);
+                Pawn heir = pawn.royalty?.GetHeir(Faction.OfEmpire);
                 if (heir != null)
                     Heirs.Add(heir);
             }

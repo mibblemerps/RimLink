@@ -15,8 +15,6 @@
 			<li>(0.98, 0.75, 0.37)</li>
 			<li>(0.97, 0.62, 0.52)</li>
 		</colorSpectrum>
-		<startingGoodwill>0</startingGoodwill>
-		<naturalColonyGoodwill>-50~50</naturalColonyGoodwill>
 		<generateNewLeaderFromMapMembersOnly>true</generateNewLeaderFromMapMembersOnly>
 		<leaderTitle>leader</leaderTitle>
 		
@@ -36,9 +34,6 @@
 			</categories>
 		</li>
 		</backstoryFilters>
-		<hairTags>
-			<li>Urban</li>
-		</hairTags>
 		<apparelStuffFilter>
 			<thingDefs>
 				<li>Synthread</li>
